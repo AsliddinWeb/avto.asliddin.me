@@ -1,3 +1,4 @@
+# config/urls.py
 """
 URL configuration for config project.
 """
@@ -7,6 +8,15 @@ from django.urls import path, include
 # Static settings
 from django.conf import settings
 from django.conf.urls.static import static
+
+# Admin customization
+admin.site.site_header = "Avtokontinent.uz Admin Panel"
+admin.site.site_title = "Avtokontinent Admin"
+admin.site.index_title = "Boshqaruv paneli"
+
+# Admin site descriptions
+admin.site.site_url = "https://avtokontinent.uz"  # "Saytni ko'rish" tugmasi
+admin.site.enable_nav_sidebar = True  # Sidebar navigation
 
 urlpatterns = [
     path('admin/', admin.site.urls),
