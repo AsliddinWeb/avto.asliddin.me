@@ -1,0 +1,224 @@
+<!-- Category Menu Dropdown Component -->
+<div class="relative"
+     x-data="{
+        isOpen: false,
+        activeCategory: null,
+        categories: [],
+
+        async loadCategories() {
+            try {
+                const response = await fetch('/categories/api/menu/');
+                const data = await response.json();
+                this.categories = data.categories || [];
+            } catch (error) {
+                console.error('Categories loading error:', error);
+            }
+        },
+
+        openMenu() {
+            this.isOpen = true;
+            if (this.categories.length === 0) {
+                this.loadCategories();
+            }
+        },
+
+        closeMenu() {
+            this.isOpen = false;
+            this.activeCategory = null;
+        },
+
+        setActiveCategory(category) {
+            this.activeCategory = category;
+        }
+     }"
+     @mouseenter="openMenu()"
+     @mouseleave="closeMenu()">
+
+    <!-- Menu Trigger -->
+    <button class="flex items-center space-x-2 text-gray-700 hover:text-primary-600 font-medium transition-colors py-2 px-3 rounded-lg hover:bg-gray-50"
+            :class="isOpen ? 'text-primary-600 bg-gray-50' : ''">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <span>Kategoriyalar</span>
+        <svg class="w-4 h-4 transition-transform duration-200"
+             :class="isOpen ? 'rotate-180' : ''"
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div x-show="isOpen"
+         x-cloak
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="absolute top-full left-0 mt-2 w-screen max-w-4xl bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+
+        <!-- Loading State -->
+        <div x-show="categories.length === 0" class="p-8 text-center">
+            <div class="flex items-center justify-center space-x-2 text-gray-500">
+                <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-sm">Kategoriyalar yuklanmoqda...</span>
+            </div>
+        </div>
+
+        <!-- Menu Content -->
+        <div x-show="categories.length > 0" class="flex">
+
+            <!-- Main Categories (Left Side) -->
+            <div class="w-1/3 border-r border-gray-200 p-4">
+                <div class="space-y-1">
+                    <template x-for="category in categories" :key="category.id">
+                        <div>
+                            <!-- Parent Category -->
+                            <a :href="category.url"
+                               @mouseenter="setActiveCategory(category)"
+                               :class="activeCategory && activeCategory.id === category.id ? 'bg-primary-50 text-primary-700 border-primary-200' : 'text-gray-700 hover:bg-gray-50'"
+                               class="flex items-center justify-between p-3 rounded-lg transition-colors border border-transparent">
+                                <div class="flex items-center space-x-3">
+                                    <!-- Category Icon (you can customize based on category) -->
+                                    <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium" x-text="category.name"></div>
+                                        <div class="text-xs text-gray-500" x-show="category.subcategories.length > 0">
+                                            <span x-text="category.subcategories.length"></span> ta bo'lim
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Arrow for categories with subcategories -->
+                                <svg x-show="category.subcategories.length > 0"
+                                     class="w-4 h-4 text-gray-400"
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Subcategories (Right Side) -->
+            <div class="w-2/3 p-4">
+                <!-- Active Category Header -->
+                <div x-show="activeCategory" class="mb-4 pb-3 border-b border-gray-200">
+                    <h3 class="font-semibold text-gray-900" x-text="activeCategory ? activeCategory.name : ''"></h3>
+                    <p class="text-sm text-gray-500">
+                        <span x-text="activeCategory ? activeCategory.subcategories.length : 0"></span>
+                        ta subkategoriya
+                    </p>
+                </div>
+
+                <!-- Subcategories Grid -->
+                <div x-show="activeCategory && activeCategory.subcategories.length > 0">
+                    <div class="grid grid-cols-2 gap-3">
+                        <template x-for="subcategory in (activeCategory ? activeCategory.subcategories : [])" :key="subcategory.id">
+                            <a :href="subcategory.url"
+                               class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                                <div class="w-10 h-10 bg-gray-100 group-hover:bg-primary-100 rounded-lg flex items-center justify-center transition-colors">
+                                    <svg class="w-5 h-5 text-gray-500 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-medium text-gray-900 truncate" x-text="subcategory.name"></div>
+                                    <div class="text-xs text-gray-500">Ko'rish</div>
+                                </div>
+                            </a>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- No Subcategories Message -->
+                <div x-show="activeCategory && activeCategory.subcategories.length === 0" class="text-center py-8">
+                    <div class="text-gray-400 mb-2">
+                        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm text-gray-500">Bu kategoriyada subkategoriya yo'q</p>
+                    <a :href="activeCategory ? activeCategory.url : '#'"
+                       class="inline-flex items-center mt-3 text-sm text-primary-600 hover:text-primary-800">
+                        <span>Barcha mahsulotlarni ko'rish</span>
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Default State (No Category Selected) -->
+                <div x-show="!activeCategory" class="text-center py-8">
+                    <div class="text-gray-400 mb-2">
+                        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                        </svg>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-3">Kategoriya tanlang</p>
+                    <p class="text-xs text-gray-400">Subkategoriyalarni ko'rish uchun chap tomondan kategoriya ustiga sichqonchani olib boring</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Links -->
+        <div class="border-t border-gray-200 p-4 bg-gray-50 rounded-b-lg">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4 text-sm">
+                    <a href="{% url 'categories:category_list' %}" class="text-primary-600 hover:text-primary-800 font-medium">
+                        Barcha kategoriyalar
+                    </a>
+                    <a href="{% url 'products:featured_products' %}" class="text-gray-600 hover:text-gray-800">
+                        Tavsiya qilingan
+                    </a>
+                    <a href="{% url 'products:popular_products' %}" class="text-gray-600 hover:text-gray-800">
+                        Mashhur mahsulotlar
+                    </a>
+                </div>
+
+                <div class="text-xs text-gray-500">
+                    Barcha kategoriyalar
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fallback for No JavaScript -->
+<noscript>
+    <div class="relative group">
+        <button class="flex items-center space-x-2 text-gray-700 hover:text-primary-600 font-medium transition-colors py-2 px-3 rounded-lg hover:bg-gray-50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <span>Kategoriyalar</span>
+        </button>
+
+        <!-- Simple Dropdown for No-JS -->
+        <div class="invisible group-hover:visible absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+            <div class="p-4">
+                <div class="space-y-2">
+                    <a href="{% url 'categories:category_list' %}" class="block p-2 text-gray-700 hover:bg-gray-50 rounded transition-colors">
+                        Barcha kategoriyalar
+                    </a>
+                    <a href="{% url 'products:featured_products' %}" class="block p-2 text-gray-700 hover:bg-gray-50 rounded transition-colors">
+                        Tavsiya qilingan mahsulotlar
+                    </a>
+                    <a href="{% url 'products:popular_products' %}" class="block p-2 text-gray-700 hover:bg-gray-50 rounded transition-colors">
+                        Mashhur mahsulotlar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</noscript>

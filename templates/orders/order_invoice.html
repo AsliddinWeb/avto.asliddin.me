@@ -1,0 +1,358 @@
+<!-- templates/orders/order_invoice.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chek #{{ order.order_number }} - {{ site_name|default:"Avtokontinent.uz" }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .invoice-container, .invoice-container * {
+            visibility: visible;
+        }
+        .invoice-container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        .no-print {
+            display: none !important;
+        }
+        .bg-gray-50 {
+            background: white !important;
+        }
+        .shadow-sm {
+            box-shadow: none !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <!-- Print Actions -->
+        <div class="max-w-4xl mx-auto mb-6 no-print">
+            <div class="bg-white rounded-lg shadow-sm p-4">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h1 class="text-xl font-semibold text-gray-900">Buyurtma cheki</h1>
+                        <p class="text-gray-600 text-sm">Buyurtma #{{ order.order_number }}</p>
+                    </div>
+
+                    <div class="flex space-x-3">
+                        <button onclick="window.print()"
+                                class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z"></path>
+                            </svg>
+                            Chop etish
+                        </button>
+
+                        <button onclick="downloadPDF()"
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            PDF yuklash
+                        </button>
+
+                        <a href="{% url 'orders:order_detail' order.order_number %}"
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Orqaga
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice -->
+        <div class="invoice-container max-w-4xl mx-auto">
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+
+                <!-- Invoice Header -->
+                <div class="bg-gradient-to-r from-primary-600 to-blue-600 text-white p-8">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div>
+                            <h1 class="text-3xl font-bold mb-2">{{ site_name|default:"Avtokontinent.uz" }}</h1>
+                            <p class="text-blue-100">Avto ehtiyot qismlar do'koni</p>
+                        </div>
+
+                        <div class="mt-4 md:mt-0 text-right">
+                            <h2 class="text-2xl font-bold">CHEK</h2>
+                            <p class="text-blue-100">#{{ order.order_number }}</p>
+                            <p class="text-blue-100 text-sm">{{ order.created_at|date:"d.m.Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Invoice Body -->
+                <div class="p-8">
+
+                    <!-- Order & Customer Info -->
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Buyurtma ma'lumotlari</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Buyurtma raqami:</span>
+                                    <span class="font-medium">#{{ order.order_number }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Sana:</span>
+                                    <span class="font-medium">{{ order.created_at|date:"d.m.Y H:i" }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Holat:</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">
+                                        {{ order.get_status_display }}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Dollar kursi:</span>
+                                    <span class="font-medium">{{ order.usd_rate_used }} so'm</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Mijoz ma'lumotlari</h3>
+                            <div class="space-y-2 text-sm">
+                                <div>
+                                    <span class="text-gray-600 block">Ism:</span>
+                                    <span class="font-medium">{{ order.user.first_name|default:"Mijoz" }} {{ order.user.last_name|default:"" }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600 block">Telefon:</span>
+                                    <span class="font-medium">{{ order.user.phone }}</span>
+                                </div>
+                                {% if order.user.email %}
+                                <div>
+                                    <span class="text-gray-600 block">Email:</span>
+                                    <span class="font-medium">{{ order.user.email }}</span>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <span class="text-gray-600 block">Yetkazish manzili:</span>
+                                    <span class="font-medium">{{ order.delivery_address }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Items Table -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Buyurtma tarkibi</h3>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full border-collapse border border-gray-200">
+                                <thead>
+                                    <tr class="bg-gray-50">
+                                        <th class="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-900">#</th>
+                                        <th class="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-900">Mahsulot</th>
+                                        <th class="border border-gray-200 px-4 py-3 text-center text-sm font-medium text-gray-900">Miqdor</th>
+                                        <th class="border border-gray-200 px-4 py-3 text-right text-sm font-medium text-gray-900">Narx (USD)</th>
+                                        <th class="border border-gray-200 px-4 py-3 text-right text-sm font-medium text-gray-900">Narx (UZS)</th>
+                                        <th class="border border-gray-200 px-4 py-3 text-right text-sm font-medium text-gray-900">Jami (UZS)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in order_items %}
+                                    <tr class="{% if forloop.counter0|divisibleby:2 %}bg-gray-25{% else %}bg-white{% endif %}">
+                                        <td class="border border-gray-200 px-4 py-3 text-sm">{{ forloop.counter }}</td>
+                                        <td class="border border-gray-200 px-4 py-3">
+                                            <div class="text-sm font-medium text-gray-900">{{ item.product_name|default:item.product.name }}</div>
+                                            {% if item.product.category %}
+                                            <div class="text-xs text-gray-500">{{ item.product.category.name }}</div>
+                                            {% endif %}
+                                            {% if item.product.brand %}
+                                            <div class="text-xs text-gray-500">{{ item.product.brand.name }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td class="border border-gray-200 px-4 py-3 text-center text-sm">{{ item.quantity }}</td>
+                                        <td class="border border-gray-200 px-4 py-3 text-right text-sm font-medium">
+                                            ${{ item.price_usd|default:item.product.price_usd }}
+                                        </td>
+                                        <td class="border border-gray-200 px-4 py-3 text-right text-sm">
+                                            {{ item.price_som|floatformat:0|default:item.product.price_som }} so'm
+                                        </td>
+                                        <td class="border border-gray-200 px-4 py-3 text-right text-sm font-medium">
+                                            {{ item.total_som|floatformat:0 }} so'm
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="border border-gray-200 px-4 py-8 text-center text-gray-500">
+                                            Buyurtmada mahsulot yo'q
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Order Totals -->
+                    <div class="flex justify-end mb-8">
+                        <div class="w-full max-w-sm">
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Jami summa</h3>
+
+                                <div class="space-y-3">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Mahsulotlar:</span>
+                                        <span class="font-medium">${{ order.total_amount_usd }}</span>
+                                    </div>
+
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">UZS da:</span>
+                                        <span class="font-medium">{{ order.formatted_total_som }}</span>
+                                    </div>
+
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Yetkazish:</span>
+                                        <span class="font-medium text-green-600">Bepul</span>
+                                    </div>
+
+                                    <div class="border-t pt-3">
+                                        <div class="flex justify-between">
+                                            <span class="text-lg font-semibold text-gray-900">Jami to'lov:</span>
+                                            <div class="text-right">
+                                                <div class="text-xl font-bold text-primary-600">${{ order.total_amount_usd }}</div>
+                                                <div class="text-lg font-bold text-gray-900">{{ order.formatted_total_som }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Status -->
+                    {% if order.payment_screenshot %}
+                    <div class="border-t pt-6 mb-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">To'lov holati</h3>
+                                <div class="flex items-center space-x-2 mt-2">
+                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span class="text-green-600 font-medium">To'lov amalga oshirildi</span>
+                                </div>
+                                {% if order.payment_card_number %}
+                                <p class="text-sm text-gray-600 mt-1">
+                                    Karta: {{ order.payment_card_number }}
+                                </p>
+                                {% endif %}
+                            </div>
+
+                            <div class="text-right text-sm text-gray-600">
+                                <div>To'lov sanasi:</div>
+                                <div class="font-medium">{{ order.updated_at|date:"d.m.Y H:i" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Footer -->
+                    <div class="border-t pt-6">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="font-semibold text-gray-900 mb-2">{{ site_name|default:"Avtokontinent.uz" }}</h3>
+                                <div class="text-sm text-gray-600 space-y-1">
+                                    <p>Avto ehtiyot qismlar do'koni</p>
+                                    <p>Telefon: +998 90 123 45 67</p>
+                                    <p>Email: info@avtokontinent.uz</p>
+                                    <p>Sayt: avtokontinent.uz</p>
+                                </div>
+                            </div>
+
+                            <div class="text-right">
+                                <div class="text-sm text-gray-600">
+                                    <p class="font-semibold mb-2">Xizmat ko'rsatish sifati</p>
+                                    <p>✓ Sifatli mahsulotlar</p>
+                                    <p>✓ Tez yetkazib berish</p>
+                                    <p>✓ Kafolat xizmati</p>
+                                    <p>✓ 24/7 qo'llab-quvvatlash</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QR Code & Signature -->
+                        <div class="flex justify-between items-end mt-8 pt-6 border-t">
+                            <div>
+                                <div class="w-20 h-20 bg-gray-200 border-2 border-gray-300 rounded flex items-center justify-center">
+                                    <span class="text-xs text-gray-500">QR</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">QR kod</p>
+                            </div>
+
+                            <div class="text-right">
+                                <div class="border-b border-gray-300 w-40 mb-2"></div>
+                                <p class="text-xs text-gray-500">Rahbar imzosi</p>
+                            </div>
+                        </div>
+
+                        <!-- Print Date -->
+                        <div class="text-center mt-6 pt-4 border-t">
+                            <p class="text-xs text-gray-500">
+                                Chek yaratilgan sana: {{ "now"|date:"d.m.Y H:i" }}
+                            </p>
+                            <p class="text-xs text-gray-400 mt-1">
+                                Bu hujjat avtomatik tarzda yaratilgan va imzo talab qilmaydi.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Download PDF function
+function downloadPDF() {
+    // Simple implementation - in real project use libraries like jsPDF or html2canvas
+    window.print();
+
+    // Show download message
+    setTimeout(() => {
+        window.avtokontinent.showToast('PDF yuklash uchun brauzerdagi "Print" oynasidan "Save as PDF" tanlang', 'info');
+    }, 1000);
+}
+
+// Print optimization
+window.addEventListener('beforeprint', function() {
+    // Hide non-essential elements
+    document.querySelectorAll('.no-print').forEach(el => {
+        el.style.display = 'none';
+    });
+});
+
+window.addEventListener('afterprint', function() {
+    // Show elements back
+    document.querySelectorAll('.no-print').forEach(el => {
+        el.style.display = '';
+    });
+});
+
+// Auto-print if URL has print parameter
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('print') === 'true') {
+    setTimeout(() => {
+        window.print();
+    }, 1000);
+}
+</script>
+{% endblock %}

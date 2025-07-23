@@ -1,0 +1,209 @@
+<!-- Pagination Component -->
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6" aria-label="Pagination">
+
+    <!-- Mobile Pagination (Simple) -->
+    <div class="flex flex-1 justify-between sm:hidden">
+        {% if page_obj.has_previous %}
+            <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}page={{ page_obj.previous_page_number }}"
+               class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                Oldingi
+            </a>
+        {% else %}
+            <span class="relative inline-flex items-center rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">
+                Oldingi
+            </span>
+        {% endif %}
+
+        {% if page_obj.has_next %}
+            <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}page={{ page_obj.next_page_number }}"
+               class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                Keyingi
+            </a>
+        {% else %}
+            <span class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">
+                Keyingi
+            </span>
+        {% endif %}
+    </div>
+
+    <!-- Desktop Pagination (Full) -->
+    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+
+        <!-- Results Info -->
+        <div>
+            <p class="text-sm text-gray-700">
+                <span class="font-medium">{{ page_obj.start_index }}</span>
+                dan
+                <span class="font-medium">{{ page_obj.end_index }}</span>
+                gacha, jami
+                <span class="font-medium">{{ page_obj.paginator.count }}</span>
+                ta natija
+            </p>
+        </div>
+
+        <!-- Page Numbers -->
+        <div>
+            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+
+                <!-- Previous Button -->
+                {% if page_obj.has_previous %}
+                    <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}page={{ page_obj.previous_page_number }}"
+                       class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 hover:text-gray-600 focus:z-20 focus:outline-offset-0 transition-colors">
+                        <span class="sr-only">Oldingi sahifa</span>
+                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                {% else %}
+                    <span class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-300 ring-1 ring-inset ring-gray-300 cursor-not-allowed">
+                        <span class="sr-only">Oldingi sahifa</span>
+                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                {% endif %}
+
+                <!-- Page Numbers Logic -->
+                {% with ''|center:page_obj.paginator.num_pages as range %}
+                {% for i in range %}
+                    {% with forloop.counter as page_num %}
+
+                        <!-- Show first page -->
+                        {% if page_num == 1 %}
+                            {% if page_obj.number == 1 %}
+                                <span aria-current="page" class="relative z-10 inline-flex items-center bg-primary-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                                    1
+                                </span>
+                            {% else %}
+                                <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}page=1"
+                                   class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 transition-colors">
+                                    1
+                                </a>
+                            {% endif %}
+
+                        <!-- Show dots after first page if needed -->
+                        {% elif page_num == 2 and page_obj.number > 4 %}
+                            <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300">
+                                ...
+                            </span>
+
+                        <!-- Show pages around current page -->
+                        {% elif page_num >= page_obj.number|add:"-2" and page_num <= page_obj.number|add:"2" and page_num > 1 and page_num < page_obj.paginator.num_pages %}
+                            {% if page_obj.number == page_num %}
+                                <span aria-current="page" class="relative z-10 inline-flex items-center bg-primary-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                                    {{ page_num }}
+                                </span>
+                            {% else %}
+                                <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}page={{ page_num }}"
+                                   class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 transition-colors">
+                                    {{ page_num }}
+                                </a>
+                            {% endif %}
+
+                        <!-- Show dots before last page if needed -->
+                        {% elif page_num == page_obj.paginator.num_pages|add:"-1" and page_obj.number < page_obj.paginator.num_pages|add:"-3" %}
+                            <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300">
+                                ...
+                            </span>
+
+                        <!-- Show last page -->
+                        {% elif page_num == page_obj.paginator.num_pages and page_obj.paginator.num_pages > 1 %}
+                            {% if page_obj.number == page_obj.paginator.num_pages %}
+                                <span aria-current="page" class="relative z-10 inline-flex items-center bg-primary-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
+                                    {{ page_obj.paginator.num_pages }}
+                                </span>
+                            {% else %}
+                                <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}page={{ page_obj.paginator.num_pages }}"
+                                   class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 transition-colors">
+                                    {{ page_obj.paginator.num_pages }}
+                                </a>
+                            {% endif %}
+                        {% endif %}
+
+                    {% endwith %}
+                {% endfor %}
+                {% endwith %}
+
+                <!-- Next Button -->
+                {% if page_obj.has_next %}
+                    <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}page={{ page_obj.next_page_number }}"
+                       class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 hover:text-gray-600 focus:z-20 focus:outline-offset-0 transition-colors">
+                        <span class="sr-only">Keyingi sahifa</span>
+                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                {% else %}
+                    <span class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-300 ring-1 ring-inset ring-gray-300 cursor-not-allowed">
+                        <span class="sr-only">Keyingi sahifa</span>
+                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                {% endif %}
+
+            </nav>
+        </div>
+    </div>
+</nav>
+
+<!-- Per Page Options (Optional) -->
+{% if show_per_page_options %}
+<div class="border-t border-gray-200 bg-gray-50 px-4 py-3 sm:px-6">
+    <div class="flex items-center justify-between">
+        <div class="text-sm text-gray-700">
+            Sahifada ko'rsatish:
+        </div>
+        <div class="flex items-center space-x-2">
+            {% for per_page in per_page_options %}
+                {% if per_page == request.GET.per_page|default:"24" %}
+                    <span class="bg-primary-600 text-white px-3 py-1 rounded text-sm font-medium">
+                        {{ per_page }}
+                    </span>
+                {% else %}
+                    <a href="?{% if request.GET %}{% for key, value in request.GET.items %}{% if key != 'per_page' and key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}{% endif %}per_page={{ per_page }}"
+                       class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1 rounded text-sm font-medium transition-colors">
+                        {{ per_page }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endif %}
+
+<!-- Jump to Page (Optional Advanced Feature) -->
+{% if show_jump_to_page and page_obj.paginator.num_pages > 10 %}
+<div class="border-t border-gray-200 bg-gray-50 px-4 py-3 sm:px-6">
+    <div class="flex items-center justify-center">
+        <form method="get" class="flex items-center space-x-2">
+            <!-- Preserve existing GET parameters -->
+            {% if request.GET %}
+                {% for key, value in request.GET.items %}
+                    {% if key != 'page' %}
+                        <input type="hidden" name="{{ key }}" value="{{ value }}">
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <label for="jump-to-page" class="text-sm text-gray-700">
+                Sahifaga o'tish:
+            </label>
+            <input type="number"
+                   id="jump-to-page"
+                   name="page"
+                   min="1"
+                   max="{{ page_obj.paginator.num_pages }}"
+                   value="{{ page_obj.number }}"
+                   class="w-20 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-1 focus:ring-primary-500 focus:border-primary-500">
+            <button type="submit"
+                    class="bg-primary-600 text-white px-3 py-1 rounded text-sm font-medium hover:bg-primary-700 transition-colors">
+                O'tish
+            </button>
+        </form>
+    </div>
+</div>
+{% endif %}

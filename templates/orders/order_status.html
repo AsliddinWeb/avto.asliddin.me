@@ -1,0 +1,391 @@
+<!-- templates/orders/order_status.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Buyurtma holati #{{ order.order_number }} - Avtokontinent.uz{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <div class="max-w-4xl mx-auto">
+
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">
+                            Buyurtma holati #{{ order.order_number }}
+                        </h1>
+                        <p class="text-gray-600 mt-1">
+                            {{ order.created_at|date:"d.m.Y H:i" }} da berilgan
+                        </p>
+                    </div>
+
+                    <div>
+                        <span class="px-4 py-2 rounded-full text-sm font-medium
+                            {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                            {% elif order.status == 'payment_pending' %}bg-blue-100 text-blue-800
+                            {% elif order.status == 'confirmed' %}bg-green-100 text-green-800
+                            {% elif order.status == 'preparing' %}bg-indigo-100 text-indigo-800
+                            {% elif order.status == 'shipped' %}bg-purple-100 text-purple-800
+                            {% elif order.status == 'delivered' %}bg-green-100 text-green-800
+                            {% elif order.status == 'cancelled' %}bg-red-100 text-red-800
+                            {% elif order.status == 'payment_rejected' %}bg-red-100 text-red-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="flex flex-wrap gap-3">
+                    <a href="{% url 'orders:order_detail' order.order_number %}"
+                       class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        Buyurtma tafsilotlari
+                    </a>
+
+                    <button onclick="refreshStatus()"
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Yangilash
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-6">
+
+                <!-- Status Timeline -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-xl font-semibold mb-6">Buyurtma jarayoni</h2>
+
+                        <!-- Timeline -->
+                        <div class="relative">
+                            <!-- Pending -->
+                            <div class="flex items-start mb-8">
+                                <div class="flex-shrink-0 relative">
+                                    <div class="w-10 h-10 {% if order.status == 'pending' %}bg-primary-500 animate-pulse{% else %}bg-green-500{% endif %} rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="absolute top-10 left-5 w-0.5 h-8 bg-green-300"></div>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h3 class="font-semibold text-lg text-green-800">Kutilmoqda</h3>
+                                    {% if order.status == 'pending' %}
+                                        <p class="text-primary-600 font-medium mt-1">🔄 Hozirgi holat</p>
+                                        <div class="mt-3 p-4 bg-primary-50 rounded-lg">
+                                            <p class="text-primary-800">Buyurtmangiz qabul qilindi. Oferta bilan tanishib, tasdiqlang.</p>
+                                        </div>
+                                    {% else %}
+                                        <p class="text-green-600 font-medium mt-1">✅ Bajarildi</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Payment Pending -->
+                            <div class="flex items-start mb-8">
+                                <div class="flex-shrink-0 relative">
+                                    {% if order.status == 'payment_pending' %}
+                                        <div class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center animate-pulse">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                            </svg>
+                                        </div>
+                                    {% elif order.status == 'pending' %}
+                                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                            </svg>
+                                        </div>
+                                    {% else %}
+                                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                    {% if order.status != 'delivered' and order.status != 'cancelled' %}
+                                    <div class="absolute top-10 left-5 w-0.5 h-8 {% if order.status == 'payment_pending' or order.status == 'confirmed' or order.status == 'preparing' or order.status == 'shipped' %}bg-green-300{% else %}bg-gray-300{% endif %}"></div>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h3 class="font-semibold text-lg {% if order.status == 'payment_pending' %}text-primary-600{% elif order.status == 'pending' %}text-gray-500{% else %}text-green-800{% endif %}">
+                                        To'lov kutilmoqda
+                                    </h3>
+                                    {% if order.status == 'payment_pending' %}
+                                        <p class="text-primary-600 font-medium mt-1">🔄 Hozirgi holat</p>
+                                        <div class="mt-3 p-4 bg-primary-50 rounded-lg">
+                                            <p class="text-primary-800">To'lov chekingizni tekshirib ko'rmoqdamiz. Odatda bu 30 daqiqa - 2 soat vaqt oladi.</p>
+                                        </div>
+                                    {% elif order.status == 'pending' %}
+                                        <p class="text-gray-500 mt-1">Navbatda</p>
+                                    {% else %}
+                                        <p class="text-green-600 font-medium mt-1">✅ Bajarildi</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Confirmed -->
+                            <div class="flex items-start mb-8">
+                                <div class="flex-shrink-0 relative">
+                                    {% if order.status == 'confirmed' %}
+                                        <div class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center animate-pulse">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                    {% elif order.status == 'pending' or order.status == 'payment_pending' %}
+                                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                    {% else %}
+                                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                    {% if order.status != 'delivered' and order.status != 'cancelled' %}
+                                    <div class="absolute top-10 left-5 w-0.5 h-8 {% if order.status == 'preparing' or order.status == 'shipped' %}bg-green-300{% else %}bg-gray-300{% endif %}"></div>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h3 class="font-semibold text-lg {% if order.status == 'confirmed' %}text-primary-600{% elif order.status == 'pending' or order.status == 'payment_pending' %}text-gray-500{% else %}text-green-800{% endif %}">
+                                        Tasdiqlandi
+                                    </h3>
+                                    {% if order.status == 'confirmed' %}
+                                        <p class="text-primary-600 font-medium mt-1">🔄 Hozirgi holat</p>
+                                        <div class="mt-3 p-4 bg-primary-50 rounded-lg">
+                                            <p class="text-primary-800">To'lovingiz tasdiqlandi! Buyurtmangizni tayyorlash boshlandi.</p>
+                                        </div>
+                                    {% elif order.status == 'pending' or order.status == 'payment_pending' %}
+                                        <p class="text-gray-500 mt-1">Navbatda</p>
+                                    {% else %}
+                                        <p class="text-green-600 font-medium mt-1">✅ Bajarildi</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Preparing -->
+                            <div class="flex items-start mb-8">
+                                <div class="flex-shrink-0 relative">
+                                    {% if order.status == 'preparing' %}
+                                        <div class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center animate-pulse">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                            </svg>
+                                        </div>
+                                    {% elif order.status == 'shipped' or order.status == 'delivered' %}
+                                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                    {% else %}
+                                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                    {% if order.status != 'delivered' and order.status != 'cancelled' %}
+                                    <div class="absolute top-10 left-5 w-0.5 h-8 {% if order.status == 'shipped' %}bg-green-300{% else %}bg-gray-300{% endif %}"></div>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h3 class="font-semibold text-lg {% if order.status == 'preparing' %}text-primary-600{% elif order.status == 'shipped' or order.status == 'delivered' %}text-green-800{% else %}text-gray-500{% endif %}">
+                                        Tayyorlanmoqda
+                                    </h3>
+                                    {% if order.status == 'preparing' %}
+                                        <p class="text-primary-600 font-medium mt-1">🔄 Hozirgi holat</p>
+                                        <div class="mt-3 p-4 bg-primary-50 rounded-lg">
+                                            <p class="text-primary-800">Mahsulotlar tayyor bo'lishi va qadoqlanishi 1-2 kun vaqt oladi.</p>
+                                        </div>
+                                    {% elif order.status == 'shipped' or order.status == 'delivered' %}
+                                        <p class="text-green-600 font-medium mt-1">✅ Bajarildi</p>
+                                    {% else %}
+                                        <p class="text-gray-500 mt-1">Navbatda</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Shipped -->
+                            <div class="flex items-start mb-8">
+                                <div class="flex-shrink-0 relative">
+                                    {% if order.status == 'shipped' %}
+                                        <div class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center animate-pulse">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                    {% elif order.status == 'delivered' %}
+                                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                    {% else %}
+                                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                    {% if order.status != 'delivered' and order.status != 'cancelled' %}
+                                    <div class="absolute top-10 left-5 w-0.5 h-8 bg-gray-300"></div>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h3 class="font-semibold text-lg {% if order.status == 'shipped' %}text-primary-600{% elif order.status == 'delivered' %}text-green-800{% else %}text-gray-500{% endif %}">
+                                        Jo'natildi
+                                    </h3>
+                                    {% if order.status == 'shipped' %}
+                                        <p class="text-primary-600 font-medium mt-1">🔄 Hozirgi holat</p>
+                                        <div class="mt-3 p-4 bg-primary-50 rounded-lg">
+                                            <p class="text-primary-800">Buyurtmangiz yetkazuvchiga topshirildi. Tez orada sizga yetib boradi.</p>
+                                        </div>
+                                    {% elif order.status == 'delivered' %}
+                                        <p class="text-green-600 font-medium mt-1">✅ Bajarildi</p>
+                                    {% else %}
+                                        <p class="text-gray-500 mt-1">Navbatda</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Delivered -->
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    {% if order.status == 'delivered' %}
+                                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                    {% else %}
+                                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <h3 class="font-semibold text-lg {% if order.status == 'delivered' %}text-green-800{% else %}text-gray-500{% endif %}">
+                                        Yetkazildi
+                                    </h3>
+                                    {% if order.status == 'delivered' %}
+                                        <p class="text-green-600 font-medium mt-1">✅ Bajarildi</p>
+                                        <div class="mt-3 p-4 bg-green-50 rounded-lg">
+                                            <p class="text-green-800">Buyurtmangiz muvaffaqiyatli yetkazildi! Bizni tanlaganingiz uchun rahmat.</p>
+                                        </div>
+                                    {% else %}
+                                        <p class="text-gray-500 mt-1">Navbatda</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="lg:col-span-1 space-y-6">
+
+                    <!-- Order Info -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-lg font-semibold mb-4">Buyurtma ma'lumoti</h2>
+
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Raqam:</span>
+                                <span class="font-medium">#{{ order.order_number }}</span>
+                            </div>
+
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Sana:</span>
+                                <span class="font-medium">{{ order.created_at|date:"d.m.Y H:i" }}</span>
+                            </div>
+
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Jami:</span>
+                                <div class="text-right">
+                                    <div class="font-bold text-primary-600">${{ order.total_amount_usd }}</div>
+                                    <div class="text-xs text-gray-500">{{ order.formatted_total_som }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Support -->
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                        <h3 class="font-medium text-yellow-900 mb-3">Yordam kerakmi?</h3>
+
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                </svg>
+                                <a href="tel:+998901234567" class="text-yellow-800 hover:underline">
+                                    +998 90 123 45 67
+                                </a>
+                            </div>
+
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                                </svg>
+                                <a href="https://t.me/avtokontinent_support"
+                                   target="_blank"
+                                   class="text-yellow-800 hover:underline">
+                                    Telegram orqali
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Refresh status
+function refreshStatus() {
+    location.reload();
+}
+
+// Auto-refresh for active orders
+const currentStatus = '{{ order.status }}';
+if (currentStatus === 'payment_pending' || currentStatus === 'preparing' || currentStatus === 'shipped') {
+    setInterval(() => {
+        fetch(window.location.href)
+            .then(response => response.text())
+            .then(html => {
+                // Check if status changed
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newStatus = doc.querySelector('.px-4.py-2.rounded-full')?.textContent?.trim();
+                const oldStatus = document.querySelector('.px-4.py-2.rounded-full')?.textContent?.trim();
+
+                if (newStatus && newStatus !== oldStatus) {
+                    window.avtokontinent.showToast('Holat yangilandi! Sahifa yangilanmoqda...', 'success');
+                    setTimeout(() => location.reload(), 2000);
+                }
+            })
+            .catch(() => {});
+    }, 30000); // 30 seconds
+}
+</script>
+{% endblock %}

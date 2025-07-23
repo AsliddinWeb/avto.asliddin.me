@@ -1,0 +1,835 @@
+<!-- templates/cart/cart.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Savatcha - Avtokontinent.uz{% endblock %}
+
+{% block description %}
+Sizning xarid savatingiz. Avto ehtiyot qismlarni ko'rib chiqing va buyurtma bering.
+Tez yetkazib berish va kafolat bilan.
+{% endblock %}
+
+{% block keywords %}
+savatcha, xarid, avto ehtiyot qismlar, buyurtma, avtokontinent
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cart-item {
+        transition: all 0.3s ease;
+    }
+
+    .cart-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .quantity-btn {
+        transition: all 0.2s ease;
+    }
+
+    .quantity-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .cart-animation {
+        animation: slideInUp 0.5s ease;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .empty-cart-animation {
+        animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .checkout-pulse {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+    }
+
+    .price-highlight {
+        background: linear-gradient(45deg, #fbbf24, #f59e0b);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .loading-skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                        🛒 Savatingiz
+                    </h1>
+                    <p class="text-gray-600" id="cart-items-count">
+                        Mahsulotlar yuklanmoqda...
+                    </p>
+                </div>
+
+                <!-- Continue Shopping -->
+                <a href="{% url 'products:product_list' %}"
+                   class="hidden md:flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg transition-colors font-medium">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+                    </svg>
+                    <span>Xaridni davom ettirish</span>
+                </a>
+            </div>
+
+            <!-- Mobile Continue Shopping -->
+            <div class="md:hidden mt-4">
+                <a href="{% url 'products:product_list' %}"
+                   class="w-full flex items-center justify-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+                    </svg>
+                    <span>Xaridni davom ettirish</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="lg:grid lg:grid-cols-3 lg:gap-8">
+
+            <!-- Cart Items (Left Column) -->
+            <div class="lg:col-span-2 mb-8 lg:mb-0">
+                <div id="cart-container" class="space-y-4">
+                    <!-- Loading State -->
+                    <div id="loading-state" class="space-y-4">
+                        {% for i in "123456" %}
+                        <div class="bg-white rounded-lg p-6 loading-skeleton h-32"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary (Right Column) -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 sticky top-8">
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                            <svg class="w-6 h-6 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Buyurtma xulasasi
+                        </h2>
+
+                        <!-- Order Summary Content -->
+                        <div id="order-summary" class="space-y-4">
+                            <!-- Loading placeholder -->
+                            <div class="loading-skeleton h-20 rounded"></div>
+                        </div>
+
+                        <!-- Promo Code -->
+                        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center space-x-2 mb-3">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                </svg>
+                                <span class="font-medium text-gray-900">Promo kod</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <input type="text"
+                                       id="promo-code"
+                                       placeholder="Promo kodni kiriting..."
+                                       class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm">
+                                <button onclick="applyPromoCode()"
+                                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                                    Qo'llash
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2">
+                                Chegirma kodingiz bormi? Yuqoridagi maydonga kiriting
+                            </p>
+                        </div>
+
+                        <!-- Checkout Button -->
+                        <div class="mt-6">
+                            <button id="checkout-btn"
+                                    onclick="proceedToCheckout()"
+                                    disabled
+                                    class="w-full bg-primary-600 text-white py-4 px-6 rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold text-lg flex items-center justify-center space-x-2">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                </svg>
+                                <span>Buyurtma berish</span>
+                            </button>
+
+                            <!-- Security Badge -->
+                            <div class="flex items-center justify-center space-x-2 mt-3 text-sm text-gray-500">
+                                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                                <span>Xavfsiz to'lov</span>
+                            </div>
+                        </div>
+
+                        <!-- Payment Methods -->
+                        <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                            <h3 class="font-medium text-gray-900 mb-3 text-sm">To'lov usullari:</h3>
+                            <div class="grid grid-cols-4 gap-2">
+                                <div class="bg-white p-2 rounded border flex items-center justify-center">
+                                    <span class="text-xs font-bold text-blue-600">UzCard</span>
+                                </div>
+                                <div class="bg-white p-2 rounded border flex items-center justify-center">
+                                    <span class="text-xs font-bold text-green-600">Humo</span>
+                                </div>
+                                <div class="bg-white p-2 rounded border flex items-center justify-center">
+                                    <span class="text-xs font-bold text-blue-800">VISA</span>
+                                </div>
+                                <div class="bg-blue-500 p-2 rounded flex items-center justify-center">
+                                    <span class="text-xs font-bold text-white">PayMe</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Info -->
+                        <div class="mt-6 p-4 border border-green-200 bg-green-50 rounded-lg">
+                            <div class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                                </svg>
+                                <div>
+                                    <h4 class="font-medium text-green-900 text-sm">Yetkazib berish</h4>
+                                    <p class="text-green-700 text-xs mt-1">
+                                        Toshkent bo'ylab 1-2 kun, viloyatlarga 3-5 kun ichida yetkazamiz
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recently Viewed Products -->
+        <div class="mt-16" id="recently-viewed" style="display: none;">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Yaqinda ko'rgan mahsulotlar</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="recently-viewed-container">
+                <!-- Recently viewed products will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Recommended Products -->
+        <div class="mt-16" id="recommended-products" style="display: none;">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Sizga tavsiya qilamiz</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="recommended-container">
+                <!-- Recommended products will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cart Item Template -->
+<template id="cart-item-template">
+    <div class="cart-item bg-white rounded-lg shadow-sm border border-gray-200 p-6 cart-animation">
+        <div class="flex items-start space-x-4">
+            <!-- Product Image -->
+            <div class="flex-shrink-0">
+                <img class="product-image w-20 h-20 lg:w-24 lg:h-24 object-cover rounded-lg bg-gray-100"
+                     alt="Product">
+            </div>
+
+            <!-- Product Info -->
+            <div class="flex-1 min-w-0">
+                <!-- Product Name & Category -->
+                <div class="mb-2">
+                    <h3 class="product-name font-semibold text-gray-900 text-lg line-clamp-2"></h3>
+                    <p class="product-category text-sm text-gray-500 mt-1"></p>
+                    <p class="product-brand text-sm text-primary-600 font-medium"></p>
+                </div>
+
+                <!-- Price -->
+                <div class="mb-4">
+                    <div class="product-price-uzs text-xl font-bold text-gray-900"></div>
+                </div>
+
+                <!-- Mobile Actions -->
+                <div class="flex items-center justify-between lg:hidden">
+                    <div class="flex items-center space-x-3">
+                        <button class="quantity-btn quantity-decrease bg-gray-200 hover:bg-gray-300 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center font-bold transition-all">
+                            −
+                        </button>
+                        <span class="quantity-display font-semibold text-lg min-w-[2rem] text-center"></span>
+                        <button class="quantity-btn quantity-increase bg-gray-200 hover:bg-gray-300 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center font-bold transition-all">
+                            +
+                        </button>
+                    </div>
+                    <button class="remove-item text-red-500 hover:text-red-700 p-2 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Desktop Actions -->
+            <div class="hidden lg:flex flex-col items-end space-y-4">
+                <!-- Quantity Controls -->
+                <div class="flex items-center space-x-3 bg-gray-50 rounded-lg p-2">
+                    <button class="quantity-btn quantity-decrease bg-white hover:bg-gray-100 text-gray-700 w-10 h-10 rounded-lg flex items-center justify-center font-bold shadow-sm transition-all">
+                        −
+                    </button>
+                    <span class="quantity-display font-semibold text-xl min-w-[3rem] text-center"></span>
+                    <button class="quantity-btn quantity-increase bg-white hover:bg-gray-100 text-gray-700 w-10 h-10 rounded-lg flex items-center justify-center font-bold shadow-sm transition-all">
+                        +
+                    </button>
+                </div>
+
+                <!-- Item Total -->
+                <div class="text-right">
+                    <div class="item-total-uzs text-xl font-bold price-highlight"></div>
+                </div>
+
+                <!-- Remove Button -->
+                <button class="remove-item bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 p-3 rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Product Details (Expandable) -->
+        <div class="mt-4 pt-4 border-t border-gray-100" x-data="{ showDetails: false }">
+            <button @click="showDetails = !showDetails"
+                    class="flex items-center space-x-2 text-primary-600 hover:text-primary-800 text-sm font-medium">
+                <span>Batafsil ma'lumot</span>
+                <svg class="w-4 h-4 transition-transform"
+                     :class="showDetails ? 'rotate-180' : ''"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+            <div x-show="showDetails"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform scale-95"
+                 x-transition:enter-end="opacity-100 transform scale-100"
+                 class="mt-3 text-sm text-gray-600 space-y-2">
+                <p class="product-description"></p>
+                <div class="flex space-x-4">
+                    <span class="inline-flex items-center space-x-1">
+                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span>Kafolat</span>
+                    </span>
+                    <span class="inline-flex items-center space-x-1">
+                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                        <span>Tez yetkazish</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Empty Cart Template -->
+<template id="empty-cart-template">
+    <div class="empty-cart-animation text-center py-16">
+        <div class="max-w-md mx-auto">
+            <!-- Empty Cart Icon -->
+            <div class="w-32 h-32 mx-auto mb-8 bg-gray-100 rounded-full flex items-center justify-center">
+                <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                          d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 4M7 13l1.5 4m0 0h10m-10 0v-2m10 2v-2">
+                    </path>
+                </svg>
+            </div>
+
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Savatcha hali bo'sh</h3>
+            <p class="text-gray-600 mb-8 text-lg">
+                Sizga kerakli avto ehtiyot qismlarni qo'shish uchun katalogga o'ting
+            </p>
+
+            <!-- Action Buttons -->
+            <div class="space-y-4">
+                <a href="{% url 'products:product_list' %}"
+                   class="inline-flex items-center bg-primary-600 text-white px-8 py-4 rounded-lg hover:bg-primary-700 transition-colors font-semibold text-lg">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M8 11v6h8v-6M8 11H6a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2h-2"></path>
+                    </svg>
+                    <span>Xaridni boshlash</span>
+                </a>
+
+                <div class="flex justify-center space-x-6 text-sm">
+                    <a href="{% url 'categories:category_list' %}" class="text-primary-600 hover:text-primary-800 font-medium">
+                        Kategoriyalar
+                    </a>
+                    <a href="{% url 'brands:brand_list' %}" class="text-primary-600 hover:text-primary-800 font-medium">
+                        Brendlar
+                    </a>
+                    <a href="{% url 'products:featured_products' %}" class="text-primary-600 hover:text-primary-800 font-medium">
+                        Tavsiya qilingan
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</template>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Cart data
+let cartProducts = [];
+let currentCart = [];
+
+// Enhanced Cart Management
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadCart();
+});
+
+async function loadCart() {
+    const cart = window.cartManager.getCart();
+    const container = document.getElementById('cart-container');
+    const loadingState = document.getElementById('loading-state');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const itemsCount = document.getElementById('cart-items-count');
+
+    // Hide loading state
+    setTimeout(() => {
+        if (loadingState) loadingState.style.display = 'none';
+    }, 800);
+
+    if (cart.length === 0) {
+        displayEmptyCart();
+        return;
+    }
+
+    try {
+        // Fetch product details for cart items
+        const productIds = cart.map(item => item.id);
+        const response = await fetch('/products/api/products/by-ids/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ ids: productIds })
+        });
+
+        const products = await response.json();
+
+        if (products.length > 0) {
+            cartProducts = products;
+            currentCart = cart;
+            displayCartItems();
+            updateOrderSummary();
+            enableCheckout();
+            loadRecommendations();
+        } else {
+            displayEmptyCart();
+        }
+    } catch (error) {
+        console.error('Error loading cart:', error);
+        displayError();
+    }
+}
+
+function displayEmptyCart() {
+    const container = document.getElementById('cart-container');
+    const template = document.getElementById('empty-cart-template');
+    const orderSummary = document.getElementById('order-summary');
+    const itemsCount = document.getElementById('cart-items-count');
+
+    container.innerHTML = template.innerHTML;
+    orderSummary.innerHTML = '<p class="text-gray-500 text-center py-8">Savatcha bo\'sh</p>';
+    itemsCount.textContent = 'Savatcha bo\'sh';
+}
+
+function displayCartItems() {
+    const container = document.getElementById('cart-container');
+    const template = document.getElementById('cart-item-template');
+    const itemsCount = document.getElementById('cart-items-count');
+
+    container.innerHTML = '';
+
+    // Update items count
+    const totalItems = currentCart.reduce((sum, item) => sum + item.quantity, 0);
+    itemsCount.textContent = `${totalItems} ta mahsulot savatda`;
+
+    currentCart.forEach((cartItem, index) => {
+        const product = cartProducts.find(p => p.id === cartItem.id);
+        if (!product) return;
+
+        const clone = template.content.cloneNode(true);
+        const cartItemEl = clone.querySelector('.cart-item');
+
+        // Set product data
+        cartItemEl.setAttribute('data-product-id', product.id);
+
+        // Fill product information
+        const productImg = clone.querySelector('.product-image');
+        productImg.src = product.image ? `/media/${product.image}` : '/static/images/no-image.jpg';
+        productImg.alt = product.name;
+
+        clone.querySelector('.product-name').textContent = product.name;
+        clone.querySelector('.product-category').textContent = product.category || '';
+        clone.querySelector('.product-brand').textContent = product.brand || '';
+
+        // Price - Only UZS
+        clone.querySelector('.product-price-uzs').textContent = `${product.price_uzs.toLocaleString()} so'm`;
+
+        // Quantity
+        const quantityDisplays = clone.querySelectorAll('.quantity-display');
+        quantityDisplays.forEach(display => {
+            display.textContent = cartItem.quantity;
+        });
+
+        // Calculate item total - Only UZS
+        const itemTotalUZS = product.price_uzs * cartItem.quantity;
+        clone.querySelector('.item-total-uzs').textContent = `${itemTotalUZS.toLocaleString()} so'm`;
+
+        // Description (if available)
+        const descEl = clone.querySelector('.product-description');
+        if (descEl && product.description) {
+            descEl.textContent = product.description.substring(0, 150) + '...';
+        }
+
+        // Event listeners for quantity buttons
+        const decreaseBtns = clone.querySelectorAll('.quantity-decrease');
+        const increaseBtns = clone.querySelectorAll('.quantity-increase');
+        const removeBtns = clone.querySelectorAll('.remove-item');
+
+        decreaseBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                updateQuantity(product.id, -1);
+            });
+        });
+
+        increaseBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                updateQuantity(product.id, 1);
+            });
+        });
+
+        removeBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                removeFromCart(product.id);
+            });
+        });
+
+        // Add animation delay
+        cartItemEl.style.animationDelay = `${index * 0.1}s`;
+
+        container.appendChild(clone);
+    });
+}
+
+function updateOrderSummary() {
+    const summaryContainer = document.getElementById('order-summary');
+
+    let totalUZS = 0;
+    let totalItems = 0;
+
+    currentCart.forEach(cartItem => {
+        const product = cartProducts.find(p => p.id === cartItem.id);
+        if (!product) return;
+
+        totalUZS += product.price_uzs * cartItem.quantity;
+        totalItems += cartItem.quantity;
+    });
+
+    // Delivery fee calculation - 625,000 so'm (equivalent to $50)
+    const freeDeliveryThreshold = 625000; // 625,000 so'm
+    const deliveryFeeUZS = totalUZS > freeDeliveryThreshold ? 0 : 62500; // 62,500 so'm (equivalent to $5)
+
+    const finalTotalUZS = totalUZS + deliveryFeeUZS;
+
+    summaryContainer.innerHTML = `
+        <div class="space-y-4">
+            <!-- Items Summary -->
+            <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Mahsulotlar (${totalItems} ta):</span>
+                <div class="text-right">
+                    <div class="font-semibold">${totalUZS.toLocaleString()} so'm</div>
+                </div>
+            </div>
+
+            <!-- Delivery Fee -->
+            <div class="flex justify-between text-sm">
+                <span class="text-gray-600">Yetkazib berish:</span>
+                <div class="text-right">
+                    ${deliveryFeeUZS === 0 ?
+                        '<div class="text-green-600 font-semibold">Bepul</div>' :
+                        `<div class="font-semibold">${deliveryFeeUZS.toLocaleString()} so'm</div>`
+                    }
+                </div>
+            </div>
+
+            ${deliveryFeeUZS > 0 ? `
+            <!-- Free Delivery Progress -->
+            <div class="bg-gray-100 p-3 rounded-lg">
+                <div class="flex justify-between text-xs text-gray-600 mb-2">
+                    <span>Bepul yetkazish uchun:</span>
+                    <span>${(freeDeliveryThreshold - totalUZS).toLocaleString()} so'm qoldi</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full transition-all duration-500"
+                         style="width: ${Math.min((totalUZS / freeDeliveryThreshold) * 100, 100)}%"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-1">625,000 so'm dan yuqori xaridlarda yetkazish bepul!</p>
+            </div>
+            ` : ''}
+
+            <hr class="border-gray-200">
+
+            <!-- Total -->
+            <div class="flex justify-between">
+                <span class="text-lg font-bold text-gray-900">Jami:</span>
+                <div class="text-right">
+                    <div class="text-xl font-bold price-highlight">${finalTotalUZS.toLocaleString()} so'm</div>
+                </div>
+            </div>
+
+            <!-- Savings Display -->
+            ${totalUZS > 1250000 ? `
+            <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="text-green-800 font-medium text-sm">Siz ${(totalUZS * 0.05).toLocaleString()} so'm tejadingiz!</span>
+                </div>
+            </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+function updateQuantity(productId, change) {
+    const cart = window.cartManager.getCart();
+    const item = cart.find(i => i.id === productId);
+
+    if (item) {
+        item.quantity += change;
+        if (item.quantity <= 0) {
+            removeFromCart(productId);
+            return;
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        currentCart = cart;
+
+        // Update UI elements
+        const cartItem = document.querySelector(`[data-product-id="${productId}"]`);
+        if (cartItem) {
+            // Update quantity displays
+            const displays = cartItem.querySelectorAll('.quantity-display');
+            displays.forEach(display => display.textContent = item.quantity);
+
+            // Update item total - Only UZS
+            const product = cartProducts.find(p => p.id === productId);
+            if (product) {
+                const itemTotalUZS = product.price_uzs * item.quantity;
+                const totalUZSEl = cartItem.querySelector('.item-total-uzs');
+                if (totalUZSEl) totalUZSEl.textContent = `${itemTotalUZS.toLocaleString()} so'm`;
+            }
+        }
+
+        // Update cart count and order summary
+        window.cartManager.updateCartCount();
+        updateOrderSummary();
+        updateItemsCount();
+
+        window.avtokontinent.showToast('Miqdor yangilandi', 'success');
+    }
+}
+
+function removeFromCart(productId) {
+    // Show confirmation dialog
+    if (confirm('Bu mahsulotni savatdan olib tashlashni istaysizmi?')) {
+        window.cartManager.removeFromCart(productId);
+
+        // Update local data
+        currentCart = currentCart.filter(item => item.id !== productId);
+
+        // Animate item removal
+        const cartItem = document.querySelector(`[data-product-id="${productId}"]`);
+        if (cartItem) {
+            cartItem.style.transform = 'translateX(100%)';
+            cartItem.style.opacity = '0';
+
+            setTimeout(() => {
+                cartItem.remove();
+
+                // Check if cart is empty
+                if (currentCart.length === 0) {
+                    displayEmptyCart();
+                } else {
+                    updateOrderSummary();
+                    updateItemsCount();
+                }
+            }, 300);
+        }
+
+        window.avtokontinent.showToast('Mahsulot savatdan olib tashlandi', 'success');
+    }
+}
+
+function updateItemsCount() {
+    const itemsCount = document.getElementById('cart-items-count');
+    const totalItems = currentCart.reduce((sum, item) => sum + item.quantity, 0);
+    itemsCount.textContent = totalItems > 0 ? `${totalItems} ta mahsulot savatda` : 'Savatcha bo\'sh';
+}
+
+function enableCheckout() {
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn) {
+        checkoutBtn.disabled = false;
+        checkoutBtn.classList.add('checkout-pulse');
+    }
+}
+
+function proceedToCheckout() {
+    // Check if user is logged in
+    if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+        // Save current cart state and redirect to login
+        sessionStorage.setItem('redirect_after_login', '/orders/checkout/');
+        window.avtokontinent.showToast('Buyurtma berish uchun tizimga kiring', 'info');
+        window.location.href = '{% url "telegram_auth:login_page" %}';
+    } else {
+        // User is logged in, proceed to checkout
+        window.location.href = '{% url "orders:checkout" %}';
+    }
+}
+
+function applyPromoCode() {
+    const promoInput = document.getElementById('promo-code');
+    const code = promoInput.value.trim().toUpperCase();
+
+    if (!code) {
+        window.avtokontinent.showToast('Promo kodni kiriting', 'error');
+        return;
+    }
+
+    // Mock promo code validation - Updated for UZS
+    const validPromoCodes = {
+        'WELCOME10': { discount: 10, type: 'percentage' },
+        'SAVE62500': { discount: 62500, type: 'fixed' }, // 62,500 so'm (equivalent to $5)
+        'NEWUSER': { discount: 15, type: 'percentage' }
+    };
+
+    if (validPromoCodes[code]) {
+        const promo = validPromoCodes[code];
+        let discountText = promo.type === 'percentage' ?
+            `${promo.discount}% chegirma` :
+            `${promo.discount.toLocaleString()} so'm chegirma`;
+
+        window.avtokontinent.showToast(`Promo kod qo'llandi: ${discountText}`, 'success');
+        promoInput.value = '';
+
+        // Here you would recalculate totals with discount
+        // For now, just show success message
+
+    } else {
+        window.avtokontinent.showToast('Noto\'g\'ri promo kod', 'error');
+        promoInput.focus();
+    }
+}
+
+function displayError() {
+    const container = document.getElementById('cart-container');
+    container.innerHTML = `
+        <div class="text-center py-16">
+            <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Xatolik yuz berdi</h3>
+            <p class="text-gray-600 mb-6">Savatcha ma'lumotlarini yuklashda muammo bo'ldi</p>
+            <button onclick="location.reload()" class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors">
+                Qayta yuklash
+            </button>
+        </div>
+    `;
+}
+
+async function loadRecommendations() {
+    // Load recently viewed products
+    const recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+    if (recentlyViewed.length > 0) {
+        document.getElementById('recently-viewed').style.display = 'block';
+        // Load recently viewed products implementation
+    }
+
+    // Load recommended products based on cart items
+    document.getElementById('recommended-products').style.display = 'block';
+    // Load recommendations implementation
+}
+
+// Auto-save cart changes
+let cartChangeTimeout;
+function saveCartChanges() {
+    clearTimeout(cartChangeTimeout);
+    cartChangeTimeout = setTimeout(() => {
+        // Auto-save cart to server if user is logged in
+        if ({{ user.is_authenticated|yesno:"true,false" }}) {
+            // Implementation for saving cart to server
+        }
+    }, 2000);
+}
+
+// Keyboard shortcuts for cart
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + Enter to proceed to checkout
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (checkoutBtn && !checkoutBtn.disabled) {
+            proceedToCheckout();
+        }
+    }
+});
+
+// Analytics tracking
+if (typeof gtag !== 'undefined') {
+    // Track cart view
+    gtag('event', 'view_cart', {
+        currency: 'UZS', // Changed to UZS
+        value: 0 // Will be updated with actual cart value
+    });
+}
+</script>
+{% endblock %}

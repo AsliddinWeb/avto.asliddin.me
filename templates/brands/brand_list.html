@@ -1,0 +1,429 @@
+<!-- templates/brands/brand_list.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Avtomobil brendlari - Avtokontinent.uz{% endblock %}
+
+{% block description %}
+Barcha avtomobil brendlari bo'yicha ehtiyot qismlar. Mercedes, BMW, Toyota, Chevrolet va boshqa mashhur brendlar uchun zapchastlar.
+{% endblock %}
+
+{% block keywords %}
+avtomobil brendlari, Mercedes zapchastlar, BMW ehtiyot qismlar, Toyota, Chevrolet, avto brendlar
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                🚗 Avtomobil brendlari
+            </h1>
+            <p class="text-lg text-gray-600 mb-6">
+                {% if page_obj %}
+                    {{ page_obj.paginator.count }} ta brend bo'yicha ehtiyot qismlar
+                {% else %}
+                    Barcha avtomobil brendlari va ularning ehtiyot qismlari
+                {% endif %}
+            </p>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <div class="text-2xl font-bold text-primary-600">{{ page_obj.paginator.count|default:0 }}</div>
+                    <div class="text-sm text-gray-600">Jami brend</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <div class="text-2xl font-bold text-green-600">{{ popular_brands.count|default:0 }}</div>
+                    <div class="text-sm text-gray-600">Mashhur brendlar</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <div class="text-2xl font-bold text-blue-600">1000+</div>
+                    <div class="text-sm text-gray-600">Mahsulotlar</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <div class="text-2xl font-bold text-orange-600">50+</div>
+                    <div class="text-sm text-gray-600">Modeller</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popular Brands Section -->
+        {% if popular_brands %}
+        <div class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-4">🔥 Mashhur brendlar</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+                {% for brand in popular_brands|slice:":12" %}
+                <a href="{{ brand.get_absolute_url }}"
+                   class="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow border border-gray-200 group">
+                    <div class="text-center">
+                        {% if brand.logo %}
+                            <div class="w-16 h-16 mx-auto mb-3 bg-gray-100 rounded-lg overflow-hidden">
+                                <img src="{{ brand.logo.url }}"
+                                     alt="{{ brand.name }}"
+                                     class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
+                            </div>
+                        {% else %}
+                            <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-r from-primary-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">{{ brand.name|slice:":2"|upper }}</span>
+                            </div>
+                        {% endif %}
+
+                        <h3 class="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
+                            {{ brand.name }}
+                        </h3>
+
+                        <div class="text-sm text-gray-500 mt-1">
+                            {{ brand.products_count|default:0 }} mahsulot
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Search & Filter -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="flex flex-col md:flex-row gap-4">
+                <!-- Search -->
+                <div class="flex-1">
+                    <div class="relative">
+                        <input type="text"
+                               id="brand-search"
+                               placeholder="Brend nomini qidiring..."
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sort -->
+                <div class="md:w-48">
+                    <select id="brand-sort"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <option value="name">Nom bo'yicha (A-Z)</option>
+                        <option value="-name">Nom bo'yicha (Z-A)</option>
+                        <option value="-products_count">Ko'p mahsulotlar</option>
+                        <option value="products_count">Kam mahsulotlar</option>
+                        <option value="order">Tartib bo'yicha</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Brands Grid -->
+        <div id="brands-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for brand in brands %}
+            <div class="brand-card bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 overflow-hidden">
+                <a href="{{ brand.get_absolute_url }}" class="block">
+
+                    <!-- Brand Header -->
+                    <div class="relative p-6 text-center bg-gradient-to-b from-gray-50 to-white">
+                        {% if brand.logo %}
+                            <div class="w-20 h-20 mx-auto mb-4 bg-white rounded-lg shadow-sm overflow-hidden">
+                                <img src="{{ brand.logo.url }}"
+                                     alt="{{ brand.name }}"
+                                     class="w-full h-full object-contain p-2 hover:scale-105 transition-transform duration-300">
+                            </div>
+                        {% else %}
+                            <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-primary-500 to-blue-500 rounded-lg flex items-center justify-center shadow-sm">
+                                <span class="text-white font-bold text-2xl">{{ brand.name|slice:":2"|upper }}</span>
+                            </div>
+                        {% endif %}
+
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">{{ brand.name }}</h3>
+
+                        {% if brand.description %}
+                        <p class="text-sm text-gray-600 line-clamp-2">{{ brand.description|truncatechars:80 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Brand Stats -->
+                    <div class="px-6 py-4 bg-gray-50 border-t">
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <div class="text-lg font-bold text-primary-600">{{ brand.products_count|default:0 }}</div>
+                                <div class="text-xs text-gray-600">Mahsulotlar</div>
+                            </div>
+                            <div>
+                                <div class="text-lg font-bold text-green-600">{{ brand.models_count|default:0 }}</div>
+                                <div class="text-xs text-gray-600">Modeller</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="px-6 py-4 border-t">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">
+                                {% if brand.created_at %}
+                                    {{ brand.created_at|date:"Y" }} yildan
+                                {% endif %}
+                            </span>
+
+                            <div class="flex items-center text-primary-600 hover:text-primary-800 transition-colors">
+                                <span class="text-sm font-medium">Ko'rish</span>
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <!-- Empty State -->
+            <div class="col-span-full bg-white rounded-lg shadow-sm p-12 text-center">
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                </div>
+
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Brend topilmadi</h3>
+                <p class="text-gray-600 mb-6">Qidiruv so'rovingiz bo'yicha hech qanday brend topilmadi.</p>
+
+                <div class="space-y-3">
+                    <button onclick="clearSearch()"
+                            class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-semibold">
+                        Barcha brendlarni ko'rish
+                    </button>
+
+                    <div class="text-center">
+                        <a href="{% url 'products:product_list' %}" class="text-primary-600 hover:text-primary-800 font-medium">
+                            Mahsulotlar katalogiga o'tish →
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="mt-8 flex justify-center">
+            <nav class="flex items-center space-x-2">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}"
+                   class="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                    Oldingi
+                </a>
+                {% endif %}
+
+                <span class="px-4 py-2 text-gray-600">
+                    {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"
+                   class="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                    Keyingi
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+
+        <!-- Brand Categories -->
+        <div class="mt-12 bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">📂 Brendlar turkumi bo'yicha</h2>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-900">Premium</div>
+                    <div class="text-sm text-gray-600">Mercedes, BMW, Audi</div>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-900">Yapon</div>
+                    <div class="text-sm text-gray-600">Toyota, Honda, Nissan</div>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-900">Amerika</div>
+                    <div class="text-sm text-gray-600">Chevrolet, Ford, Cadillac</div>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-900">Koreya</div>
+                    <div class="text-sm text-gray-600">Hyundai, Kia, Daewoo</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEO Content -->
+        <div class="mt-8 bg-gray-100 rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Avtomobil brendlari haqida</h2>
+            <div class="prose text-gray-700 text-sm leading-relaxed">
+                <p class="mb-3">
+                    Avtokontinent.uz da barcha mashhur avtomobil brendlari uchun sifatli ehtiyot qismlar topishingiz mumkin.
+                    Bizning katalogimizda Premium brendlardan tortib, ommabop brendlargacha keng tanlov mavjud.
+                </p>
+                <p>
+                    Har bir brend uchun original va alternativ zapchastlar, motor yog'lari, filtrlari va boshqa
+                    zaruriy ehtiyot qismlar mavjud. Barcha mahsulotlar kafolat bilan ta'minlanadi.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('brand-search');
+    const sortSelect = document.getElementById('brand-sort');
+    const brandsContainer = document.getElementById('brands-container');
+    const brandCards = document.querySelectorAll('.brand-card');
+
+    let allBrands = Array.from(brandCards);
+
+    // Search functionality
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+
+        allBrands.forEach(card => {
+            const brandName = card.querySelector('h3').textContent.toLowerCase();
+            const brandDesc = card.querySelector('p')?.textContent.toLowerCase() || '';
+
+            if (brandName.includes(query) || brandDesc.includes(query)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Show/hide empty state
+        const visibleCards = allBrands.filter(card => card.style.display !== 'none');
+        if (visibleCards.length === 0 && query) {
+            showEmptyState();
+        } else {
+            hideEmptyState();
+        }
+    });
+
+    // Sort functionality
+    sortSelect.addEventListener('change', function() {
+        const sortBy = this.value;
+
+        const sortedBrands = [...allBrands].sort((a, b) => {
+            const aName = a.querySelector('h3').textContent;
+            const bName = b.querySelector('h3').textContent;
+            const aCount = parseInt(a.querySelector('.text-primary-600').textContent) || 0;
+            const bCount = parseInt(b.querySelector('.text-primary-600').textContent) || 0;
+
+            switch(sortBy) {
+                case 'name':
+                    return aName.localeCompare(bName);
+                case '-name':
+                    return bName.localeCompare(aName);
+                case 'products_count':
+                    return aCount - bCount;
+                case '-products_count':
+                    return bCount - aCount;
+                default:
+                    return 0;
+            }
+        });
+
+        // Re-arrange DOM
+        sortedBrands.forEach(card => {
+            brandsContainer.appendChild(card);
+        });
+    });
+
+    // Clear search function
+    window.clearSearch = function() {
+        searchInput.value = '';
+        allBrands.forEach(card => {
+            card.style.display = 'block';
+        });
+        hideEmptyState();
+    };
+
+    // Show empty state
+    function showEmptyState() {
+        let emptyState = document.querySelector('.empty-state');
+        if (!emptyState) {
+            emptyState = document.createElement('div');
+            emptyState.className = 'empty-state col-span-full bg-white rounded-lg shadow-sm p-12 text-center';
+            emptyState.innerHTML = `
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Brend topilmadi</h3>
+                <p class="text-gray-600 mb-6">Qidiruv so'rovingiz bo'yicha hech qanday brend topilmadi.</p>
+                <button onclick="clearSearch()" class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-semibold">
+                    Tozalash
+                </button>
+            `;
+            brandsContainer.appendChild(emptyState);
+        }
+        emptyState.style.display = 'block';
+    }
+
+    // Hide empty state
+    function hideEmptyState() {
+        const emptyState = document.querySelector('.empty-state');
+        if (emptyState) {
+            emptyState.style.display = 'none';
+        }
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Focus search on '/' key
+        if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+            const target = e.target;
+            if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        }
+
+        // Clear search on Escape
+        if (e.key === 'Escape' && searchInput === document.activeElement) {
+            clearSearch();
+            searchInput.blur();
+        }
+    });
+
+    // Add loading animation to cards
+    brandCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+
+        setTimeout(() => {
+            card.style.transition = 'all 0.3s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 50);
+    });
+
+    // Add hover effects
+    brandCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+
+// Analytics
+if (typeof gtag !== 'undefined') {
+    gtag('event', 'page_view', {
+        page_title: 'Brands List',
+        page_location: window.location.href
+    });
+}
+</script>
+{% endblock %}

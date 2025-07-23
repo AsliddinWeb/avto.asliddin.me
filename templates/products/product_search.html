@@ -1,0 +1,645 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{% if query %}
+"{{ query }}" bo'yicha qidiruv natijalari - Avtokontinent.uz
+{% else %}
+Mahsulotlarni qidirish - Avtokontinent.uz
+{% endif %}
+{% endblock %}
+
+{% block description %}
+{% if query %}
+"{{ query }}" so'rovi bo'yicha {{ total_found|default:0 }} ta mahsulot topildi.
+Avto ehtiyot qismlar onlayn qidirish va xarid qilish.
+{% else %}
+Avto ehtiyot qismlarni qidirish. Kuchli qidiruv tizimi bilan kerakli mahsulotingizni oson toping.
+{% endif %}
+{% endblock %}
+
+{% block keywords %}
+{% if query %}{{ query }}, {% endif %}
+qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokontinent
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-highlight {
+        background-color: #fef3c7;
+        font-weight: 600;
+        padding: 0 2px;
+    }
+
+    .search-suggestion {
+        transition: all 0.2s ease;
+    }
+
+    .search-suggestion:hover {
+        background-color: #f3f4f6;
+        transform: translateX(4px);
+    }
+
+    .typo-suggestion {
+        background: linear-gradient(90deg, #ddd6fe, #e0e7ff);
+        border-left: 4px solid #8b5cf6;
+    }
+
+    .no-results-animation {
+        animation: fadeInUp 0.6s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+
+    <!-- Search Header -->
+    <div class="bg-white border-b shadow-sm">
+        <div class="container mx-auto px-4 py-6">
+
+            <!-- Search Form -->
+            <div class="max-w-3xl mx-auto mb-6">
+                <form method="GET" class="relative">
+                    <div class="relative">
+                        <input type="text"
+                               name="q"
+                               value="{{ query }}"
+                               placeholder="Mahsulot nomi, kategoriya yoki brend nomini kiriting..."
+                               class="w-full pl-12 pr-20 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-gray-50 focus:bg-white transition-all"
+                               autocomplete="off"
+                               autofocus>
+
+                        <!-- Search Icon -->
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+
+                        <!-- Search Button -->
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+                            <button type="submit"
+                                    class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+                                Qidirish
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Search Toggle -->
+                    <div class="mt-4 text-center">
+                        <button type="button"
+                                onclick="toggleAdvancedSearch()"
+                                class="text-sm text-primary-600 hover:text-primary-800 font-medium">
+                            Kengaytirilgan qidiruv
+                        </button>
+                    </div>
+
+                    <!-- Advanced Search Panel -->
+                    <div id="advanced-search" class="hidden mt-4 bg-gray-50 rounded-lg p-4 border">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Kategoriya</label>
+                                <select name="category" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500">
+                                    <option value="">Barcha kategoriyalar</option>
+                                    <option value="motor">Motor qismlari</option>
+                                    <option value="tormoz">Tormoz tizimi</option>
+                                    <option value="filtr">Filtrlar</option>
+                                    <option value="yog">Yog'lar</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Brend</label>
+                                <select name="brand" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500">
+                                    <option value="">Barcha brendlar</option>
+                                    <option value="mercedes">Mercedes</option>
+                                    <option value="bmw">BMW</option>
+                                    <option value="audi">Audi</option>
+                                    <option value="toyota">Toyota</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Narx oralig'i (USD)</label>
+                                <div class="flex space-x-2">
+                                    <input type="number" name="price_min" placeholder="Dan" class="flex-1 border border-gray-300 rounded-lg px-3 py-2">
+                                    <input type="number" name="price_max" placeholder="Gacha" class="flex-1 border border-gray-300 rounded-lg px-3 py-2">
+                                </div>
+                            </div>
+
+                            <div class="flex items-end">
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="in_stock" value="1" class="text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                    <span class="ml-2 text-sm text-gray-700">Faqat mavjud mahsulotlar</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Search Results Info -->
+            {% if query %}
+                <div class="text-center">
+                    <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+                        "{{ query }}" bo'yicha qidiruv natijalari
+                    </h1>
+                    <p class="text-gray-600">
+                        {% if total_found %}
+                            {{ total_found }} ta mahsulot topildi
+                        {% else %}
+                            Hech qanday mahsulot topilmadi
+                        {% endif %}
+                    </p>
+                </div>
+            {% else %}
+                <div class="text-center">
+                    <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+                        Mahsulotlarni qidirish
+                    </h1>
+                    <p class="text-gray-600">
+                        Kerakli mahsulotingizni toping
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Search Suggestions & Typo Corrections -->
+    {% if query and not products %}
+        <div class="container mx-auto px-4 py-6">
+            <!-- Typo Suggestion -->
+            <div class="typo-suggestion rounded-lg p-4 mb-6">
+                <h3 class="font-semibold text-gray-900 mb-2">Ehtimol siz quyidagini nazarda tutgan bo'larsiz:</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% comment %} Backend'dan typo suggestions keladi {% endcomment %}
+                    <a href="?q=motor" class="bg-white hover:bg-purple-50 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium border border-purple-200 transition-colors">
+                        "motor" ({{ query }} o'rniga)
+                    </a>
+                    <a href="?q=tormoz" class="bg-white hover:bg-purple-50 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium border border-purple-200 transition-colors">
+                        "tormoz" ({{ query }} o'rniga)
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Popular Searches -->
+    {% if not query %}
+        <div class="container mx-auto px-4 py-6">
+            <div class="bg-white rounded-lg shadow-sm border p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Mashhur qidiruvlar</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <a href="?q=motor" class="search-suggestion group p-3 rounded-lg border border-gray-200 hover:border-primary-300">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-900 group-hover:text-primary-600">Motor qismlari</span>
+                        </div>
+                    </a>
+
+                    <a href="?q=tormoz" class="search-suggestion group p-3 rounded-lg border border-gray-200 hover:border-primary-300">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"/>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-900 group-hover:text-primary-600">Tormoz tizimi</span>
+                        </div>
+                    </a>
+
+                    <a href="?q=filtr" class="search-suggestion group p-3 rounded-lg border border-gray-200 hover:border-primary-300">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-900 group-hover:text-primary-600">Filtrlar</span>
+                        </div>
+                    </a>
+
+                    <a href="?q=akkumulyator" class="search-suggestion group p-3 rounded-lg border border-gray-200 hover:border-primary-300">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/>
+                                </svg>
+                            </div>
+                            <span class="font-medium text-gray-900 group-hover:text-primary-600">Akkumulyator</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Search Results -->
+    {% if query %}
+        <div class="container mx-auto px-4 py-6">
+
+            <!-- Sort & Filter -->
+            {% if products %}
+                <div class="bg-white rounded-lg shadow-sm border p-4 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div class="text-sm text-gray-600">
+                            {{ products|length }} ta natija ko'rsatilmoqda
+                        </div>
+
+                        <div class="flex items-center space-x-4">
+                            <label class="text-sm font-medium text-gray-700">Tartiblash:</label>
+                            <select onchange="updateSort(this.value)"
+                                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500">
+                                <option value="relevance">Mos kelish bo'yicha</option>
+                                <option value="-created_at">Yangi mahsulotlar</option>
+                                <option value="name">Nom (A-Z)</option>
+                                <option value="price">Arzon narx</option>
+                                <option value="-price">Qimmat narx</option>
+                                <option value="-views_count">Mashhur</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Products Grid -->
+            {% if products %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                    {% for product in products %}
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg hover:border-primary-300 transition-all duration-300 group">
+
+                            <!-- Product Image -->
+                            <div class="aspect-square relative overflow-hidden bg-gray-100 rounded-t-lg">
+                                <a href="{{ product.get_absolute_url }}" class="block w-full h-full">
+                                    {% if product.main_image %}
+                                        <img src="{{ product.main_image.url }}"
+                                             alt="{{ product.name }}"
+                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                             loading="lazy">
+                                    {% else %}
+                                        <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                                            <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                </a>
+
+                                <!-- Quick Actions -->
+                                <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <button class="wishlist-btn w-8 h-8 bg-white bg-opacity-90 hover:bg-white rounded-full flex items-center justify-center shadow-md"
+                                            data-product-id="{{ product.id }}">
+                                        <svg class="w-4 h-4 text-gray-600 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Stock Status -->
+                                <div class="absolute bottom-3 left-3">
+                                    {% if product.in_stock %}
+                                        <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                                            ✅ Mavjud
+                                        </span>
+                                    {% else %}
+                                        <span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
+                                            ❌ Tugagan
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Product Info -->
+                            <div class="p-4">
+                                <!-- Category & Brand -->
+                                <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+                                    {% if product.category %}
+                                        <span>{{ product.category.name }}</span>
+                                    {% endif %}
+                                    {% if product.brand %}
+                                        <span class="bg-gray-100 px-2 py-1 rounded">{{ product.brand.name }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Product Name with Search Highlight -->
+                                <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors">
+                                    <a href="{{ product.get_absolute_url }}">
+                                        {% comment %} Highlight search terms {% endcomment %}
+                                        {% if query in product.name %}
+                                            {{ product.name|safe }}
+                                        {% else %}
+                                            {{ product.name }}
+                                        {% endif %}
+                                    </a>
+                                </h3>
+
+                                <!-- Price -->
+                                <div class="mb-3">
+                                    <div class="text-lg font-bold text-gray-900">
+                                        ${{ product.price_usd }}
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        {{ product.formatted_price_som }}
+                                    </div>
+                                </div>
+
+                                <!-- Stats -->
+                                <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="flex items-center space-x-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            </svg>
+                                            <span>{{ product.views_count|default:0 }}</span>
+                                        </div>
+
+                                        <button class="like-btn flex items-center space-x-1 hover:text-red-500 transition-colors"
+                                                data-product-id="{{ product.id }}">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                            </svg>
+                                            <span class="like-count">{{ product.likes_count|default:0 }}</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Add to Cart Button -->
+                                {% if product.in_stock %}
+                                    <button onclick="handleAddToCart({{ product.id }})"
+                                            class="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-lg font-medium text-sm transition-colors">
+                                        Savatga qo'shish
+                                    </button>
+                                {% else %}
+                                    <button disabled
+                                            class="w-full bg-gray-300 text-gray-500 py-2 px-4 rounded-lg font-medium text-sm cursor-not-allowed">
+                                        Mavjud emas
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.paginator.num_pages > 1 %}
+                    <div class="mt-12">
+                        {% include 'includes/pagination.html' %}
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <!-- No Results -->
+                <div class="no-results-animation text-center py-16">
+                    <div class="max-w-lg mx-auto">
+                        <svg class="w-24 h-24 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+
+                        <h3 class="text-2xl font-semibold text-gray-900 mb-4">
+                            "{{ query }}" bo'yicha natija topilmadi
+                        </h3>
+
+                        <p class="text-gray-600 mb-8">
+                            Qidiruv so'rovingizni o'zgartiring yoki quyidagi tavsiyalardan foydalaning:
+                        </p>
+
+                        <div class="space-y-4 text-left bg-gray-50 rounded-lg p-6">
+                            <h4 class="font-semibold text-gray-900">Qidiruv tavsiyalari:</h4>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-start space-x-2">
+                                    <span class="text-primary-600 mt-1">•</span>
+                                    <span>Imlo xatolarini tekshiring</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <span class="text-primary-600 mt-1">•</span>
+                                    <span>Qisqaroq yoki umumiyroq so'zlar ishlatib ko'ring</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <span class="text-primary-600 mt-1">•</span>
+                                    <span>Sinonimlar yoki boshqa atamalardan foydalaning</span>
+                                </li>
+                                <li class="flex items-start space-x-2">
+                                    <span class="text-primary-600 mt-1">•</span>
+                                    <span>Kengaytirilgan qidiruvdan foydalaning</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-8 space-y-4">
+                            <div class="text-sm text-gray-500 mb-4">Mashhur qidiruvlar:</div>
+                            <div class="flex flex-wrap justify-center gap-2">
+                                <a href="?q=motor" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">Motor</a>
+                                <a href="?q=tormoz" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">Tormoz</a>
+                                <a href="?q=filtr" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">Filtr</a>
+                                <a href="?q=yog" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">Yog'</a>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row gap-3 justify-center mt-6">
+                                <a href="{% url 'products:product_list' %}"
+                                   class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                                    Barcha mahsulotlar
+                                </a>
+                                <a href="{% url 'categories:category_list' %}"
+                                   class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium">
+                                    Kategoriyalar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Advanced search toggle
+    window.toggleAdvancedSearch = function() {
+        const panel = document.getElementById('advanced-search');
+        panel.classList.toggle('hidden');
+    };
+
+    // Sort functionality
+    window.updateSort = function(sortValue) {
+        const url = new URL(window.location);
+        url.searchParams.set('sort', sortValue);
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
+    };
+
+    // Search suggestions (real-time)
+    const searchInput = document.querySelector('input[name="q"]');
+    if (searchInput) {
+        let searchTimeout;
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+
+            if (query.length >= 2) {
+                searchTimeout = setTimeout(() => {
+                    fetchSearchSuggestions(query);
+                }, 300);
+            }
+        });
+    }
+
+    // Initialize product interactions
+    initProductInteractions();
+});
+
+// Fetch search suggestions
+async function fetchSearchSuggestions(query) {
+    try {
+        const response = await fetch(`/products/api/suggestions/?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        if (data.suggestions && data.suggestions.length > 0) {
+            showSearchSuggestions(data.suggestions);
+        }
+    } catch (error) {
+        console.error('Search suggestions error:', error);
+    }
+}
+
+// Show search suggestions dropdown
+function showSearchSuggestions(suggestions) {
+    // Remove existing suggestions
+    const existing = document.getElementById('search-suggestions');
+    if (existing) existing.remove();
+
+    const searchInput = document.querySelector('input[name="q"]');
+    const container = searchInput.parentElement;
+
+    // Create suggestions dropdown
+    const dropdown = document.createElement('div');
+    dropdown.id = 'search-suggestions';
+    dropdown.className = 'absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-lg mt-1 z-50 max-h-64 overflow-y-auto';
+
+    suggestions.forEach(suggestion => {
+        const item = document.createElement('a');
+        item.href = `?q=${encodeURIComponent(suggestion.name)}`;
+        item.className = 'block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 text-left';
+
+        const typeColor = {
+            'product': 'text-blue-600',
+            'category': 'text-green-600',
+            'brand': 'text-purple-600'
+        }[suggestion.type] || 'text-gray-600';
+
+        item.innerHTML = `
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="font-medium text-gray-900">${suggestion.name}</div>
+                    <div class="text-xs ${typeColor}">${suggestion.category || suggestion.type}</div>
+                </div>
+                ${suggestion.image ? `<img src="${suggestion.image}" alt="" class="w-10 h-10 object-cover rounded">` : ''}
+            </div>
+        `;
+
+        dropdown.appendChild(item);
+    });
+
+    container.appendChild(dropdown);
+
+    // Remove dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!container.contains(e.target)) {
+            dropdown.remove();
+        }
+    }, { once: true });
+}
+
+// Product interactions
+function initProductInteractions() {
+    // Wishlist buttons
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+                window.avtokontinent?.showToast('Sevimlilarga qo\'shish uchun tizimga kiring', 'info');
+                return;
+            }
+
+            const productId = this.dataset.productId;
+            console.log('Wishlist clicked:', productId);
+            // Wishlist logic here
+        });
+    });
+
+    // Like buttons
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+                window.avtokontinent?.showToast('Like bosish uchun tizimga kiring', 'info');
+                return;
+            }
+
+            const productId = this.dataset.productId;
+            console.log('Like clicked:', productId);
+            // Like logic here
+        });
+    });
+}
+
+// Add to cart
+window.handleAddToCart = function(productId) {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+
+    btn.innerHTML = '✓ Qo\'shildi!';
+    btn.disabled = true;
+    btn.classList.remove('bg-primary-600', 'hover:bg-primary-700');
+    btn.classList.add('bg-green-500');
+
+    window.cartManager?.addToCart(productId);
+
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.classList.remove('bg-green-500');
+        btn.classList.add('bg-primary-600', 'hover:bg-primary-700');
+    }, 2000);
+};
+
+// Highlight search terms in results
+function highlightSearchTerms(text, query) {
+    if (!query) return text;
+
+    const regex = new RegExp(`(${query})`, 'gi');
+    return text.replace(regex, '<span class="search-highlight">$1</span>');
+}
+
+// Search analytics
+if (typeof gtag !== 'undefined' && '{{ query }}') {
+    gtag('event', 'search', {
+        search_term: '{{ query }}',
+        results_count: {{ total_found|default:0 }}
+    });
+}
+</script>
+{% endblock %}

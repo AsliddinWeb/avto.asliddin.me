@@ -1,0 +1,213 @@
+<!-- templates/core/about.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Biz haqimizda - Avtokontinent.uz{% endblock %}
+
+{% block description %}
+Avtokontinent.uz - O'zbekistondagi eng yirik avto ehtiyot qismlar do'koni. 2020 yildan beri sifatli mahsulotlar va professional xizmat.
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Biz haqimizda</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                O'zbekiston avto ehtiyot qismlar bozorida ishonchli hamkor
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-12 items-center mb-16">
+
+            <!-- Company Info -->
+            <div>
+                <div class="bg-white rounded-lg shadow-sm p-8">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-6">Avtokontinent.uz</h2>
+
+                    <div class="space-y-4 text-gray-700">
+                        <p>
+                            <strong>2020 yildan beri</strong> biz O'zbekiston avto ehtiyot qismlar bozorida faoliyat olib boramiz.
+                            Bizning maqsadimiz - har bir avtomobil egasiga sifatli va arzon mahsulotlar taqdim etish.
+                        </p>
+
+                        <p>
+                            Bizda <strong>5000+</strong> xil mahsulot, <strong>50+</strong> mashhur brend va
+                            <strong>100+</strong> avtomobil modeli uchun ehtiyot qismlar mavjud.
+                        </p>
+
+                        <p>
+                            Barcha mahsulotlarimiz original yoki yuqori sifatli alternativ mahsulotlar bo'lib,
+                            <strong>kafolat bilan</strong> ta'minlanadi.
+                        </p>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-8 border-t">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600">5000+</div>
+                            <div class="text-sm text-gray-600">Mahsulotlar</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-600">50+</div>
+                            <div class="text-sm text-gray-600">Brendlar</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-orange-600">24/7</div>
+                            <div class="text-sm text-gray-600">Qo'llab-quvvatlash</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-purple-600">100%</div>
+                            <div class="text-sm text-gray-600">Kafolat</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image/Logo -->
+            <div class="text-center">
+                <div class="bg-white rounded-lg shadow-sm p-12">
+                    <div class="w-32 h-32 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-white font-bold text-4xl">AK</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Avtokontinent.uz</h3>
+                    <p class="text-gray-600">Avto ehtiyot qismlar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services -->
+        <div class="bg-white rounded-lg shadow-sm p-8 mb-12">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-8 text-center">Bizning xizmatlar</h2>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Sifatli mahsulotlar</h3>
+                    <p class="text-gray-600">Barcha mahsulotlar original yoki yuqori sifatli alternativ</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Tez yetkazib berish</h3>
+                    <p class="text-gray-600">1-3 kun ichida O'zbekiston bo'ylab yetkazib berish</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM12 18a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V18.75A.75.75 0 0112 18z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">24/7 Qo'llab-quvvatlash</h3>
+                    <p class="text-gray-600">Kun-tun sizga yordam berishga tayyormiz</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-8">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">Biz bilan bog'laning</h2>
+                <p class="text-gray-600">Savollaringiz bo'lsa, bizga murojaat qiling</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 text-center">
+                <div>
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900">Telefon</h3>
+                    <a href="tel:+998901234567" class="text-green-600 hover:text-green-800">
+                        +998 90 123 45 67
+                    </a>
+                </div>
+
+                <div>
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900">Telegram</h3>
+                    <a href="https://t.me/avtokontinent_support" target="_blank" class="text-blue-600 hover:text-blue-800">
+                        @avtokontinent_support
+                    </a>
+                </div>
+
+                <div>
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900">Manzil</h3>
+                    <p class="text-gray-600">Toshkent shahri<br>Chilonzor tumani</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Animate stats on scroll
+document.addEventListener('DOMContentLoaded', function() {
+    const stats = document.querySelectorAll('.text-2xl.font-bold');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const target = entry.target;
+                const finalValue = target.textContent.replace(/\D/g, '');
+
+                if (finalValue) {
+                    animateValue(target, 0, parseInt(finalValue), 2000);
+                }
+                observer.unobserve(target);
+            }
+        });
+    });
+
+    stats.forEach(stat => observer.observe(stat));
+});
+
+function animateValue(element, start, end, duration) {
+    const range = end - start;
+    const minTimer = 50;
+    const stepTime = Math.abs(Math.floor(duration / range));
+
+    const timer = setInterval(() => {
+        start += 1;
+        const suffix = element.textContent.replace(/\d/g, '');
+        element.textContent = start + suffix;
+
+        if (start >= end) {
+            clearInterval(timer);
+        }
+    }, stepTime);
+}
+
+// Analytics
+if (typeof gtag !== 'undefined') {
+    gtag('event', 'page_view', {
+        page_title: 'About Us',
+        page_location: window.location.href
+    });
+}
+</script>
+{% endblock %}

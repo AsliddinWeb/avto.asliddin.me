@@ -1,0 +1,374 @@
+<!-- templates/users/profile_edit.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profilni tahrirlash - {{ user.first_name|default:"Foydalanuvchi" }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <div class="max-w-2xl mx-auto">
+
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="flex items-center space-x-4 mb-4">
+                    <a href="{% url 'users:profile' %}"
+                       class="p-2 text-gray-600 hover:text-gray-900 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Profilni tahrirlash</h1>
+                        <p class="text-gray-600">Shaxsiy ma'lumotlaringizni yangilang</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Form -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+
+                    <!-- Profile Image Section -->
+                    <div class="flex items-center space-x-6">
+                        <div class="w-20 h-20 bg-gradient-to-r from-primary-500 to-blue-500 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                            {{ user.first_name|default:"U"|slice:":1"|upper }}
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-900">Profil rasmi</h3>
+                            <p class="text-sm text-gray-500">Hozircha faqat harfli avatar mavjud</p>
+                        </div>
+                    </div>
+
+                    <!-- Basic Information -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                Ism *
+                            </label>
+                            <input type="text"
+                                   id="first_name"
+                                   name="first_name"
+                                   value="{{ user.first_name|default:'' }}"
+                                   required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                   placeholder="Ismingizni kiriting">
+                        </div>
+
+                        <div>
+                            <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                Familiya
+                            </label>
+                            <input type="text"
+                                   id="last_name"
+                                   name="last_name"
+                                   value="{{ user.last_name|default:'' }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                   placeholder="Familiyangizni kiriting">
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="space-y-4">
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                Telefon raqam
+                            </label>
+                            <input type="tel"
+                                   id="phone"
+                                   value="{{ user.phone }}"
+                                   disabled
+                                   readonly
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed">
+                            <p class="text-xs text-gray-500 mt-1">
+                                Telefon raqamni o'zgartirib bo'lmaydi
+                            </p>
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                Email manzil
+                            </label>
+                            <input type="email"
+                                   id="email"
+                                   name="email"
+                                   value="{{ user.email|default:'' }}"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                   placeholder="email@example.com">
+                            <p class="text-xs text-gray-500 mt-1">
+                                Email ixtiyoriy, lekin yangiliklar uchun foydali
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Account Status -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-medium text-gray-900 mb-3">Hisob holati</h3>
+
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Telefon tasdiqlangan:</span>
+                                <span class="{% if user.is_phone_verified %}text-green-600{% else %}text-yellow-600{% endif %} font-medium">
+                                    {% if user.is_phone_verified %}
+                                        ✅ Tasdiqlangan
+                                    {% else %}
+                                        ⏳ Tasdiqlanmagan
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Telegram ulangan:</span>
+                                <span class="{% if user.telegram_chat_id %}text-green-600{% else %}text-gray-500{% endif %} font-medium">
+                                    {% if user.telegram_chat_id %}
+                                        ✅ Ulangan
+                                        {% if user.telegram_username %}
+                                            (@{{ user.telegram_username }})
+                                        {% endif %}
+                                    {% else %}
+                                        ❌ Ulanmagan
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Ro'yxatdan o'tgan:</span>
+                                <span class="text-gray-900 font-medium">{{ user.date_joined|date:"d.m.Y" }}</span>
+                            </div>
+                        </div>
+
+                        {% if not user.telegram_chat_id %}
+                        <div class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
+                            <p class="text-blue-800 text-sm">
+                                <strong>Telegram botga ulaning!</strong>
+                                Buyurtmalaringiz holati haqida xabar olish uchun
+                                <a href="https://t.me/asliddin767bot"
+                                   target="_blank"
+                                   class="text-blue-600 hover:underline font-medium">
+                                    @asliddin767bot
+                                </a> ga murojaat qiling.
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t">
+                        <button type="submit"
+                                class="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                            ✅ O'zgarishlarni saqlash
+                        </button>
+
+                        <a href="{% url 'users:profile' %}"
+                           class="flex-1 border border-gray-300 text-gray-700 text-center py-3 px-6 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                            ❌ Bekor qilish
+                        </a>
+                    </div>
+
+                    <!-- Additional Actions -->
+                    <div class="pt-4 border-t">
+                        <div class="flex flex-col sm:flex-row gap-3 text-sm">
+                            <a href="{% url 'users:settings' %}"
+                               class="text-primary-600 hover:text-primary-800 font-medium">
+                                ⚙️ Sozlamalar
+                            </a>
+
+                            <a href="{% url 'users:logout' %}"
+                               class="text-gray-600 hover:text-gray-800 font-medium">
+                                🚪 Chiqish
+                            </a>
+
+                            <a href="{% url 'users:delete_account' %}"
+                               class="text-red-600 hover:text-red-800 font-medium">
+                                🗑️ Hisobni o'chirish
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tips -->
+            <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 class="font-medium text-blue-900 mb-2">💡 Maslahatlar</h3>
+                <ul class="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                    <li>To'liq ism kiriting - bu yetkazib berish uchun muhim</li>
+                    <li>Email manzilni kiriting - maxsus takliflar va yangiliklar uchun</li>
+                    <li>Telegram botga ulanib, buyurtmalar haqida xabar oling</li>
+                    <li>Ma'lumotlaringiz xavfsiz saqlanadi va uchinchi shaxslarga berilmaydi</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const firstNameInput = document.getElementById('first_name');
+    const emailInput = document.getElementById('email');
+
+    // Real-time validation
+    firstNameInput.addEventListener('blur', function() {
+        const value = this.value.trim();
+        if (value.length < 2) {
+            this.classList.add('border-red-500');
+            showFieldError(this, 'Ism kamida 2 ta harf bo\'lishi kerak');
+        } else {
+            this.classList.remove('border-red-500');
+            hideFieldError(this);
+        }
+    });
+
+    emailInput.addEventListener('blur', function() {
+        const value = this.value.trim();
+        if (value && !isValidEmail(value)) {
+            this.classList.add('border-red-500');
+            showFieldError(this, 'Email manzil noto\'g\'ri');
+        } else {
+            this.classList.remove('border-red-500');
+            hideFieldError(this);
+        }
+    });
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        const firstName = firstNameInput.value.trim();
+        const email = emailInput.value.trim();
+
+        let hasErrors = false;
+
+        // Validate first name
+        if (firstName.length < 2) {
+            firstNameInput.classList.add('border-red-500');
+            showFieldError(firstNameInput, 'Ism majburiy va kamida 2 ta harf bo\'lishi kerak');
+            hasErrors = true;
+        }
+
+        // Validate email if provided
+        if (email && !isValidEmail(email)) {
+            emailInput.classList.add('border-red-500');
+            showFieldError(emailInput, 'Email manzil noto\'g\'ri formatda');
+            hasErrors = true;
+        }
+
+        if (hasErrors) {
+            e.preventDefault();
+            window.avtokontinent.showToast('Formada xatolar mavjud', 'error');
+            return;
+        }
+
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<div class="loading-spinner inline-block mr-2"></div> Saqlanmoqda...';
+        submitBtn.disabled = true;
+
+        // Restore button after 10 seconds if form doesn't submit
+        setTimeout(() => {
+            if (submitBtn.disabled) {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }, 10000);
+    });
+
+    // Auto-focus first name if empty
+    if (!firstNameInput.value.trim()) {
+        firstNameInput.focus();
+    }
+});
+
+// Helper functions
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function showFieldError(field, message) {
+    hideFieldError(field); // Remove existing error
+
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-error text-red-500 text-xs mt-1';
+    errorDiv.textContent = message;
+
+    field.parentNode.appendChild(errorDiv);
+}
+
+function hideFieldError(field) {
+    const existingError = field.parentNode.querySelector('.field-error');
+    if (existingError) {
+        existingError.remove();
+    }
+}
+
+// Auto-save draft (optional - saves to localStorage)
+const draftKey = 'profile_edit_draft';
+let draftTimer;
+
+document.querySelectorAll('input[type="text"], input[type="email"]').forEach(input => {
+    input.addEventListener('input', function() {
+        clearTimeout(draftTimer);
+        draftTimer = setTimeout(() => {
+            saveDraft();
+        }, 1000);
+    });
+});
+
+function saveDraft() {
+    const formData = {
+        first_name: document.getElementById('first_name').value,
+        last_name: document.getElementById('last_name').value,
+        email: document.getElementById('email').value,
+        timestamp: Date.now()
+    };
+
+    localStorage.setItem(draftKey, JSON.stringify(formData));
+}
+
+function loadDraft() {
+    const draft = localStorage.getItem(draftKey);
+    if (draft) {
+        const data = JSON.parse(draft);
+        // Only load if draft is less than 1 hour old
+        if (Date.now() - data.timestamp < 3600000) {
+            if (!document.getElementById('first_name').value && data.first_name) {
+                document.getElementById('first_name').value = data.first_name;
+            }
+            if (!document.getElementById('last_name').value && data.last_name) {
+                document.getElementById('last_name').value = data.last_name;
+            }
+            if (!document.getElementById('email').value && data.email) {
+                document.getElementById('email').value = data.email;
+            }
+        }
+    }
+}
+
+// Clear draft on successful submission
+window.addEventListener('beforeunload', function() {
+    // Don't clear draft on page refresh, only on navigation
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + S to save
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        document.querySelector('form').dispatchEvent(new Event('submit'));
+    }
+
+    // Escape to cancel
+    if (e.key === 'Escape') {
+        window.location.href = '{% url "users:profile" %}';
+    }
+});
+
+// Load draft on page load
+// loadDraft(); // Uncomment if you want auto-draft loading
+</script>
+{% endblock %}

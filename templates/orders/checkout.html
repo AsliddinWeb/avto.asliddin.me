@@ -1,0 +1,359 @@
+<!-- templates/orders/checkout.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Buyurtma rasmiylashtirish - Avtokontinent.uz{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <!-- Progress Steps -->
+        <div class="mb-8">
+            <div class="flex items-center justify-center space-x-4 mb-6">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center text-sm font-medium">1</div>
+                    <span class="ml-2 text-sm font-medium text-primary-600">Buyurtma</span>
+                </div>
+                <div class="w-16 h-1 bg-gray-300"></div>
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center text-sm font-medium">2</div>
+                    <span class="ml-2 text-sm text-gray-500">To'lov</span>
+                </div>
+                <div class="w-16 h-1 bg-gray-300"></div>
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center text-sm font-medium">3</div>
+                    <span class="ml-2 text-sm text-gray-500">Tasdiqlash</span>
+                </div>
+            </div>
+            <h1 class="text-3xl font-bold text-center text-gray-900">Buyurtma rasmiylashtirish</h1>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+
+            <!-- Order Form -->
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <form method="post" id="checkout-form">
+                    {% csrf_token %}
+
+                    <!-- Customer Info -->
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold mb-4">Mijoz ma'lumotlari</h2>
+
+                        {% if user.is_authenticated %}
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span class="text-green-800 font-medium">Tizimga kirgansiz: {{ user.phone }}</span>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                                <p class="text-blue-800">Buyurtma berish uchun tizimga kirish talab qilinadi</p>
+                                <a href="{% url 'telegram_auth:login_page' %}" class="text-blue-600 font-medium hover:underline">Kirish →</a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Delivery Info -->
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold mb-4">Yetkazish ma'lumotlari</h2>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Yetkazish manzili *</label>
+                                <textarea name="delivery_address"
+                                         required
+                                         rows="3"
+                                         placeholder="To'liq manzilni kiriting (shahar, ko'cha, uy raqami)"
+                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"></textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Telefon raqam *</label>
+                                <input type="tel"
+                                       name="delivery_phone"
+                                       required
+                                       placeholder="+998 90 123 45 67"
+                                       value="{{ user.phone|default:'' }}"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Notes -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Qo'shimcha izoh</label>
+                        <textarea name="notes"
+                                 rows="2"
+                                 placeholder="Buyurtma haqida qo'shimcha ma'lumot (ixtiyoriy)"
+                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"></textarea>
+                    </div>
+
+                    <!-- Hidden cart data -->
+                    <input type="hidden" name="cart_data" id="cart-data-input">
+                    <input type="hidden" name="cart_items" id="cart-items-input">
+
+                    <!-- Submit Button -->
+                    <button type="submit"
+                            id="submit-order"
+                            disabled
+                            class="w-full bg-primary-600 text-white py-3 px-6 rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold">
+                        Buyurtmani tasdiqlash
+                    </button>
+                </form>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="bg-white rounded-lg shadow-sm p-6 h-fit sticky top-8">
+                <h2 class="text-xl font-semibold mb-4">Buyurtma tafsilotlari</h2>
+
+                <div id="order-items" class="space-y-4 mb-6">
+                    <!-- Cart items will be loaded here -->
+                    <div class="text-center py-8 text-gray-500">
+                        Mahsulotlar yuklanmoqda...
+                    </div>
+                </div>
+
+                <div class="border-t pt-4">
+                    <div id="order-totals" class="space-y-2">
+                        <!-- Totals will be calculated here -->
+                    </div>
+                </div>
+
+                <!-- Payment Info -->
+                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <h3 class="font-medium text-gray-900 mb-2">To'lov ma'lumoti:</h3>
+                    <p class="text-sm text-gray-600">
+                        Dollar kursi: <span class="font-medium">{{ usd_rate|default:"12,500" }} so'm</span>
+                    </p>
+                    {% if payment_card %}
+                    <p class="text-sm text-gray-600 mt-1">
+                        To'lov kartasi: <code class="bg-white px-2 py-1 rounded">{{ payment_card }}</code>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCartForCheckout();
+
+    // Check if user is authenticated
+    const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+    if (!isAuthenticated) {
+        // Disable form and show login message
+        document.getElementById('submit-order').disabled = true;
+        document.getElementById('submit-order').textContent = 'Avval tizimga kiring';
+        return;
+    }
+});
+
+async function loadCartForCheckout() {
+    const cart = window.cartManager.getCart();
+    const orderItems = document.getElementById('order-items');
+    const orderTotals = document.getElementById('order-totals');
+    const submitBtn = document.getElementById('submit-order');
+
+    if (cart.length === 0) {
+        orderItems.innerHTML = `
+            <div class="text-center py-8">
+                <div class="text-gray-500 mb-4">Savatcha bo'sh</div>
+                <a href="/products/" class="text-primary-600 hover:underline">Xaridni boshlash</a>
+            </div>
+        `;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Savatcha bo\'sh';
+        return;
+    }
+
+    try {
+        // Fetch product details
+        const response = await fetch('/products/api/products/by-ids/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ ids: cart.map(item => item.id) })
+        });
+
+        const products = await response.json();
+
+        if (products.length > 0) {
+            displayOrderItems(cart, products);
+            calculateTotals(cart, products);
+
+            // Prepare cart data for form submission
+            document.getElementById('cart-data-input').value = JSON.stringify({
+                items: cart,
+                products: products
+            });
+
+            // Prepare simplified cart items for backend
+            const cartItems = cart.map(cartItem => {
+                const product = products.find(p => p.id === cartItem.id);
+                return {
+                    product_id: cartItem.id,
+                    quantity: cartItem.quantity,
+                    price_usd: product ? product.price_usd : 0,
+                    product_name: product ? product.name : '',
+                    product_image: product ? product.image : ''
+                };
+            });
+            document.getElementById('cart-items-input').value = JSON.stringify(cartItems);
+
+            // Enable submit button
+            const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+            if (isAuthenticated) {
+                submitBtn.disabled = false;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading cart:', error);
+        orderItems.innerHTML = '<div class="text-red-500 text-center py-4">Xatolik yuz berdi</div>';
+    }
+}
+
+function displayOrderItems(cart, products) {
+    const container = document.getElementById('order-items');
+
+    const itemsHtml = cart.map(cartItem => {
+        const product = products.find(p => p.id === cartItem.id);
+        if (!product) return '';
+
+        // Calculate UZS price (same as cart.html logic)
+        const priceUzs = product.price_uzs || (product.price_usd * 12500);
+        const itemTotal = priceUzs * cartItem.quantity;
+
+        return `
+            <div class="flex items-center space-x-3 pb-3 border-b border-gray-100">
+                <img src="${product.image ? '/media/' + product.image : '/static/images/no-image.jpg'}"
+                     alt="${product.name}"
+                     class="w-12 h-12 object-cover rounded bg-gray-100">
+                <div class="flex-1 min-w-0">
+                    <h4 class="font-medium text-sm text-gray-900 line-clamp-2">${product.name}</h4>
+                    <p class="text-xs text-gray-500">${product.category || ''}</p>
+                    <div class="flex items-center justify-between mt-1">
+                        <span class="text-sm text-gray-600">×${cartItem.quantity}</span>
+                        <span class="font-medium text-sm">${itemTotal.toLocaleString()} so'm</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = itemsHtml;
+}
+
+function calculateTotals(cart, products) {
+    const container = document.getElementById('order-totals');
+
+    let totalUSD = 0;
+    let totalUZS = 0;
+    let totalItems = 0;
+
+    cart.forEach(cartItem => {
+        const product = products.find(p => p.id === cartItem.id);
+        if (product) {
+            totalUSD += product.price_usd * cartItem.quantity;
+            // Calculate UZS price (same as cart.html logic)
+            const priceUzs = product.price_uzs || (product.price_usd * 12500);
+            totalUZS += priceUzs * cartItem.quantity;
+            totalItems += cartItem.quantity;
+        }
+    });
+
+    // Delivery fee (free over $50)
+    const deliveryFeeUSD = totalUSD > 50 ? 0 : 5;
+    const usdRate = parseFloat('{{ usd_rate|default:"12500" }}') || 12500;
+    const deliveryFeeUZS = deliveryFeeUSD * usdRate;
+
+    const finalTotalUSD = totalUSD + deliveryFeeUSD;
+    const finalTotalUZS = totalUZS + deliveryFeeUZS;
+
+    container.innerHTML = `
+        <div class="flex justify-between text-sm">
+            <span>Mahsulotlar (${totalItems} ta):</span>
+            <span>${totalUZS.toLocaleString()} so'm</span>
+        </div>
+        <div class="flex justify-between text-sm">
+            <span>Yetkazish:</span>
+            <span>${deliveryFeeUSD === 0 ? 'Bepul' : deliveryFeeUZS.toLocaleString() + ' so\'m'}</span>
+        </div>
+        <div class="flex justify-between text-lg font-bold pt-2 border-t">
+            <span>Jami:</span>
+            <div class="text-right">
+                <div>${finalTotalUSD.toFixed(2)}</div>
+                <div class="text-base text-gray-600">${finalTotalUZS.toLocaleString()} so'm</div>
+            </div>
+        </div>
+    `;
+}
+
+// Form submission
+document.getElementById('checkout-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const cart = window.cartManager.getCart();
+    if (cart.length === 0) {
+        window.avtokontinent.showToast('Savatcha bo\'sh', 'error');
+        return;
+    }
+
+    const deliveryAddress = document.querySelector('[name="delivery_address"]').value.trim();
+    const deliveryPhone = document.querySelector('[name="delivery_phone"]').value.trim();
+
+    if (!deliveryAddress) {
+        window.avtokontinent.showToast('Yetkazish manzilini kiriting', 'error');
+        document.querySelector('[name="delivery_address"]').focus();
+        return;
+    }
+
+    if (!deliveryPhone) {
+        window.avtokontinent.showToast('Telefon raqamni kiriting', 'error');
+        document.querySelector('[name="delivery_phone"]').focus();
+        return;
+    }
+
+    // Check if user is authenticated
+    const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+    if (!isAuthenticated) {
+        window.avtokontinent.showToast('Avval tizimga kiring', 'error');
+        window.location.href = '{% url "telegram_auth:login_page" %}';
+        return;
+    }
+
+    // Check if cart data is prepared
+    const cartItemsData = document.getElementById('cart-items-input').value;
+    if (!cartItemsData) {
+        window.avtokontinent.showToast('Savatcha ma\'lumotlari tayyorlanmagan', 'error');
+        return;
+    }
+
+    // Show loading and submit
+    const submitBtn = document.getElementById('submit-order');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<div class="loading-spinner inline-block mr-2"></div> Yuborilmoqda...';
+    submitBtn.disabled = true;
+
+    // Submit form
+    this.submit();
+
+    // Restore button after 10 seconds if form doesn't submit
+    setTimeout(() => {
+        if (submitBtn.disabled) {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    }, 10000);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,203 @@
+<!-- templates/brands/car_model_products.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ brand.name }} {{ car_model.name }} - Mahsulotlar{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-6">
+    <div class="container mx-auto px-4">
+
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    {% if brand.logo %}
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
+                            <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="w-full h-full object-contain">
+                        </div>
+                    {% endif %}
+
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">
+                            {{ brand.name }} {{ car_model.name }} mahsulotlari
+                        </h1>
+                        <p class="text-gray-600">{{ total_products }} ta mahsulot</p>
+                    </div>
+                </div>
+
+                <a href="{{ car_model.get_absolute_url }}"
+                   class="text-primary-600 hover:text-primary-800 font-medium">
+                    ← Modelga qaytish
+                </a>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-4 gap-6">
+
+            <!-- Filters Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-sm p-6 sticky top-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Filtrlash</h3>
+
+                    <form method="get" id="filter-form">
+                        <!-- Category Filter -->
+                        {% if available_categories %}
+                        <div class="mb-6">
+                            <h4 class="font-medium text-gray-900 mb-3">Kategoriya</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="category" value=""
+                                           {% if not current_category %}checked{% endif %}
+                                           class="text-primary-600 focus:ring-primary-500">
+                                    <span class="ml-2 text-sm">Barchasi</span>
+                                </label>
+                                {% for category in available_categories %}
+                                <label class="flex items-center">
+                                    <input type="radio" name="category" value="{{ category.slug }}"
+                                           {% if current_category == category.slug %}checked{% endif %}
+                                           class="text-primary-600 focus:ring-primary-500">
+                                    <span class="ml-2 text-sm">{{ category.name }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Apply Filter Button -->
+                        <button type="submit"
+                                class="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                            Filtrlash
+                        </button>
+
+                        <!-- Clear Filters -->
+                        {% if current_category %}
+                        <a href="{% url 'brands:car_model_products' brand.slug car_model.slug %}"
+                           class="block w-full text-center mt-2 text-gray-600 hover:text-gray-800 text-sm">
+                            Filtrlarni tozalash
+                        </a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="lg:col-span-3">
+
+                <!-- Sort Options -->
+                <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div class="text-sm text-gray-600">
+                            {{ products|length }} ta mahsulot ko'rsatilmoqda
+                        </div>
+
+                        <div class="flex items-center space-x-4">
+                            <label class="text-sm font-medium text-gray-700">Tartiblash:</label>
+                            <select name="sort" onchange="updateSort(this.value)"
+                                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500">
+                                <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Yangi</option>
+                                <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Nom (A-Z)</option>
+                                <option value="price" {% if current_sort == 'price' %}selected{% endif %}>Arzon</option>
+                                <option value="-price" {% if current_sort == '-price' %}selected{% endif %}>Qimmat</option>
+                                <option value="popular" {% if current_sort == 'popular' %}selected{% endif %}>Mashhur</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products -->
+                {% if products %}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% for product in products %}
+                            {% include 'includes/product_card.html' %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                    <div class="mt-8 flex justify-center">
+                        <nav class="flex items-center space-x-2">
+                            {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                               class="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                                ← Oldingi
+                            </a>
+                            {% endif %}
+
+                            <span class="px-4 py-2 text-gray-600">
+                                {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                            </span>
+
+                            {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                               class="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                                Keyingi →
+                            </a>
+                            {% endif %}
+                        </nav>
+                    </div>
+                    {% endif %}
+
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+                        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                            </svg>
+                        </div>
+
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Mahsulot topilmadi</h3>
+                        <p class="text-gray-600 mb-6">
+                            {{ brand.name }} {{ car_model.name }} uchun
+                            {% if current_category %}tanlangan kategoriyada{% endif %} mahsulot mavjud emas.
+                        </p>
+
+                        <div class="space-y-3">
+                            {% if current_category %}
+                            <a href="{% url 'brands:car_model_products' brand.slug car_model.slug %}"
+                               class="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                                Barcha kategoriyalar
+                            </a>
+                            {% endif %}
+
+                            <div>
+                                <a href="{{ brand.get_absolute_url }}"
+                                   class="text-primary-600 hover:text-primary-800 font-medium">
+                                    Brend mahsulotlari →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit form on filter change
+    const filterForm = document.getElementById('filter-form');
+    const filterInputs = filterForm.querySelectorAll('input[type="radio"]');
+
+    filterInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            setTimeout(() => {
+                filterForm.submit();
+            }, 100);
+        });
+    });
+});
+
+// Sort functionality
+function updateSort(sortValue) {
+    const url = new URL(window.location);
+    url.searchParams.set('sort', sortValue);
+    url.searchParams.delete('page');
+    window.location.href = url.toString();
+}
+</script>
+{% endblock %}

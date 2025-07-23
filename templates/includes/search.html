@@ -1,0 +1,258 @@
+<!-- Search Component -->
+<div class="relative" x-data="{
+    query: '{{ request.GET.q|default:'' }}',
+    showResults: false,
+    isSearching: false,
+    results: [],
+    selectedIndex: -1,
+
+    focusSearch() {
+        this.showResults = true;
+        if (this.query.length >= 2) {
+            this.searchProducts();
+        }
+    },
+
+    hideResults() {
+        setTimeout(() => this.showResults = false, 200);
+    },
+
+    selectResult(index) {
+        if (this.results[index]) {
+            window.location.href = this.results[index].url;
+        }
+    },
+
+    handleKeydown(event) {
+        if (!this.showResults || this.results.length === 0) return;
+
+        switch(event.key) {
+            case 'ArrowDown':
+                event.preventDefault();
+                this.selectedIndex = Math.min(this.selectedIndex + 1, this.results.length - 1);
+                break;
+            case 'ArrowUp':
+                event.preventDefault();
+                this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+                break;
+            case 'Enter':
+                event.preventDefault();
+                if (this.selectedIndex >= 0) {
+                    this.selectResult(this.selectedIndex);
+                } else {
+                    this.$refs.searchForm.submit();
+                }
+                break;
+            case 'Escape':
+                this.showResults = false;
+                this.selectedIndex = -1;
+                this.$refs.searchInput.blur();
+                break;
+        }
+    },
+
+    async searchProducts() {
+        if (this.query.length < 2) {
+            this.results = [];
+            return;
+        }
+
+        this.isSearching = true;
+        try {
+            const response = await fetch(`/products/api/suggestions/?q=${encodeURIComponent(this.query)}`);
+            const data = await response.json();
+            this.results = data.suggestions || [];
+        } catch (error) {
+            console.error('Search error:', error);
+            this.results = [];
+        } finally {
+            this.isSearching = false;
+        }
+    }
+}">
+
+    <!-- Search Form -->
+    <form x-ref="searchForm"
+          action="{% url 'core:search' %}"
+          method="GET"
+          class="relative">
+
+        <!-- Search Input -->
+        <div class="relative">
+            <input x-ref="searchInput"
+                   type="text"
+                   name="q"
+                   x-model="query"
+                   @input.debounce.300ms="searchProducts()"
+                   @focus="focusSearch()"
+                   @blur="hideResults()"
+                   @keydown="handleKeydown($event)"
+                   placeholder="Mahsulot, kategoriya yoki brend izlang..."
+                   class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white hover:bg-gray-50 transition-colors text-sm md:text-base"
+                   autocomplete="off"
+                   spellcheck="false">
+
+            <!-- Search Icon -->
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+
+            <!-- Submit Button / Loading -->
+            <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                <button type="submit"
+                        class="text-gray-400 hover:text-primary-600 transition-colors"
+                        title="Qidiruv">
+                    <span x-show="!isSearching">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
+                        </svg>
+                    </span>
+                    <span x-show="isSearching" class="flex items-center">
+                        <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+
+            <!-- Clear Button -->
+            <button x-show="query.length > 0"
+                    @click="query = ''; results = []; showResults = false; $refs.searchInput.focus();"
+                    type="button"
+                    class="absolute inset-y-0 right-12 pr-2 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                    title="Tozalash">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </form>
+
+    <!-- Search Results Dropdown -->
+    <div x-show="showResults && (results.length > 0 || query.length >= 2)"
+         x-cloak
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-96 overflow-y-auto z-50">
+
+        <!-- Loading State -->
+        <div x-show="isSearching" class="p-4 text-center">
+            <div class="flex items-center justify-center space-x-2 text-gray-500">
+                <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-sm">Qidirilmoqda...</span>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        <template x-for="(result, index) in results" :key="result.id">
+            <a :href="result.url"
+               @mouseenter="selectedIndex = index"
+               :class="selectedIndex === index ? 'bg-primary-50 border-primary-200' : 'hover:bg-gray-50'"
+               class="block p-4 border-b border-gray-100 last:border-b-0 transition-colors">
+                <div class="flex items-center space-x-3">
+                    <!-- Product Image -->
+                    <div class="flex-shrink-0">
+                        <img :src="result.image || '/static/images/no-image.jpg'"
+                             :alt="result.name"
+                             class="w-12 h-12 object-cover rounded-lg bg-gray-100">
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-medium text-gray-900 truncate" x-text="result.name"></h4>
+                        <div class="flex items-center space-x-2 mt-1">
+                            <span class="text-sm text-gray-500" x-text="result.category"></span>
+                            <span x-show="result.brand" class="text-xs text-gray-400">•</span>
+                            <span x-show="result.brand" class="text-sm text-gray-500" x-text="result.brand"></span>
+                        </div>
+                        <div class="flex items-center space-x-2 mt-1">
+                            <span class="text-sm font-semibold text-primary-600" x-text="'$' + result.price_usd"></span>
+                            <span class="text-sm text-gray-500" x-text="result.price_som + ' so\'m'"></span>
+                        </div>
+                    </div>
+
+                    <!-- Arrow Icon -->
+                    <div class="flex-shrink-0">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+        </template>
+
+        <!-- No Results -->
+        <div x-show="!isSearching && results.length === 0 && query.length >= 2"
+             class="p-6 text-center">
+            <div class="text-gray-400 mb-2">
+                <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <p class="text-sm text-gray-500 mb-1">Hech narsa topilmadi</p>
+            <p class="text-xs text-gray-400">Boshqa kalit so'zlar bilan izlab ko'ring</p>
+        </div>
+
+        <!-- Popular Searches (when no query) -->
+        <div x-show="!isSearching && query.length < 2" class="p-4">
+            <div class="mb-3">
+                <h5 class="text-sm font-medium text-gray-900 mb-2">Mashhur qidiruvlar</h5>
+                <div class="flex flex-wrap gap-2">
+                    <a href="/search/?q=motor" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm transition-colors">
+                        Motor
+                    </a>
+                    <a href="/search/?q=tormoz" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm transition-colors">
+                        Tormoz
+                    </a>
+                    <a href="/search/?q=filtr" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm transition-colors">
+                        Filtr
+                    </a>
+                    <a href="/search/?q=yog" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm transition-colors">
+                        Yog'
+                    </a>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-100 pt-3">
+                <h5 class="text-sm font-medium text-gray-900 mb-2">Kategoriyalar</h5>
+                <div class="space-y-1">
+                    <a href="/categories/motor/" class="block text-sm text-gray-600 hover:text-primary-600 transition-colors">
+                        🔧 Motor qismlari
+                    </a>
+                    <a href="/categories/tormoz/" class="block text-sm text-gray-600 hover:text-primary-600 transition-colors">
+                        🛑 Tormoz tizimi
+                    </a>
+                    <a href="/categories/elektr/" class="block text-sm text-gray-600 hover:text-primary-600 transition-colors">
+                        ⚡ Elektr qismlari
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- View All Results -->
+        <div x-show="results.length > 0" class="p-3 bg-gray-50 border-t border-gray-100">
+            <a :href="'/search/?q=' + encodeURIComponent(query)"
+               class="block text-center text-sm font-medium text-primary-600 hover:text-primary-800 py-2">
+                Barcha natijalarni ko'rish
+                <span x-show="results.length >= 10" class="text-gray-500">
+                    ({{ results.length }}+)
+                </span>
+            </a>
+        </div>
+
+        <!-- Keyboard Shortcuts Hint -->
+        <div class="p-2 bg-gray-50 border-t border-gray-100 text-xs text-gray-500 text-center">
+            <span>↑↓ harakat, Enter tanlash, Esc yopish</span>
+        </div>
+    </div>
+</div>

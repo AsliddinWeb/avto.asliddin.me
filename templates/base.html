@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="uz" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- SEO Meta Tags -->
+    <title>{% block title %}Avtokontinent.uz - Avto Ehtiyot Qismlar{% endblock %}</title>
+    <meta name="description" content="{% block description %}Avtokontinent.uz - Barcha markalar uchun sifatli avto ehtiyot qismlar. Tez yetkazib berish va kafolat.{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}avto ehtiyot qismlar, avtokontinent, auto parts, uzbekistan{% endblock %}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/logo/favicon.ico' %}">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e'
+                        },
+                        secondary: {
+                            50: '#fefce8',
+                            100: '#fef9c3',
+                            200: '#fef08a',
+                            300: '#fde047',
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04',
+                            700: '#a16207',
+                            800: '#854d0e',
+                            900: '#713f12'
+                        },
+                        accent: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d'
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'ui-sans-serif', 'system-ui'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Custom CSS -->
+<style>
+    [x-cloak] { display: none !important; }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track {
+        background: #f8fafc;
+        border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        border-radius: 5px;
+        border: 2px solid #f8fafc;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #0284c7, #075985);
+    }
+
+    /* Enhanced Loading spinner */
+    .loading-spinner {
+        width: 24px;
+        height: 24px;
+        border: 3px solid transparent;
+        border-top: 3px solid #0ea5e9;
+        border-right: 3px solid #38bdf8;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Glass morphism effect */
+    .glass {
+        backdrop-filter: blur(16px) saturate(180%);
+        background-color: rgba(255, 255, 255, 0.75);
+        border: 1px solid rgba(209, 213, 219, 0.3);
+    }
+
+    /* Gradient text */
+    .gradient-text {
+        background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Enhanced shadows */
+    .shadow-elegant {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .shadow-glow {
+        box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+    }
+
+    /* Smooth transitions */
+    * {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Enhanced focus styles */
+    input:focus, textarea:focus, select:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        border-color: #0ea5e9;
+    }
+
+    /* Button hover effects */
+    .btn-primary {
+        background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #0284c7, #075985);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3);
+    }
+
+    /* Text utilities */
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Card hover effects */
+    .card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Animated gradient background */
+    .gradient-bg {
+        background: linear-gradient(-45deg, #f8fafc, #e2e8f0, #cbd5e1, #94a3b8);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+    }
+
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Loading pulse */
+    .pulse-loading {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .5; }
+    }
+</style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="gradient-bg font-sans antialiased min-h-screen" x-data="{
+    cartCount: 0,
+    showMobileMenu: false,
+    showMobileSearch: false,
+    isLoading: false
+}">
+
+<!-- Loading Overlay -->
+<div x-show="isLoading" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+    <div class="glass rounded-2xl p-8 flex items-center space-x-4 shadow-elegant">
+        <div class="loading-spinner"></div>
+        <span class="text-gray-700 font-medium">Yuklanmoqda...</span>
+    </div>
+</div>
+
+<!-- Header -->
+<header class="glass shadow-elegant sticky top-0 z-40 border-b border-white/20">
+    {% include 'includes/header.html' %}
+</header>
+
+<!-- Breadcrumb -->
+{% block breadcrumb %}
+{% if request.resolver_match.url_name != 'core:homepage' %}
+<nav class="bg-gray-100 border-b" aria-label="Breadcrumb">
+    <div class="container mx-auto px-4 py-3">
+        {% include 'includes/breadcrumb.html' %}
+    </div>
+</nav>
+{% endif %}
+{% endblock %}
+
+<!-- Messages -->
+{% if messages %}
+<div class="container mx-auto px-4 py-2">
+    {% include 'includes/messages.html' %}
+</div>
+{% endif %}
+
+<!-- Main Content -->
+<main id="main-content" class="flex-1">
+    {% block content %}
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Xush kelibsiz!</h1>
+            <p class="text-xl text-gray-600">Bu sahifa content template'da to'ldiriladi</p>
+        </div>
+    </div>
+    {% endblock %}
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-white">
+    {% include 'includes/footer.html' %}
+</footer>
+
+<!-- Mobile Cart Button -->
+<div class="fixed bottom-6 right-6 z-30 md:hidden">
+    <a href="/cart/" class="btn-primary text-white p-4 rounded-2xl shadow-glow transform hover:scale-110 transition-all duration-300">
+
+<!-- Scroll to Top Button -->
+<button @click="window.scrollTo({top: 0, behavior: 'smooth'})"
+        x-show="window.pageYOffset > 300"
+        x-cloak
+        class="fixed bottom-6 left-6 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white p-4 rounded-2xl shadow-glow hover:from-secondary-600 hover:to-secondary-700 transform hover:scale-110 transition-all duration-300 z-30">
+
+<!-- JavaScript Libraries -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+<!-- Global JavaScript -->
+<script>
+// Global avtokontinent object (TUZATILDI: oldin avtokontinet edi)
+window.avtokontinent = {
+    // Show/Hide loading
+    showLoading() {
+        const alpineData = Alpine.store('main') || window.Alpine?.$data(document.body);
+        if (alpineData) {
+            alpineData.isLoading = true;
+        }
+    },
+
+    hideLoading() {
+        const alpineData = Alpine.store('main') || window.Alpine?.$data(document.body);
+        if (alpineData) {
+            alpineData.isLoading = false;
+        }
+    },
+
+    // Show toast message
+    showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-500' :
+                       type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+
+        toast.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm ${bgColor} text-white transform translate-x-full transition-transform duration-300`;
+        toast.innerHTML = `
+            <div class="flex items-center">
+                <span class="flex-1">${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-3 text-white hover:text-gray-200">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+        `;
+        document.body.appendChild(toast);
+
+        // Animate in
+        setTimeout(() => toast.classList.remove('translate-x-full'), 100);
+
+        // Auto remove
+        setTimeout(() => {
+            toast.classList.add('translate-x-full');
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
+    },
+
+    // Format price
+    formatPrice(price) {
+        return new Intl.NumberFormat('uz-UZ').format(price) + ' so\'m';
+    },
+
+    // AJAX helper
+    async fetchJson(url, options = {}) {
+        try {
+            this.showLoading();
+
+            // Get CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+                              document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+            const response = await fetch(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                    ...options.headers
+                },
+                ...options
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('Fetch error:', error);
+            this.showToast('Xatolik yuz berdi: ' + error.message, 'error');
+            throw error;
+        } finally {
+            this.hideLoading();
+        }
+    }
+};
+
+// Cart Management (LocalStorage)
+window.cartManager = {
+    getCart() {
+        const cart = localStorage.getItem('cart');
+        return cart ? JSON.parse(cart) : [];
+    },
+
+    addToCart(productId, quantity = 1) {
+        let cart = this.getCart();
+        const existingItem = cart.find(item => item.id === productId);
+
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cart.push({ id: productId, quantity: quantity });
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        this.updateCartCount();
+        window.avtokontinent.showToast('Mahsulot savatga qo\'shildi!', 'success');
+    },
+
+    removeFromCart(productId) {
+        let cart = this.getCart();
+        cart = cart.filter(item => item.id !== productId);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        this.updateCartCount();
+    },
+
+    updateCartCount() {
+        const cart = this.getCart();
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+        // Update cart count displays
+        document.querySelectorAll('.cart-count').forEach(el => {
+            el.textContent = totalItems;
+            if (totalItems > 0) {
+                el.style.display = 'flex';
+            } else {
+                el.style.display = 'none';
+            }
+        });
+    },
+
+    clearCart() {
+        localStorage.removeItem('cart');
+        this.updateCartCount();
+    }
+};
+
+// Wishlist Management (LocalStorage)
+window.wishlistManager = {
+    getWishlist() {
+        const wishlist = localStorage.getItem('wishlist');
+        return wishlist ? JSON.parse(wishlist) : [];
+    },
+
+    toggleWishlist(productId) {
+        let wishlist = this.getWishlist();
+        const index = wishlist.indexOf(productId);
+
+        if (index > -1) {
+            wishlist.splice(index, 1);
+            window.avtokontinent.showToast('Sevimlilardan olib tashlandi', 'success');
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            return false;
+        } else {
+            wishlist.push(productId);
+            window.avtokontinent.showToast('Sevimlilarga qo\'shildi!', 'success');
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            return true;
+        }
+    },
+
+    isInWishlist(productId) {
+        return this.getWishlist().includes(productId);
+    },
+
+    updateWishlistCount() {
+        const wishlist = this.getWishlist();
+        document.querySelectorAll('.wishlist-count').forEach(el => {
+            el.textContent = wishlist.length;
+            if (wishlist.length > 0) {
+                el.style.display = 'flex';
+            } else {
+                el.style.display = 'none';
+            }
+        });
+    }
+};
+
+// Product card functions
+function handleWishlist(productId) {
+    const isAdded = window.wishlistManager.toggleWishlist(productId);
+    const icon = document.querySelector(`.wishlist-icon-${productId}`);
+
+    if (icon) {
+        if (isAdded) {
+            icon.classList.add('text-red-500', 'fill-current');
+        } else {
+            icon.classList.remove('text-red-500', 'fill-current');
+        }
+    }
+}
+
+function handleAddToCart(productId) {
+    window.cartManager.addToCart(productId);
+
+    // Optional: animate button
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✓ Qo\'shildi!';
+    btn.disabled = true;
+
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }, 1500);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Update counts
+    window.cartManager.updateCartCount();
+    window.wishlistManager.updateWishlistCount();
+
+    // Check wishlist status on page load
+    const wishlist = window.wishlistManager.getWishlist();
+    wishlist.forEach(productId => {
+        const icon = document.querySelector(`.wishlist-icon-${productId}`);
+        if (icon) {
+            icon.classList.add('text-red-500', 'fill-current');
+        }
+    });
+
+    // Auto-dismiss messages after 5 seconds
+    setTimeout(() => {
+        const successMessages = document.querySelectorAll('[class*="bg-green-50"]');
+        successMessages.forEach(message => {
+            if (message.parentNode) {
+                message.style.transform = 'translateX(100%)';
+                message.style.opacity = '0';
+                setTimeout(() => message.remove(), 300);
+            }
+        });
+    }, 5000);
+});
+</script>
+
+{% block extra_js %}{% endblock %}
+
+{% csrf_token %}
+</body>
+</html>

@@ -1,0 +1,443 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - Avtokontinent.uz{% endblock %}
+
+{% block description %}
+{{ category.name }} kategoriyasidagi avto ehtiyot qismlar.
+{{ category.description|default:"Sifatli zapchastlar va avtomobil qismlari." }}
+{% endblock %}
+
+{% block keywords %}
+{{ category.name }}, avto ehtiyot qismlar, zapchastlar, avtokontinent,
+{% for subcategory in subcategories %}{{ subcategory.name }}, {% endfor %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-card {
+        transition: all 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .subcategory-card {
+        transition: all 0.2s ease;
+    }
+
+    .subcategory-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .filter-toggle {
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+
+    <!-- Category Header -->
+    <div class="bg-white border-b">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+
+                <!-- Category Info -->
+                <div class="mb-6 lg:mb-0">
+                    <!-- Breadcrumb -->
+                    <nav class="flex items-center space-x-2 text-sm text-gray-500 mb-4">
+                        <a href="{% url 'core:homepage' %}" class="hover:text-primary-600">Bosh sahifa</a>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <a href="{% url 'categories:category_list' %}" class="hover:text-primary-600">Kategoriyalar</a>
+                        {% if parent_category %}
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                            <a href="{{ parent_category.get_absolute_url }}" class="hover:text-primary-600">{{ parent_category.name }}</a>
+                        {% endif %}
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                        <span class="text-gray-900 font-medium">{{ category.name }}</span>
+                    </nav>
+
+                    <!-- Category Title -->
+                    <div class="flex items-center space-x-4">
+                        {% if category.image %}
+                            <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <img src="{{ category.image.url }}"
+                                     alt="{{ category.name }}"
+                                     class="w-12 h-12 object-contain">
+                            </div>
+                        {% endif %}
+
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ category.name }}</h1>
+                            <p class="text-gray-600">
+                                {{ total_products|default:0 }} ta mahsulot mavjud
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Category Description -->
+                    {% if category.description %}
+                        <p class="text-gray-600 mt-4 max-w-2xl">{{ category.description }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'categories:category_products' category.slug %}"
+                       class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                        Barcha mahsulotlar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+
+        <!-- Subcategories -->
+        {% if subcategories %}
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-6">Subkategoriyalar</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {% for subcategory in subcategories %}
+                    <a href="{{ subcategory.get_absolute_url }}"
+                       class="subcategory-card bg-white rounded-lg border border-gray-200 hover:border-primary-300 p-4 text-center group">
+
+                        <!-- Subcategory Icon -->
+                        <div class="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg flex items-center justify-center">
+                            {% if subcategory.image %}
+                                <img src="{{ subcategory.image.url }}"
+                                     alt="{{ subcategory.name }}"
+                                     class="w-8 h-8 object-contain">
+                            {% else %}
+                                <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                            {% endif %}
+                        </div>
+
+                        <!-- Subcategory Name -->
+                        <h3 class="font-medium text-gray-900 group-hover:text-primary-600 transition-colors text-sm mb-1">
+                            {{ subcategory.name }}
+                        </h3>
+
+                        <!-- Products Count -->
+                        <p class="text-xs text-gray-500">
+                            {{ subcategory.products_count|default:0 }} mahsulot
+                        </p>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Products Section -->
+        {% if products %}
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-900">
+                    {% if subcategories %}
+                        Mashhur mahsulotlar
+                    {% else %}
+                        Mahsulotlar
+                    {% endif %}
+                </h2>
+
+                {% if subcategories %}
+                    <a href="{% url 'categories:category_products' category.slug %}"
+                       class="text-primary-600 hover:text-primary-800 font-medium text-sm flex items-center">
+                        Barchasini ko'rish
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                {% for product in products %}
+                    {% include 'includes/product_card.html' %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Category Brands -->
+        {% if category_brands %}
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-6">Bu kategoriyada mavjud brendlar</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+                {% for brand in category_brands %}
+                    <a href="{{ brand.get_absolute_url }}"
+                       class="bg-white border border-gray-200 rounded-lg p-4 text-center hover:border-primary-300 hover:shadow-md transition-all group">
+
+                        <!-- Brand Logo -->
+                        <div class="w-12 h-12 mx-auto mb-2 bg-gray-50 rounded-lg flex items-center justify-center group-hover:bg-primary-50 transition-colors">
+                            {% if brand.logo %}
+                                <img src="{{ brand.logo.url }}"
+                                     alt="{{ brand.name }}"
+                                     class="w-8 h-8 object-contain">
+                            {% else %}
+                                <div class="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg flex items-center justify-center">
+                                    <span class="text-white font-bold text-xs">{{ brand.name|first }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Brand Name -->
+                        <h3 class="font-medium text-gray-900 group-hover:text-primary-600 transition-colors text-xs">
+                            {{ brand.name }}
+                        </h3>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Empty State -->
+        {% if not products and not subcategories %}
+        <div class="text-center py-16">
+            <div class="max-w-md mx-auto">
+                <svg class="w-20 h-20 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4-8-4m16 0v10l-8 4-8-4V7"></path>
+                </svg>
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4">
+                    Bu kategoriyada hali mahsulot yo'q
+                </h3>
+                <p class="text-gray-600 mb-8">
+                    Tez orada {{ category.name }} kategoriyasiga mahsulotlar qo'shiladi.
+                    Boshqa kategoriyalarni ko'rib chiqing.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <a href="{% url 'categories:category_list' %}"
+                       class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                        Boshqa kategoriyalar
+                    </a>
+                    <a href="{% url 'products:product_list' %}"
+                       class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium">
+                        Barcha mahsulotlar
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Related Categories (if this is a subcategory) -->
+        {% if parent_category %}
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-6">O'xshash kategoriyalar</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {% for sibling in parent_category.subcategories.all %}
+                    {% if sibling != category %}
+                        <a href="{{ sibling.get_absolute_url }}"
+                           class="bg-white border border-gray-200 rounded-lg p-4 hover:border-primary-300 hover:shadow-md transition-all group">
+
+                            <div class="flex items-center space-x-3">
+                                <!-- Sibling Icon -->
+                                <div class="w-10 h-10 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                    </svg>
+                                </div>
+
+                                <div>
+                                    <h3 class="font-medium text-gray-900 group-hover:text-primary-600 transition-colors text-sm">
+                                        {{ sibling.name }}
+                                    </h3>
+                                    <p class="text-xs text-gray-500">
+                                        {{ sibling.products_count|default:0 }} mahsulot
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple hover animations
+    const productCards = document.querySelectorAll('.product-card');
+    const subcategoryCards = document.querySelectorAll('.subcategory-card');
+
+    // Product card animations
+    productCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-4px)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Subcategory card animations
+    subcategoryCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Loading animation for links
+    const categoryLinks = document.querySelectorAll('a[href*="/categories/"], a[href*="/products/"]');
+
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            // Add loading state
+            this.style.opacity = '0.7';
+            this.style.pointerEvents = 'none';
+
+            // Reset after 3 seconds if page doesn't load
+            setTimeout(() => {
+                this.style.opacity = '1';
+                this.style.pointerEvents = 'auto';
+            }, 3000);
+        });
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Simple analytics tracking
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'page_view', {
+            page_title: 'Category Detail - {{ category.name }}',
+            page_location: window.location.href,
+            category_name: '{{ category.name }}'
+        });
+    }
+});
+
+// Add to cart functionality (if product cards are present)
+window.handleAddToCart = function(productId) {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+
+    btn.innerHTML = '✓ Qo\'shildi!';
+    btn.disabled = true;
+    btn.classList.remove('bg-primary-600', 'hover:bg-primary-700');
+    btn.classList.add('bg-green-500');
+
+    // Use global cart manager if available
+    if (window.cartManager) {
+        window.cartManager.addToCart(productId);
+    }
+
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.classList.remove('bg-green-500');
+        btn.classList.add('bg-primary-600', 'hover:bg-primary-700');
+    }, 2000);
+};
+
+// Wishlist functionality
+window.handleWishlist = function(productId) {
+    if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+        if (window.avtokontinent && window.avtokontinent.showToast) {
+            window.avtokontinent.showToast('Sevimlilarga qo\'shish uchun tizimga kiring', 'info');
+        } else {
+            alert('Sevimlilarga qo\'shish uchun tizimga kiring');
+        }
+        return;
+    }
+
+    // Use global wishlist manager if available
+    if (window.wishlistManager) {
+        const isAdded = window.wishlistManager.toggleWishlist(productId);
+        const icon = document.querySelector(`.wishlist-icon-${productId}`);
+
+        if (icon) {
+            if (isAdded) {
+                icon.classList.add('text-red-500', 'fill-current');
+            } else {
+                icon.classList.remove('text-red-500', 'fill-current');
+            }
+        }
+    }
+};
+</script>
+
+<!-- SEO Schema -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "{{ category.name }} - Avtokontinent.uz",
+    "description": "{{ category.description|default:'Avto ehtiyot qismlar kategoriyasi' }}",
+    "url": "{{ request.build_absolute_uri }}",
+    "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Bosh sahifa",
+                "item": "{{ request.build_absolute_uri }}/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Kategoriyalar",
+                "item": "{{ request.build_absolute_uri }}/categories/"
+            }{% if parent_category %},
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "{{ parent_category.name }}",
+                "item": "{{ request.build_absolute_uri }}{{ parent_category.get_absolute_url }}"
+            },
+            {
+                "@type": "ListItem",
+                "position": 4,
+                "name": "{{ category.name }}",
+                "item": "{{ request.build_absolute_uri }}{{ category.get_absolute_url }}"
+            }{% else %},
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "{{ category.name }}",
+                "item": "{{ request.build_absolute_uri }}{{ category.get_absolute_url }}"
+            }{% endif %}
+        ]
+    },
+    "mainEntity": {
+        "@type": "ItemList",
+        "numberOfItems": {{ total_products|default:0 }}
+    }
+}
+</script>
+{% endblock %}

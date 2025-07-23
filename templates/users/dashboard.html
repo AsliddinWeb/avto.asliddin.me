@@ -1,0 +1,364 @@
+<!-- templates/users/dashboard.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - {{ user.first_name|default:"Foydalanuvchi" }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <div class="max-w-6xl mx-auto">
+
+            <!-- Welcome Header -->
+            <div class="bg-gradient-to-r from-primary-600 to-blue-600 rounded-lg text-white p-6 mb-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">
+                            Xush kelibsiz, {{ user.first_name|default:"Foydalanuvchi" }}! 👋
+                        </h1>
+                        <p class="text-blue-100">
+                            Bugun {{ "now"|date:"d.m.Y" }} - Hisob holatni ko'rib chiqing
+                        </p>
+                    </div>
+                    <div class="mt-4 md:mt-0">
+                        <a href="{% url 'products:product_list' %}"
+                           class="inline-flex items-center bg-white text-primary-600 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M8 11v6h8v-6M8 11H6a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2h-2"></path>
+                            </svg>
+                            Xarid qilish
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <div class="text-2xl font-bold text-gray-900">{{ stats.total_orders }}</div>
+                    <div class="text-sm text-gray-600">Jami buyurtma</div>
+                </div>
+
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <div class="text-2xl font-bold text-yellow-600">{{ stats.active_orders }}</div>
+                    <div class="text-sm text-gray-600">Faol</div>
+                </div>
+
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <div class="text-2xl font-bold text-green-600">{{ stats.completed_orders }}</div>
+                    <div class="text-sm text-gray-600">Yakunlangan</div>
+                </div>
+
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <div class="text-2xl font-bold text-red-600">{{ stats.cancelled_orders }}</div>
+                    <div class="text-sm text-gray-600">Bekor qilingan</div>
+                </div>
+
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <div class="text-2xl font-bold text-blue-600">{{ stats.wishlist_count }}</div>
+                    <div class="text-sm text-gray-600">Sevimlilar</div>
+                </div>
+
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                    <div class="text-2xl font-bold text-purple-600">{{ stats.reviews_count }}</div>
+                    <div class="text-sm text-gray-600">Sharhlar</div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="grid lg:grid-cols-3 gap-6">
+
+                <!-- Active Orders -->
+                <div class="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-gray-900">
+                            🔄 Faol buyurtmalar
+                        </h2>
+                        <a href="{% url 'orders:order_list' %}"
+                           class="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                            Barchasini ko'rish →
+                        </a>
+                    </div>
+
+                    {% if active_orders %}
+                        <div class="space-y-4">
+                            {% for order in active_orders %}
+                            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="font-semibold text-gray-900">#{{ order.order_number }}</span>
+                                        <span class="px-2 py-1 rounded text-xs font-medium
+                                            {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                            {% elif order.status == 'payment_pending' %}bg-blue-100 text-blue-800
+                                            {% elif order.status == 'confirmed' %}bg-green-100 text-green-800
+                                            {% elif order.status == 'preparing' %}bg-indigo-100 text-indigo-800
+                                            {% elif order.status == 'shipped' %}bg-purple-100 text-purple-800
+                                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-semibold text-gray-900">${{ order.total_amount_usd }}</div>
+                                        <div class="text-sm text-gray-500">{{ order.created_at|date:"d.m.Y" }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div class="text-sm text-gray-600">
+                                        {{ order.items.count }} ta mahsulot
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <a href="{% url 'orders:order_detail' order.order_number %}"
+                                           class="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                                            Ko'rish
+                                        </a>
+                                        <a href="{% url 'orders:order_status' order.order_number %}"
+                                           class="text-gray-600 hover:text-gray-800 text-sm font-medium">
+                                            Holat
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <p class="text-gray-500 mb-3">Faol buyurtma yo'q</p>
+                            <a href="{% url 'products:product_list' %}"
+                               class="text-primary-600 hover:text-primary-800 font-medium">
+                                Buyurtma berish →
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h3 class="font-semibold text-gray-900 mb-4">⚡ Tez amallar</h3>
+
+                        <div class="space-y-3">
+                            <a href="{% url 'users:profile_edit' %}"
+                               class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                                <svg class="w-5 h-5 text-gray-500 group-hover:text-primary-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                                <span class="font-medium text-gray-900 group-hover:text-primary-600">Profil tahrirlash</span>
+                            </a>
+
+                            <a href="{% url 'users:favorites' %}"
+                               class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                                <svg class="w-5 h-5 text-gray-500 group-hover:text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                                <div>
+                                    <div class="font-medium text-gray-900 group-hover:text-red-600">Sevimlilar</div>
+                                    <div class="text-sm text-gray-500">{{ stats.wishlist_count }} ta mahsulot</div>
+                                </div>
+                            </a>
+
+                            <a href="{% url 'orders:order_tracking' %}"
+                               class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                                <svg class="w-5 h-5 text-gray-500 group-hover:text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                                <span class="font-medium text-gray-900 group-hover:text-blue-600">Buyurtma kuzatuvi</span>
+                            </a>
+
+                            <a href="{% url 'users:settings' %}"
+                               class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                                <svg class="w-5 h-5 text-gray-500 group-hover:text-gray-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span class="font-medium text-gray-900 group-hover:text-gray-600">Sozlamalar</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Recent Favorites -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-900">❤️ Sevimlilar</h3>
+                            <a href="{% url 'users:favorites' %}" class="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                                Ko'rish →
+                            </a>
+                        </div>
+
+                        {% if recent_favorites %}
+                            <div class="space-y-3">
+                                {% for favorite in recent_favorites %}
+                                <div class="flex items-center space-x-3">
+                                    <img src="{{ favorite.product.main_image.url|default:'/static/images/no-image.jpg' }}"
+                                         alt="{{ favorite.product.name }}"
+                                         class="w-10 h-10 object-cover rounded bg-gray-100">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="font-medium text-gray-900 text-sm truncate">
+                                            {{ favorite.product.name|truncatechars:30 }}
+                                        </p>
+                                        <p class="text-xs text-gray-500">
+                                            ${{ favorite.product.price_usd }}
+                                        </p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-6">
+                                <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                                <p class="text-gray-500 text-sm">Sevimli mahsulot yo'q</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Account Status -->
+                    <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
+                        <h3 class="font-semibold text-gray-900 mb-4">🔐 Hisob holati</h3>
+
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Telefon:</span>
+                                <span class="{% if user.is_phone_verified %}text-green-600{% else %}text-yellow-600{% endif %} font-medium">
+                                    {% if user.is_phone_verified %}✅ Tasdiqlangan{% else %}⏳ Kutilmoqda{% endif %}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Telegram:</span>
+                                <span class="{% if user.telegram_chat_id %}text-green-600{% else %}text-gray-500{% endif %} font-medium">
+                                    {% if user.telegram_chat_id %}✅ Ulangan{% else %}❌ Ulanmagan{% endif %}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-600">Email:</span>
+                                <span class="{% if user.email %}text-green-600{% else %}text-gray-500{% endif %} font-medium">
+                                    {% if user.email %}✅ Mavjud{% else %}❌ Yo'q{% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        {% if not user.telegram_chat_id %}
+                        <div class="mt-4 pt-3 border-t border-green-200">
+                            <p class="text-xs text-gray-600 mb-2">Telegram botga ulanib, xabar olish:</p>
+                            <a href="https://t.me/asliddin767bot"
+                               target="_blank"
+                               class="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                                </svg>
+                                Botga ulaning
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Dashboard interactivity
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate stats on load
+    animateStats();
+
+    // Auto-refresh active orders every 2 minutes
+    setInterval(refreshActiveOrders, 120000);
+
+    // Show welcome message for new users
+    if ({{ stats.total_orders }} === 0) {
+        setTimeout(() => {
+            window.avtokontinent.showToast(
+                'Xush kelibsiz! Birinchi buyurtmangizni bering 🎉',
+                'success'
+            );
+        }, 2000);
+    }
+});
+
+function animateStats() {
+    const statElements = document.querySelectorAll('.text-2xl.font-bold');
+
+    statElements.forEach(element => {
+        const finalValue = parseInt(element.textContent) || 0;
+        let currentValue = 0;
+        const increment = Math.max(1, Math.ceil(finalValue / 30));
+
+        if (finalValue > 0) {
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= finalValue) {
+                    currentValue = finalValue;
+                    clearInterval(timer);
+                }
+                element.textContent = currentValue;
+            }, 50);
+        }
+    });
+}
+
+function refreshActiveOrders() {
+    // Simple refresh for active orders
+    const activeOrdersSection = document.querySelector('.lg\\:col-span-2');
+    if (activeOrdersSection && {{ stats.active_orders }} > 0) {
+        fetch(window.location.href)
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newActiveOrders = doc.querySelector('.lg\\:col-span-2');
+
+                if (newActiveOrders) {
+                    // Check if content changed
+                    if (activeOrdersSection.innerHTML !== newActiveOrders.innerHTML) {
+                        activeOrdersSection.innerHTML = newActiveOrders.innerHTML;
+                        window.avtokontinent.showToast('Buyurtma holati yangilandi', 'info');
+                    }
+                }
+            })
+            .catch(() => {});
+    }
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + D for dashboard refresh
+    if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault();
+        location.reload();
+    }
+
+    // Ctrl/Cmd + N for new order
+    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault();
+        window.location.href = '{% url "products:product_list" %}';
+    }
+
+    // Ctrl/Cmd + P for profile
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault();
+        window.location.href = '{% url "users:profile_edit" %}';
+    }
+});
+
+// Track page view for analytics
+if (typeof gtag !== 'undefined') {
+    gtag('event', 'page_view', {
+        page_title: 'User Dashboard',
+        page_location: window.location.href
+    });
+}
+</script>
+{% endblock %}

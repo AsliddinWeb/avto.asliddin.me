@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eng ko'p sotilgan mahsulotlar - Avtokontinent.uz{% endblock %}
+
+{% block description %}
+Mijozlarimiz tomonidan eng ko'p xarid qilinadigan avto ehtiyot qismlar.
+Mashhur va ishonchli mahsulotlar - eng yaxshi tanlov.
+{% endblock %}
+
+{% block keywords %}
+mashhur mahsulotlar, popular products, eng ko'p sotilgan, bestseller,
+avto ehtiyot qismlar, zapchastlar, avtokontinent
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+
+    <!-- Page Header -->
+    <div class="bg-white border-b">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center">
+                <div class="inline-flex items-center bg-red-100 text-red-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                    🔥 Eng mashhur
+                </div>
+                <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                    Eng ko'p sotilgan mahsulotlar
+                </h1>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Mijozlarimiz tomonidan eng ko'p xarid qilinadigan
+                    va yuqori bahoga sazovor bo'lgan mahsulotlar
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sort Section -->
+    <div class="bg-white border-b sticky top-0 z-30">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">
+                    {% if page_obj %}
+                        {{ page_obj.paginator.count }} ta mashhur mahsulot
+                    {% endif %}
+                </span>
+
+                <select onchange="updateSort(this.value)"
+                        class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                    <option value="-views_count" {% if request.GET.sort == '-views_count' or not request.GET.sort %}selected{% endif %}>Eng mashhur</option>
+                    <option value="-created_at" {% if request.GET.sort == '-created_at' %}selected{% endif %}>Yangi qo'shilgan</option>
+                    <option value="name" {% if request.GET.sort == 'name' %}selected{% endif %}>Nom (A-Z)</option>
+                    <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>Arzon narx</option>
+                    <option value="-price" {% if request.GET.sort == '-price' %}selected{% endif %}>Qimmat narx</option>
+                    <option value="-likes_count" {% if request.GET.sort == '-likes_count' %}selected{% endif %}>Ko'p yoqtirilgan</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="container mx-auto px-4 py-8">
+        {% if products %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
+                {% for product in products %}
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg hover:border-primary-300 transition-all duration-300 group relative">
+
+                        <!-- Popular Badge -->
+                        <div class="absolute top-3 left-3 z-10">
+                            <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                                🔥 #{{ forloop.counter }}
+                            </span>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="aspect-square relative overflow-hidden bg-gray-100 rounded-t-lg">
+                            <a href="{{ product.get_absolute_url }}" class="block w-full h-full">
+                                {% if product.main_image %}
+                                    <img src="{{ product.main_image.url }}"
+                                         alt="{{ product.name }}"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                         loading="lazy">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                                        <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                {% endif %}
+                            </a>
+
+                            <!-- Quick Actions -->
+                            <div class="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <button class="wishlist-btn w-8 h-8 bg-white bg-opacity-90 hover:bg-white rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-200 text-gray-600 hover:text-red-500"
+                                        data-product-id="{{ product.id }}"
+                                        title="Sevimlilarga qo'shish">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Stock Status -->
+                            <div class="absolute bottom-3 left-3">
+                                {% if product.in_stock %}
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
+                                        ✅ Mavjud
+                                    </span>
+                                {% else %}
+                                    <span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
+                                        ❌ Tugagan
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Product Info -->
+                        <div class="p-4">
+                            <!-- Category & Brand -->
+                            <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+                                {% if product.category %}
+                                    <span>{{ product.category.name }}</span>
+                                {% endif %}
+                                {% if product.brand %}
+                                    <span class="bg-gray-100 px-2 py-1 rounded">{{ product.brand.name }}</span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Product Name -->
+                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors">
+                                <a href="{{ product.get_absolute_url }}">
+                                    {{ product.name }}
+                                </a>
+                            </h3>
+
+                            <!-- Price -->
+                            <div class="mb-3">
+                                <div class="text-lg font-bold text-gray-900">
+                                    ${{ product.price_usd }}
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    {{ product.formatted_price_som }}
+                                </div>
+                            </div>
+
+                            <!-- Stats -->
+                            <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="flex items-center space-x-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                        <span>{{ product.views_count|default:0 }}</span>
+                                    </div>
+
+                                    <button class="like-btn flex items-center space-x-1 hover:text-red-500 transition-colors"
+                                            data-product-id="{{ product.id }}">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                        </svg>
+                                        <span class="like-count">{{ product.likes_count|default:0 }}</span>
+                                    </button>
+                                </div>
+
+                                <div class="text-xs text-red-600 font-medium">
+                                    🔥 Mashhur
+                                </div>
+                            </div>
+
+                            <!-- Add to Cart Button -->
+                            {% if product.in_stock %}
+                                <button onclick="handleAddToCart({{ product.id }})"
+                                        class="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-lg font-medium text-sm transition-colors">
+                                    Savatga qo'shish
+                                </button>
+                            {% else %}
+                                <button disabled
+                                        class="w-full bg-gray-300 text-gray-500 py-2 px-4 rounded-lg font-medium text-sm cursor-not-allowed">
+                                    Mavjud emas
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.paginator.num_pages > 1 %}
+                <div class="mt-12">
+                    {% include 'includes/pagination.html' %}
+                </div>
+            {% endif %}
+
+        {% else %}
+            <!-- No Products -->
+            <div class="text-center py-16">
+                <div class="text-6xl mb-6">🔥</div>
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4">
+                    Mashhur mahsulotlar topilmadi
+                </h3>
+                <p class="text-gray-600 mb-8">
+                    Hozircha mashhur mahsulotlarimiz ro'yxati bo'sh.
+                    Tez orada eng ko'p sotilgan mahsulotlar paydo bo'ladi.
+                </p>
+                <a href="{% url 'products:product_list' %}"
+                   class="inline-block bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                    Barcha mahsulotlarni ko'rish
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Sort functionality
+    window.updateSort = function(sortValue) {
+        const url = new URL(window.location);
+        url.searchParams.set('sort', sortValue);
+        url.searchParams.delete('page');
+        window.location.href = url.toString();
+    };
+
+    // Initialize product interactions
+    initProductInteractions();
+});
+
+// Product interactions
+function initProductInteractions() {
+    // Wishlist buttons
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+                window.avtokontinent?.showToast('Sevimlilarga qo\'shish uchun tizimga kiring', 'info');
+                return;
+            }
+
+            const productId = this.dataset.productId;
+            console.log('Wishlist clicked:', productId);
+            // Wishlist logic here
+        });
+    });
+
+    // Like buttons
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+                window.avtokontinent?.showToast('Like bosish uchun tizimga kiring', 'info');
+                return;
+            }
+
+            const productId = this.dataset.productId;
+            console.log('Like clicked:', productId);
+            // Like logic here
+        });
+    });
+}
+
+// Add to cart
+window.handleAddToCart = function(productId) {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+
+    btn.innerHTML = '✓ Qo\'shildi!';
+    btn.disabled = true;
+    btn.classList.remove('bg-primary-600', 'hover:bg-primary-700');
+    btn.classList.add('bg-green-500');
+
+    window.cartManager?.addToCart(productId);
+
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.classList.remove('bg-green-500');
+        btn.classList.add('bg-primary-600', 'hover:bg-primary-700');
+    }, 2000);
+};
+</script>
+{% endblock %}

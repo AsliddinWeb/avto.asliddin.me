@@ -1,0 +1,236 @@
+<!-- templates/brands/car_model_detail.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ car_model.brand.name }} {{ car_model.name }} - Ehtiyot qismlar{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-6">
+    <div class="container mx-auto px-4">
+
+        <!-- Model Header -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    {% if brand.logo %}
+                        <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
+                            <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="w-full h-full object-contain">
+                        </div>
+                    {% endif %}
+
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">
+                            {{ brand.name }} {{ car_model.name }}
+                        </h1>
+                        <p class="text-gray-600">
+                            {% if car_model.year_from or car_model.year_to %}
+                                {{ car_model.year_from|default:"" }}{% if car_model.year_from and car_model.year_to %} - {% endif %}{{ car_model.year_to|default:"hozir" }}
+                            {% endif %}
+                            • {{ total_products }} ta mahsulot
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3">
+                    <a href="{% url 'brands:car_model_products' brand.slug car_model.slug %}"
+                       class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                        Mahsulotlar
+                    </a>
+                    <a href="{% url 'brands:car_model_list' brand.slug %}"
+                       class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        ← Orqaga
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+
+                <!-- Recent Products -->
+                {% if model_products %}
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-gray-900">Mahsulotlar</h2>
+                        <a href="{% url 'brands:car_model_products' brand.slug car_model.slug %}"
+                           class="text-primary-600 hover:text-primary-800 text-sm font-medium">
+                            Barchasini ko'rish →
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {% for product in model_products|slice:":4" %}
+                        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                            <a href="{{ product.get_absolute_url }}" class="block">
+                                <div class="aspect-square bg-gray-100">
+                                    {% if product.main_image %}
+                                        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                                    {% else %}
+                                        <div class="w-full h-full flex items-center justify-center">
+                                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="p-3">
+                                    <h3 class="font-medium text-gray-900 text-sm line-clamp-2 mb-2">{{ product.name }}</h3>
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-sm">
+                                            <div class="font-bold text-gray-900">${{ product.price_usd }}</div>
+                                            <div class="text-xs text-gray-600">{{ product.price_som|floatformat:0 }} so'm</div>
+                                        </div>
+                                        {% if product.in_stock %}
+                                            <span class="bg-green-100 text-green-800 px-2 py-1 text-xs rounded">Mavjud</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Categories -->
+                {% if model_categories %}
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Kategoriyalar</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {% for category in model_categories %}
+                        <a href="{% url 'brands:car_model_products' brand.slug car_model.slug %}?category={{ category.slug }}"
+                           class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors">
+                            <span class="font-medium text-gray-900">{{ category.name }}</span>
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+
+                <!-- Model Info -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Model haqida</h3>
+                    <dl class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <dt class="text-gray-600">Brend:</dt>
+                            <dd class="font-medium">{{ brand.name }}</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="text-gray-600">Model:</dt>
+                            <dd class="font-medium">{{ car_model.name }}</dd>
+                        </div>
+                        {% if car_model.year_from %}
+                        <div class="flex justify-between">
+                            <dt class="text-gray-600">Yillar:</dt>
+                            <dd class="font-medium">{{ car_model.year_from }}{% if car_model.year_to %}-{{ car_model.year_to }}{% else %}+{% endif %}</dd>
+                        </div>
+                        {% endif %}
+                        <div class="flex justify-between">
+                            <dt class="text-gray-600">Mahsulotlar:</dt>
+                            <dd class="font-medium">{{ total_products }} ta</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Tez havolalar</h3>
+                    <div class="space-y-3">
+                        <a href="{% url 'brands:car_model_products' brand.slug car_model.slug %}"
+                           class="block w-full bg-primary-600 text-white text-center px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                            Barcha mahsulotlar
+                        </a>
+                        <a href="{{ brand.get_absolute_url }}"
+                           class="block w-full border border-gray-300 text-gray-700 text-center px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                            {{ brand.name }} brendiga
+                        </a>
+                        <a href="{% url 'brands:car_model_list' brand.slug %}"
+                           class="block w-full text-center text-primary-600 hover:text-primary-800 font-medium">
+                            Boshqa modellar
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="bg-gradient-to-r from-primary-50 to-blue-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Yordam kerakmi?</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                            </svg>
+                            <a href="tel:+998901234567" class="text-green-600 hover:underline">
+                                +998 90 123 45 67
+                            </a>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                            </svg>
+                            <a href="https://t.me/avtokontinent_support" target="_blank" class="text-blue-600 hover:underline">
+                                Telegram orqali
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        {% if not model_products and not model_categories %}
+        <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Mahsulot mavjud emas</h3>
+            <p class="text-gray-600 mb-6">
+                {{ brand.name }} {{ car_model.name }} uchun mahsulotlar hozircha qo'shilmagan.
+            </p>
+            <div class="space-y-3">
+                <a href="{{ brand.get_absolute_url }}"
+                   class="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                    Brend mahsulotlari
+                </a>
+                <div>
+                    <a href="{% url 'products:product_list' %}" class="text-primary-600 hover:text-primary-800 font-medium">
+                        Barcha mahsulotlar →
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add to cart function
+function handleAddToCart(productId) {
+    if (typeof window.cartManager !== 'undefined') {
+        window.cartManager.addToCart(productId);
+    }
+}
+
+// Analytics
+if (typeof gtag !== 'undefined') {
+    gtag('event', 'car_model_view', {
+        'event_category': 'Models',
+        'event_label': '{{ brand.name }} {{ car_model.name }}',
+        'products_count': {{ total_products|default:0 }}
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,213 @@
+<!-- templates/orders/order_confirm.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Buyurtmani tasdiqlash - Avtokontinent.uz{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <!-- Progress Steps -->
+        <div class="mb-8">
+            <div class="flex items-center justify-center space-x-4 mb-6">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-medium">✓</div>
+                    <span class="ml-2 text-sm font-medium text-green-600">Buyurtma</span>
+                </div>
+                <div class="w-16 h-1 bg-green-600"></div>
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center text-sm font-medium">2</div>
+                    <span class="ml-2 text-sm font-medium text-primary-600">Tasdiqlash</span>
+                </div>
+                <div class="w-16 h-1 bg-gray-300"></div>
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center text-sm font-medium">3</div>
+                    <span class="ml-2 text-sm text-gray-500">To'lov</span>
+                </div>
+            </div>
+            <h1 class="text-3xl font-bold text-center text-gray-900">Buyurtmani tasdiqlash</h1>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+
+            <!-- Order Info -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold">Buyurtma #{{ order.order_number }}</h2>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-medium text-gray-900 mb-2">Mijoz ma'lumotlari</h3>
+                        <p class="text-gray-600">{{ order.user.first_name|default:"Mijoz" }}</p>
+                        <p class="text-gray-600">{{ order.user.phone }}</p>
+                    </div>
+
+                    <div>
+                        <h3 class="font-medium text-gray-900 mb-2">Yetkazish ma'lumotlari</h3>
+                        <p class="text-gray-600">{{ order.delivery_address|linebreaks }}</p>
+                        <p class="text-gray-600">Tel: {{ order.delivery_phone }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">Buyurtma tarkibi</h2>
+
+                <div class="space-y-4">
+                    {% for item in order_items %}
+                    <div class="flex items-center space-x-4 pb-4 border-b border-gray-100 last:border-b-0">
+                        <img src="{{ item.product.main_image.url|default:'/static/images/no-image.jpg' }}"
+                             alt="{{ item.product.name }}"
+                             class="w-16 h-16 object-cover rounded bg-gray-100">
+
+                        <div class="flex-1">
+                            <h3 class="font-medium text-gray-900">{{ item.product.name }}</h3>
+                            <p class="text-sm text-gray-500">{{ item.product.category.name|default:"" }}</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <span class="text-sm text-gray-600">Miqdor: {{ item.quantity }}</span>
+                                <div class="text-right">
+                                    <div class="font-medium">${{ item.price_usd|default:item.product.price_usd }} × {{ item.quantity }}</div>
+                                    <div class="text-sm text-gray-600">{{ item.total_som|floatformat:0 }} so'm</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500 text-center py-4">Buyurtmada mahsulot yo'q</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Order Total -->
+                <div class="border-t mt-6 pt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-lg font-semibold">Jami summa:</span>
+                        <div class="text-right">
+                            <div class="text-xl font-bold text-primary-600">${{ order.total_amount_usd }}</div>
+                            <div class="text-lg text-gray-600">{{ order.formatted_total_som }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta Agreement -->
+            {% if oferta_required %}
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="flex items-start space-x-3">
+                        <input type="checkbox"
+                               id="oferta_agreed"
+                               name="oferta_agreed"
+                               required
+                               class="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+
+                        <div class="flex-1">
+                            <label for="oferta_agreed" class="text-sm font-medium text-gray-900">
+                                Xizmat ko'rsatish shartlari bilan tanishdim va roziman *
+                            </label>
+                            <p class="text-sm text-gray-600 mt-1">
+                                <a href="{% url 'core:oferta' %}"
+                                   target="_blank"
+                                   class="text-primary-600 hover:underline">
+                                    Oferta sharti →
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit"
+                                class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-semibold">
+                            Shartlar bilan tanishdim
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4">
+                {% if order.oferta_agreed %}
+                <a href="{% url 'orders:payment' order.id %}"
+                   class="flex-1 bg-green-600 text-white text-center px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold">
+                    To'lovga o'tish →
+                </a>
+                {% else %}
+                <div class="flex-1 bg-gray-300 text-gray-500 text-center px-6 py-3 rounded-lg cursor-not-allowed font-semibold">
+                    Avval oferta bilan tanishing
+                </div>
+                {% endif %}
+
+                <a href="{% url 'orders:order_detail' order.order_number %}"
+                   class="flex-1 border border-gray-300 text-gray-700 text-center px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors font-semibold">
+                    Buyurtma tafsilotlari
+                </a>
+            </div>
+
+            <!-- Important Notes -->
+            <div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h3 class="font-medium text-blue-900 mb-2">Muhim eslatma:</h3>
+                <ul class="text-sm text-blue-800 space-y-1">
+                    <li>• To'lov qilgandan so'ng buyurtmangiz tasdiqlanadi</li>
+                    <li>• Yetkazish muddati 1-3 ish kuni</li>
+                    <li>• To'lov chekini yuklashni unutmang</li>
+                    <li>• Savol bo'lsa: +998 90 123 45 67</li>
+                </ul>
+            </div>
+
+            <!-- Payment Info -->
+            {% if payment_card %}
+            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                <h3 class="font-medium text-gray-900 mb-2">To'lov ma'lumoti:</h3>
+                <p class="text-sm text-gray-600">
+                    Karta raqami: <code class="bg-white px-2 py-1 rounded font-mono">{{ payment_card }}</code>
+                </p>
+                <p class="text-sm text-gray-600 mt-1">
+                    Dollar kursi: <span class="font-medium">{{ order.usd_rate_used }} so'm</span>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Clear cart when order is confirmed (successful checkout)
+document.addEventListener('DOMContentLoaded', function() {
+    // Clear cart since order is created successfully
+    window.cartManager.clearCart();
+
+    // Show success message
+    window.avtokontinent.showToast('Buyurtma muvaffaqiyatli yaratildi!', 'success');
+});
+
+// Track order confirmation
+if (typeof gtag !== 'undefined') {
+    gtag('event', 'begin_checkout', {
+        currency: 'USD',
+        value: parseFloat('{{ order.total_amount_usd }}'),
+        transaction_id: '{{ order.order_number }}',
+        items: [
+            {% for item in order_items %}
+            {
+                item_id: '{{ item.product.id }}',
+                item_name: '{{ item.product_name|escapejs }}',
+                category: '{{ item.product.category.name|default:""|escapejs }}',
+                quantity: parseInt('{{ item.quantity }}'),
+                price: parseFloat('{{ item.price_usd|default:0 }}')
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,867 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sevimli mahsulotlar - Avtokontinent.uz{% endblock %}
+
+{% block description %}
+Sizning sevimli avto ehtiyot qismlaringiz ro'yxati. Keyinroq xarid qilish uchun saqlangan mahsulotlar.
+{% endblock %}
+
+{% block keywords %}
+sevimlilar, wishlist, avto ehtiyot qismlar, saqlangan mahsulotlar, avtokontinent
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .wishlist-item {
+        transition: all 0.3s ease;
+    }
+
+    .wishlist-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .wishlist-animation {
+        animation: slideInUp 0.5s ease;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .remove-animation {
+        animation: slideOutRight 0.3s ease forwards;
+    }
+
+    @keyframes slideOutRight {
+        to {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    }
+
+    .empty-wishlist-animation {
+        animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .heart-pulse {
+        animation: heartPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes heartPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    .grid-view .wishlist-item {
+        min-height: 400px;
+    }
+
+    .list-view .wishlist-item {
+        display: flex;
+        align-items: center;
+        min-height: 150px;
+    }
+
+    .price-highlight {
+        background: linear-gradient(45deg, #fbbf24, #f59e0b);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .view-toggle-btn.active {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+    .loading-skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div class="mb-4 lg:mb-0">
+                    <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-2 flex items-center">
+                        <svg class="w-8 h-8 lg:w-10 lg:h-10 text-red-500 mr-3 heart-pulse" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                        Sevimli mahsulotlar
+                    </h1>
+                    <p class="text-gray-600" id="wishlist-count">
+                        Mahsulotlar yuklanmoqda...
+                    </p>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex items-center space-x-4">
+                    <!-- View Toggle -->
+                    <div class="flex bg-gray-100 rounded-lg p-1">
+                        <button id="grid-view-btn"
+                                class="view-toggle-btn active px-3 py-2 rounded-md transition-all text-sm font-medium"
+                                onclick="setViewMode('grid')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                            </svg>
+                        </button>
+                        <button id="list-view-btn"
+                                class="view-toggle-btn px-3 py-2 rounded-md transition-all text-sm font-medium"
+                                onclick="setViewMode('list')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Sort Dropdown -->
+                    <div class="relative" x-data="{ sortOpen: false }">
+                        <button @click="sortOpen = !sortOpen"
+                                class="flex items-center space-x-2 bg-white border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+                            </svg>
+                            <span class="text-sm font-medium">Saralash</span>
+                            <svg class="w-4 h-4 text-gray-400 transition-transform" :class="sortOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+
+                        <div x-show="sortOpen"
+                             x-cloak
+                             @click.away="sortOpen = false"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
+                            <div class="py-2">
+                                <button onclick="sortWishlist('newest')" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50">
+                                    Eng yangi
+                                </button>
+                                <button onclick="sortWishlist('oldest')" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50">
+                                    Eng eski
+                                </button>
+                                <button onclick="sortWishlist('name')" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50">
+                                    Nomi bo'yicha (A-Z)
+                                </button>
+                                <button onclick="sortWishlist('price-low')" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50">
+                                    Arzon narx
+                                </button>
+                                <button onclick="sortWishlist('price-high')" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50">
+                                    Qimmat narx
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clear All -->
+                    <button id="clear-all-btn"
+                            onclick="clearAllWishlist()"
+                            class="hidden bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg transition-colors text-sm font-medium">
+                        Hammasini tozalash
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wishlist Container -->
+        <div id="wishlist-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <!-- Loading State -->
+            <div id="loading-state" class="col-span-full">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                    {% for i in "12345678910" %}
+                    <div class="loading-skeleton h-80 rounded-lg"></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Bar (when items selected) -->
+        <div id="action-bar" class="hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white rounded-lg shadow-xl border px-6 py-4 z-40">
+            <div class="flex items-center space-x-4">
+                <span id="selected-count" class="font-medium text-gray-900">0 ta tanlangan</span>
+                <div class="flex space-x-2">
+                    <button onclick="addSelectedToCart()"
+                            class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 4M7 13l1.5 4m0 0h10m-10 0v-2m10 2v-2"></path>
+                        </svg>
+                        <span>Savatga qo'shish</span>
+                    </button>
+                    <button onclick="removeSelectedFromWishlist()"
+                            class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg transition-colors text-sm font-medium">
+                        Olib tashlash
+                    </button>
+                    <button onclick="clearSelection()"
+                            class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors text-sm font-medium">
+                        Bekor qilish
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations Section -->
+        <div class="mt-16" id="recommendations-section" style="display: none;">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Sizga yoqishi mumkin</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="recommendations-container">
+                <!-- Recommendations will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Wishlist Item Template (Grid View) -->
+<template id="wishlist-item-template">
+    <div class="wishlist-item bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden wishlist-animation relative">
+        <!-- Selection Checkbox -->
+        <div class="absolute top-3 left-3 z-10">
+            <input type="checkbox"
+                   class="item-checkbox w-5 h-5 text-primary-600 bg-white border-gray-300 rounded focus:ring-primary-500 focus:ring-2"
+                   onchange="updateSelection()">
+        </div>
+
+        <!-- Remove Button -->
+        <button class="remove-btn absolute top-3 right-3 w-8 h-8 bg-white hover:bg-red-50 text-red-500 hover:text-red-700 rounded-full flex items-center justify-center shadow-sm transition-all z-10">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+
+        <!-- Product Image -->
+        <div class="aspect-square overflow-hidden bg-gray-100">
+            <a href="#" class="product-link block h-full">
+                <img class="product-image w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                     alt="Product">
+            </a>
+        </div>
+
+        <!-- Product Info -->
+        <div class="p-4">
+            <!-- Category & Brand -->
+            <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+                <span class="product-category"></span>
+                <span class="product-brand font-medium"></span>
+            </div>
+
+            <!-- Product Name -->
+            <h3 class="product-name font-semibold text-gray-900 mb-2 line-clamp-2"></h3>
+
+            <!-- Price -->
+            <div class="mb-3">
+                <div class="product-price-usd text-lg font-bold text-gray-900"></div>
+                <div class="product-price-uzs text-sm text-gray-600"></div>
+            </div>
+
+            <!-- Added Date -->
+            <div class="text-xs text-gray-400 mb-3">
+                <span class="added-date"></span>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex space-x-2">
+                <button class="add-to-cart-btn flex-1 bg-primary-600 text-white py-2 px-3 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium">
+                    Savatga
+                </button>
+                <button class="quick-view-btn bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stock Status -->
+        <div class="stock-status absolute bottom-4 left-4 px-2 py-1 rounded-full text-xs font-medium"></div>
+    </div>
+</template>
+
+<!-- List View Template -->
+<template id="wishlist-list-template">
+    <div class="wishlist-item bg-white rounded-lg shadow-sm border border-gray-200 p-6 wishlist-animation relative">
+        <div class="flex items-center space-x-6">
+            <!-- Selection Checkbox -->
+            <input type="checkbox"
+                   class="item-checkbox w-5 h-5 text-primary-600 bg-white border-gray-300 rounded focus:ring-primary-500 focus:ring-2"
+                   onchange="updateSelection()">
+
+            <!-- Product Image -->
+            <div class="flex-shrink-0">
+                <a href="#" class="product-link">
+                    <img class="product-image w-20 h-20 lg:w-24 lg:h-24 object-cover rounded-lg bg-gray-100"
+                         alt="Product">
+                </a>
+            </div>
+
+            <!-- Product Info -->
+            <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="product-name font-semibold text-gray-900 text-lg mb-1"></h3>
+                        <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+                            <span class="product-category"></span>
+                            <span>•</span>
+                            <span class="product-brand"></span>
+                        </div>
+                        <div class="mb-2">
+                            <div class="product-price-usd text-xl font-bold text-gray-900"></div>
+                            <div class="product-price-uzs text-lg text-gray-600"></div>
+                        </div>
+                        <div class="text-xs text-gray-400">
+                            <span class="added-date"></span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex items-center space-x-2">
+                        <button class="add-to-cart-btn bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium">
+                            Savatga qo'shish
+                        </button>
+                        <button class="quick-view-btn bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                        <button class="remove-btn text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Status -->
+        <div class="stock-status absolute top-4 right-4 px-2 py-1 rounded-full text-xs font-medium"></div>
+    </div>
+</template>
+
+<!-- Empty Wishlist Template -->
+<template id="empty-wishlist-template">
+    <div class="col-span-full empty-wishlist-animation text-center py-16">
+        <div class="max-w-md mx-auto">
+            <!-- Empty Heart Icon -->
+            <div class="w-32 h-32 mx-auto mb-8 bg-gray-100 rounded-full flex items-center justify-center">
+                <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                    </path>
+                </svg>
+            </div>
+
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Sevimlilarda hech narsa yo'q</h3>
+            <p class="text-gray-600 mb-8 text-lg">
+                Yoqtirgan mahsulotlaringizni saqlash uchun ❤️ tugmasini bosing
+            </p>
+
+            <!-- Action Buttons -->
+            <div class="space-y-4">
+                <a href="{% url 'products:product_list' %}"
+                   class="inline-flex items-center bg-primary-600 text-white px-8 py-4 rounded-lg hover:bg-primary-700 transition-colors font-semibold text-lg">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <span>Mahsulotlarni ko'rish</span>
+                </a>
+
+                <div class="flex justify-center space-x-6 text-sm">
+                    <a href="{% url 'categories:category_list' %}" class="text-primary-600 hover:text-primary-800 font-medium">
+                        Kategoriyalar
+                    </a>
+                    <a href="{% url 'brands:brand_list' %}" class="text-primary-600 hover:text-primary-800 font-medium">
+                        Brendlar
+                    </a>
+                    <a href="{% url 'products:featured_products' %}" class="text-primary-600 hover:text-primary-800 font-medium">
+                        Tavsiya qilingan
+                    </a>
+                </div>
+            </div>
+
+            <!-- Popular Categories -->
+            <div class="mt-12">
+                <h4 class="font-semibold text-gray-900 mb-4">Mashhur kategoriyalar:</h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <a href="/categories/motor/" class="bg-white border border-gray-200 rounded-lg p-4 hover:border-primary-300 hover:shadow-md transition-all text-center">
+                        <div class="text-2xl mb-2">🔧</div>
+                        <div class="font-medium text-gray-900">Motor qismlari</div>
+                    </a>
+                    <a href="/categories/tormoz/" class="bg-white border border-gray-200 rounded-lg p-4 hover:border-primary-300 hover:shadow-md transition-all text-center">
+                        <div class="text-2xl mb-2">🛑</div>
+                        <div class="font-medium text-gray-900">Tormoz tizimi</div>
+                    </a>
+                    <a href="/categories/elektr/" class="bg-white border border-gray-200 rounded-lg p-4 hover:border-primary-300 hover:shadow-md transition-all text-center">
+                        <div class="text-2xl mb-2">⚡</div>
+                        <div class="font-medium text-gray-900">Elektr qismlari</div>
+                    </a>
+                    <a href="/categories/filtr/" class="bg-white border border-gray-200 rounded-lg p-4 hover:border-primary-300 hover:shadow-md transition-all text-center">
+                        <div class="text-2xl mb-2">🛢️</div>
+                        <div class="font-medium text-gray-900">Filtr va yog'</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Wishlist data
+let wishlistProducts = [];
+let currentViewMode = 'grid';
+let selectedItems = new Set();
+
+// Initialize wishlist
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadWishlist();
+
+    // Load view mode from localStorage
+    const savedViewMode = localStorage.getItem('wishlist_view_mode') || 'grid';
+    setViewMode(savedViewMode);
+});
+
+async function loadWishlist() {
+    const container = document.getElementById('wishlist-container');
+    const loadingState = document.getElementById('loading-state');
+    const wishlistCount = document.getElementById('wishlist-count');
+    const clearAllBtn = document.getElementById('clear-all-btn');
+
+    // Hide loading state
+    setTimeout(() => {
+        if (loadingState) loadingState.style.display = 'none';
+    }, 800);
+
+    // Get wishlist from localStorage (if not authenticated) or server
+    if ({{ user.is_authenticated|yesno:"true,false" }}) {
+        // Load from server for authenticated users
+        await loadServerWishlist();
+    } else {
+        // Load from localStorage for guests
+        await loadLocalWishlist();
+    }
+
+    if (wishlistProducts.length === 0) {
+        displayEmptyWishlist();
+        wishlistCount.textContent = 'Sevimlilar bo\'sh';
+        return;
+    }
+
+    displayWishlistItems();
+    updateWishlistCount();
+    clearAllBtn.classList.remove('hidden');
+    loadRecommendations();
+}
+
+async function loadServerWishlist() {
+    try {
+        // This would be implemented with the actual server endpoint
+        // For now, using localStorage as fallback
+        await loadLocalWishlist();
+    } catch (error) {
+        console.error('Error loading server wishlist:', error);
+        await loadLocalWishlist();
+    }
+}
+
+async function loadLocalWishlist() {
+    const wishlist = window.wishlistManager.getWishlist();
+
+    if (wishlist.length === 0) {
+        wishlistProducts = [];
+        return;
+    }
+
+    try {
+        // Fetch product details
+        const response = await fetch('/products/api/products/by-ids/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({ ids: wishlist })
+        });
+
+        const products = await response.json();
+
+        // Add wishlist metadata (added date, etc.)
+        wishlistProducts = products.map(product => ({
+            ...product,
+            added_date: new Date().toLocaleDateString('uz-UZ'),
+            added_timestamp: Date.now()
+        }));
+
+    } catch (error) {
+        console.error('Error fetching wishlist products:', error);
+        wishlistProducts = [];
+    }
+}
+
+function displayEmptyWishlist() {
+    const container = document.getElementById('wishlist-container');
+    const template = document.getElementById('empty-wishlist-template');
+
+    container.innerHTML = template.innerHTML;
+}
+
+function displayWishlistItems() {
+    const container = document.getElementById('wishlist-container');
+
+    // Clear container
+    container.innerHTML = '';
+
+    // Set grid classes based on view mode
+    if (currentViewMode === 'grid') {
+        container.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6';
+    } else {
+        container.className = 'space-y-4';
+    }
+
+    wishlistProducts.forEach((product, index) => {
+        const template = currentViewMode === 'grid' ?
+            document.getElementById('wishlist-item-template') :
+            document.getElementById('wishlist-list-template');
+
+        const clone = template.content.cloneNode(true);
+        const itemEl = clone.querySelector('.wishlist-item');
+
+        // Set product data
+        itemEl.setAttribute('data-product-id', product.id);
+
+        // Fill product information
+        const productImg = clone.querySelector('.product-image');
+        const productLink = clone.querySelector('.product-link');
+
+        productImg.src = product.image ? `/media/${product.image}` : '/static/images/no-image.jpg';
+        productImg.alt = product.name;
+        productLink.href = `/products/${product.slug}/`;
+
+        clone.querySelector('.product-name').textContent = product.name;
+        clone.querySelector('.product-category').textContent = product.category || '';
+        clone.querySelector('.product-brand').textContent = product.brand || '';
+
+        // Prices
+        clone.querySelector('.product-price-usd').textContent = `$${product.price_usd.toFixed(2)}`;
+        clone.querySelector('.product-price-uzs').textContent = `${product.price_uzs.toLocaleString()} so'm`;
+
+        // Added date
+        clone.querySelector('.added-date').textContent = `Qo'shilgan: ${product.added_date}`;
+
+        // Stock status
+        const stockStatus = clone.querySelector('.stock-status');
+        if (product.in_stock) {
+            stockStatus.textContent = '✓ Mavjud';
+            stockStatus.className = 'stock-status absolute bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium';
+            if (currentViewMode === 'list') {
+                stockStatus.className = 'stock-status absolute top-4 right-4 bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium';
+            }
+        } else {
+            stockStatus.textContent = '✗ Tugagan';
+            stockStatus.className = 'stock-status absolute bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium';
+            if (currentViewMode === 'list') {
+                stockStatus.className = 'stock-status absolute top-4 right-4 bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium';
+            }
+        }
+
+        // Event listeners
+        const checkbox = clone.querySelector('.item-checkbox');
+        const removeBtn = clone.querySelector('.remove-btn');
+        const addToCartBtn = clone.querySelector('.add-to-cart-btn');
+        const quickViewBtn = clone.querySelector('.quick-view-btn');
+
+        checkbox.value = product.id;
+
+        removeBtn.addEventListener('click', () => removeFromWishlist(product.id));
+        addToCartBtn.addEventListener('click', () => addToCart(product.id));
+        quickViewBtn.addEventListener('click', () => quickView(product.id));
+
+        // Animation delay
+        itemEl.style.animationDelay = `${index * 0.05}s`;
+
+        container.appendChild(clone);
+    });
+}
+
+function setViewMode(mode) {
+    currentViewMode = mode;
+
+    // Update button states
+    const gridBtn = document.getElementById('grid-view-btn');
+    const listBtn = document.getElementById('list-view-btn');
+
+    gridBtn.classList.toggle('active', mode === 'grid');
+    listBtn.classList.toggle('active', mode === 'list');
+
+    // Save to localStorage
+    localStorage.setItem('wishlist_view_mode', mode);
+
+    // Re-render items if they exist
+    if (wishlistProducts.length > 0) {
+        displayWishlistItems();
+    }
+}
+
+function sortWishlist(sortBy) {
+    let sortedProducts = [...wishlistProducts];
+
+    switch (sortBy) {
+        case 'newest':
+            sortedProducts.sort((a, b) => (b.added_timestamp || 0) - (a.added_timestamp || 0));
+            break;
+        case 'oldest':
+            sortedProducts.sort((a, b) => (a.added_timestamp || 0) - (b.added_timestamp || 0));
+            break;
+        case 'name':
+            sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+        case 'price-low':
+            sortedProducts.sort((a, b) => a.price_usd - b.price_usd);
+            break;
+        case 'price-high':
+            sortedProducts.sort((a, b) => b.price_usd - a.price_usd);
+            break;
+    }
+
+    wishlistProducts = sortedProducts;
+    displayWishlistItems();
+
+    // Show toast
+    const sortNames = {
+        'newest': 'Eng yangi',
+        'oldest': 'Eng eski',
+        'name': 'Nomi bo\'yicha',
+        'price-low': 'Arzon narx',
+        'price-high': 'Qimmat narx'
+    };
+
+    window.avtokontinent.showToast(`Saralandi: ${sortNames[sortBy]}`, 'success');
+}
+
+function removeFromWishlist(productId) {
+    if (confirm('Bu mahsulotni sevimlilardan olib tashlashni istaysizmi?')) {
+        // Remove from wishlist manager
+        window.wishlistManager.toggleWishlist(productId);
+
+        // Remove from local array
+        wishlistProducts = wishlistProducts.filter(p => p.id !== productId);
+
+        // Animate removal
+        const itemEl = document.querySelector(`[data-product-id="${productId}"]`);
+        if (itemEl) {
+            itemEl.classList.add('remove-animation');
+            setTimeout(() => {
+                itemEl.remove();
+
+                // Check if empty
+                if (wishlistProducts.length === 0) {
+                    displayEmptyWishlist();
+                    document.getElementById('clear-all-btn').classList.add('hidden');
+                } else {
+                    updateWishlistCount();
+                }
+            }, 300);
+        }
+
+        // Update selection if item was selected
+        selectedItems.delete(productId);
+        updateSelection();
+    }
+}
+
+function addToCart(productId) {
+    window.cartManager.addToCart(productId, 1);
+
+    // Update button temporarily
+    const btn = document.querySelector(`[data-product-id="${productId}"] .add-to-cart-btn`);
+    if (btn) {
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Qo\'shildi!';
+        btn.disabled = true;
+        btn.classList.add('bg-green-600');
+
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.disabled = false;
+            btn.classList.remove('bg-green-600');
+        }, 1500);
+    }
+}
+
+function quickView(productId) {
+    // This would open a modal with product details
+    const product = wishlistProducts.find(p => p.id === productId);
+    if (product) {
+        // For now, just redirect to product page
+        window.open(`/products/${product.slug}/`, '_blank');
+    }
+}
+
+function updateSelection() {
+    const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+    selectedItems.clear();
+
+    checkboxes.forEach(cb => {
+        selectedItems.add(parseInt(cb.value));
+    });
+
+    const actionBar = document.getElementById('action-bar');
+    const selectedCount = document.getElementById('selected-count');
+
+    if (selectedItems.size > 0) {
+        actionBar.classList.remove('hidden');
+        selectedCount.textContent = `${selectedItems.size} ta tanlangan`;
+    } else {
+        actionBar.classList.add('hidden');
+    }
+}
+
+function addSelectedToCart() {
+    if (selectedItems.size === 0) return;
+
+    selectedItems.forEach(productId => {
+        window.cartManager.addToCart(productId, 1);
+    });
+
+    window.avtokontinent.showToast(`${selectedItems.size} ta mahsulot savatga qo'shildi!`, 'success');
+    clearSelection();
+}
+
+function removeSelectedFromWishlist() {
+    if (selectedItems.size === 0) return;
+
+    if (confirm(`${selectedItems.size} ta mahsulotni sevimlilardan olib tashlashni istaysizmi?`)) {
+        selectedItems.forEach(productId => {
+            window.wishlistManager.toggleWishlist(productId);
+
+            const itemEl = document.querySelector(`[data-product-id="${productId}"]`);
+            if (itemEl) {
+                itemEl.classList.add('remove-animation');
+                setTimeout(() => itemEl.remove(), 300);
+            }
+        });
+
+        // Remove from local array
+        wishlistProducts = wishlistProducts.filter(p => !selectedItems.has(p.id));
+
+        setTimeout(() => {
+            if (wishlistProducts.length === 0) {
+                displayEmptyWishlist();
+                document.getElementById('clear-all-btn').classList.add('hidden');
+            } else {
+                updateWishlistCount();
+            }
+        }, 350);
+
+        clearSelection();
+        window.avtokontinent.showToast('Tanlangan mahsulotlar olib tashlandi', 'success');
+    }
+}
+
+function clearSelection() {
+    selectedItems.clear();
+    document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = false);
+    document.getElementById('action-bar').classList.add('hidden');
+}
+
+function clearAllWishlist() {
+    if (wishlistProducts.length === 0) return;
+
+    if (confirm('Barcha sevimli mahsulotlarni olib tashlashni istaysizmi?')) {
+        // Clear from wishlist manager
+        wishlistProducts.forEach(product => {
+            window.wishlistManager.toggleWishlist(product.id);
+        });
+
+        // Clear local data
+        wishlistProducts = [];
+        selectedItems.clear();
+
+        // Update UI
+        displayEmptyWishlist();
+        document.getElementById('clear-all-btn').classList.add('hidden');
+        document.getElementById('action-bar').classList.add('hidden');
+
+        window.avtokontinent.showToast('Barcha sevimlilar tozalandi', 'success');
+    }
+}
+
+function updateWishlistCount() {
+    const wishlistCount = document.getElementById('wishlist-count');
+    wishlistCount.textContent = `${wishlistProducts.length} ta sevimli mahsulot`;
+}
+
+async function loadRecommendations() {
+    // This would load recommended products based on wishlist
+    const recommendationsSection = document.getElementById('recommendations-section');
+    recommendationsSection.style.display = 'block';
+
+    // For now, just show the section
+    // In a real app, you'd fetch related products
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + A to select all
+    if ((e.ctrlKey || e.metaKey) && e.key === 'a' && wishlistProducts.length > 0) {
+        e.preventDefault();
+        document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = true);
+        updateSelection();
+    }
+
+    // Delete key to remove selected
+    if (e.key === 'Delete' && selectedItems.size > 0) {
+        removeSelectedFromWishlist();
+    }
+
+    // Escape to clear selection
+    if (e.key === 'Escape') {
+        clearSelection();
+    }
+});
+
+// Auto-save wishlist changes to server if authenticated
+function saveWishlistToServer() {
+    if ({{ user.is_authenticated|yesno:"true,false" }}) {
+        // Implementation for saving to server
+        // This would sync localStorage wishlist with server
+    }
+}
+
+// Call saveWishlistToServer on wishlist changes
+const originalToggle = window.wishlistManager.toggleWishlist;
+window.wishlistManager.toggleWishlist = function(productId) {
+    const result = originalToggle.call(this, productId);
+    saveWishlistToServer();
+    return result;
+};
+</script>
+{% endblock %}

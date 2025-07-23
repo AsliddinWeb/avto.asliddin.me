@@ -1,0 +1,310 @@
+<!-- templates/core/contact.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kontakt - Avtokontinent.uz{% endblock %}
+
+{% block description %}
+Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-quvvatlash xizmati.
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Biz bilan bog'laning</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Savollaringiz yoki takliflaringiz bo'lsa, biz bilan bog'laning. 24/7 xizmat ko'rsatamiz.
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-12">
+
+            <!-- Contact Info -->
+            <div class="space-y-8">
+
+                <!-- Contact Methods -->
+                <div class="bg-white rounded-lg shadow-sm p-8">
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-6">Aloqa ma'lumotlari</h2>
+
+                    <div class="space-y-6">
+                        <!-- Phone -->
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Telefon</h3>
+                                <a href="tel:+998901234567" class="text-green-600 hover:text-green-800 font-medium">
+                                    +998 90 123 45 67
+                                </a>
+                                <p class="text-sm text-gray-600">24/7 qo'ng'iroq qiling</p>
+                            </div>
+                        </div>
+
+                        <!-- Telegram -->
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Telegram</h3>
+                                <a href="https://t.me/avtokontinent_support" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium">
+                                    @avtokontinent_support
+                                </a>
+                                <p class="text-sm text-gray-600">Tez javob olish uchun</p>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Email</h3>
+                                <a href="mailto:info@avtokontinent.uz" class="text-purple-600 hover:text-purple-800 font-medium">
+                                    info@avtokontinent.uz
+                                </a>
+                                <p class="text-sm text-gray-600">Rasmiy murojaat uchun</p>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Manzil</h3>
+                                <p class="text-gray-700 font-medium">
+                                    Toshkent shahri, Chilonzor tumani<br>
+                                    Bunyodkor ko'chasi, 15-uy
+                                </p>
+                                <p class="text-sm text-gray-600">Ish vaqti: 9:00 - 18:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Working Hours -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Ish vaqti</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Dushanba - Juma:</span>
+                            <span class="font-medium">9:00 - 18:00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Shanba:</span>
+                            <span class="font-medium">9:00 - 16:00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Yakshanba:</span>
+                            <span class="font-medium text-red-600">Dam olish</span>
+                        </div>
+                        <div class="pt-2 border-t">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Online qo'llab-quvvatlash:</span>
+                                <span class="font-medium text-green-600">24/7</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="bg-white rounded-lg shadow-sm p-8">
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">Xabar yuborish</h2>
+
+                <form method="post" class="space-y-6" id="contact-form">
+                    {% csrf_token %}
+
+                    <!-- Name -->
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                            Ismingiz *
+                        </label>
+                        <input type="text"
+                               id="name"
+                               name="name"
+                               required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="To'liq ismingizni kiriting">
+                    </div>
+
+                    <!-- Phone -->
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                            Telefon raqam *
+                        </label>
+                        <input type="tel"
+                               id="phone"
+                               name="phone"
+                               required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="+998 90 123 45 67">
+                    </div>
+
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                            Email (ixtiyoriy)
+                        </label>
+                        <input type="email"
+                               id="email"
+                               name="email"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="your@email.com">
+                    </div>
+
+                    <!-- Subject -->
+                    <div>
+                        <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
+                            Mavzu *
+                        </label>
+                        <select id="subject"
+                                name="subject"
+                                required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Mavzuni tanlang</option>
+                            <option value="mahsulot">Mahsulot haqida savol</option>
+                            <option value="buyurtma">Buyurtma bo'yicha</option>
+                            <option value="yetkazish">Yetkazib berish</option>
+                            <option value="kafolat">Kafolat va qaytarish</option>
+                            <option value="taklif">Taklif va shikoyat</option>
+                            <option value="boshqa">Boshqa</option>
+                        </select>
+                    </div>
+
+                    <!-- Message -->
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                            Xabar *
+                        </label>
+                        <textarea id="message"
+                                  name="message"
+                                  rows="5"
+                                  required
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                  placeholder="Xabaringizni batafsil yozing..."></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit"
+                            class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        Xabar yuborish
+                    </button>
+                </form>
+
+                <!-- Contact Note -->
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                    <div class="flex items-start space-x-3">
+                        <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-blue-800">
+                                <strong>Tez javob olish uchun</strong> Telegram orqali murojaat qiling.
+                                Odatda 15 daqiqa ichida javob beramiz.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="mt-12 bg-white rounded-lg shadow-sm p-8">
+            <h2 class="text-2xl font-semibold text-gray-900 mb-6 text-center">Tez-tez so'raladigan savollar</h2>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Yetkazib berish qancha vaqt oladi?</h3>
+                        <p class="text-gray-600 text-sm">Toshkent shahrida 1-2 kun, viloyatlarda 2-3 kun.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Kafolat qanday ishlaydi?</h3>
+                        <p class="text-gray-600 text-sm">Barcha mahsulotlarga 6 oy kafolat beramiz.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-2">To'lov usullari qanday?</h3>
+                        <p class="text-gray-600 text-sm">Naqd, plastik karta va bank o'tkazmasi orqali.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Mahsulotni qaytarish mumkinmi?</h3>
+                        <p class="text-gray-600 text-sm">Ha, 7 kun ichida qaytarish mumkin.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contact-form');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Basic validation
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const subject = document.getElementById('subject').value;
+        const message = document.getElementById('message').value.trim();
+
+        if (!name || !phone || !subject || !message) {
+            window.avtokontinent?.showToast('Barcha majburiy maydonlarni to\'ldiring', 'error');
+            return;
+        }
+
+        // Submit form (you can implement actual form submission here)
+        window.avtokontinent?.showToast('Xabaringiz yuborildi! Tez orada bog\'lanamiz.', 'success');
+        form.reset();
+    });
+
+    // Phone number formatting
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.startsWith('998')) {
+            value = '+' + value;
+        } else if (value.length > 0 && !value.startsWith('998')) {
+            value = '+998' + value;
+        }
+        e.target.value = value;
+    });
+});
+
+// Analytics
+if (typeof gtag !== 'undefined') {
+    gtag('event', 'page_view', {
+        page_title: 'Contact',
+        page_location: window.location.href
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kategoriyalar - Avtokontinent.uz{% endblock %}
+
+{% block description %}
+Avto ehtiyot qismlar kategoriyalari. Barcha avtomobil qismlari uchun kategoriyalar.
+{% endblock %}
+
+{% block keywords %}
+kategoriyalar, categories, motor qismlari, tormoz tizimi, filtrlar, yog'lar,
+avto ehtiyot qismlar, zapchastlar, avtokontinent
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .category-card {
+        transition: all 0.3s ease;
+    }
+
+    .category-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .category-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .category-card:hover .category-icon {
+        transform: scale(1.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+
+    <!-- Page Header -->
+    <div class="bg-white border-b">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">
+                    Avto ehtiyot qismlar kategoriyalari
+                </h1>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Avtomobilingiz uchun kerakli barcha ehtiyot qismlarni kategoriyalar bo'yicha toping
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Section -->
+    <div class="container mx-auto px-4 py-8">
+
+        {% if categories %}
+            <!-- Categories Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                {% for category in categories %}
+                    <div class="category-card bg-white rounded-lg border border-gray-200 hover:border-primary-300 p-6 text-center group">
+
+                        <!-- Category Icon -->
+                        <div class="category-icon w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center">
+                            {% if category.image %}
+                                <img src="{{ category.image.url }}"
+                                     alt="{{ category.name }}"
+                                     class="w-12 h-12 object-contain">
+                            {% else %}
+                                <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                            {% endif %}
+                        </div>
+
+                        <!-- Category Name -->
+                        <h3 class="font-semibold text-lg text-gray-900 group-hover:text-primary-600 transition-colors mb-2">
+                            {{ category.name }}
+                        </h3>
+
+                        <!-- Products Count -->
+                        <p class="text-sm text-gray-600 mb-4">
+                            {{ category.products_count|default:0 }} ta mahsulot
+                        </p>
+
+                        <!-- Subcategories -->
+                        {% if category.subcategories_list %}
+                            <div class="mb-4">
+                                <div class="flex flex-wrap justify-center gap-1">
+                                    {% for subcategory in category.subcategories_list|slice:":2" %}
+                                        <span class="inline-block bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                                            {{ subcategory.name }}
+                                        </span>
+                                    {% endfor %}
+                                    {% if category.subcategories_list|length > 2 %}
+                                        <span class="inline-block bg-gray-100 text-gray-500 px-2 py-1 rounded text-xs">
+                                            +{{ category.subcategories_list|length|add:"-2" }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Action Button -->
+                        <a href="{{ category.get_absolute_url }}"
+                           class="inline-flex items-center justify-center w-full bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-lg font-medium text-sm transition-colors">
+                            Ko'rish
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.paginator.num_pages > 1 %}
+                <div class="mt-8">
+                    <nav class="flex justify-center" aria-label="Pagination">
+                        <div class="flex items-center space-x-2">
+
+                            <!-- Previous Page -->
+                            {% if page_obj.has_previous %}
+                                <a href="?page={{ page_obj.previous_page_number }}"
+                                   class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                    Oldingi
+                                </a>
+                            {% endif %}
+
+                            <!-- Page Numbers -->
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <span class="px-3 py-2 text-sm font-medium text-white bg-primary-600 border border-primary-600 rounded-md">
+                                        {{ num }}
+                                    </span>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <a href="?page={{ num }}"
+                                       class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                        {{ num }}
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+
+                            <!-- Next Page -->
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}"
+                                   class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                    Keyingi
+                                </a>
+                            {% endif %}
+                        </div>
+                    </nav>
+                </div>
+            {% endif %}
+
+        {% else %}
+            <!-- No Categories -->
+            <div class="text-center py-16">
+                <div class="max-w-md mx-auto">
+                    <svg class="w-20 h-20 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-4">
+                        Kategoriyalar topilmadi
+                    </h3>
+                    <p class="text-gray-600 mb-8">
+                        Hozircha kategoriyalar qo'shilmagan. Tez orada kategoriyalar paydo bo'ladi.
+                    </p>
+                    <a href="{% url 'core:homepage' %}"
+                       class="inline-block bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                        Bosh sahifaga qaytish
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple hover animations
+    const categoryCards = document.querySelectorAll('.category-card');
+
+    categoryCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-4px)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Simple loading animation for clicks
+    const categoryLinks = document.querySelectorAll('.category-card a');
+
+    categoryLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            const btn = this;
+            const originalText = btn.innerHTML;
+
+            btn.innerHTML = `
+                <svg class="animate-spin h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l-3-2.647z"></path>
+                </svg>
+                Yuklanmoqda...
+            `;
+
+            // Reset after 3 seconds if page doesn't load
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 3000);
+        });
+    });
+});
+</script>
+{% endblock %}

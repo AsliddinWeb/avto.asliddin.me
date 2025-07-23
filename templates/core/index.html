@@ -1,0 +1,590 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Avtokontinent.uz - O'zbekistondagi eng katta avto ehtiyot qismlar do'koni{% endblock %}
+
+{% block description %}
+Barcha markalar uchun sifatli avto ehtiyot qismlar. Tez yetkazib berish, kafolat va eng yaxshi narxlar.
+Chevrolet, Mercedes, Toyota, Hyundai va boshqa brendlar uchun original zapchastlar.
+{% endblock %}
+
+{% block keywords %}
+avto ehtiyot qismlar, zapchastlar, avtokontinent, auto parts, chevrolet, mercedes, toyota,
+motor, tormoz, filtr, yog, uzbekistan, toshkent
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Optimized animations - sekinlik yo'q */
+    .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.4s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Fast hover effects */
+    .hover-lift {
+        transition: transform 0.15s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-3px);
+    }
+
+    /* Category cards improved */
+    .category-card {
+        transition: all 0.2s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .category-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    /* Product cards optimized */
+    .product-card {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    /* Brand cards smooth */
+    .brand-card {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Banner optimized */
+    .banner-slide {
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    /* Loading prevention */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Reduced motion for better performance */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+
+    <!-- Hero Section with Banner Carousel - TUZATILDI -->
+    <section class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-4 lg:py-6">
+            <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-purple-600">
+                <!-- Banner Slides -->
+                {% if banners %}
+                <div class="swiper banner-swiper">
+                    <div class="swiper-wrapper">
+                        {% for banner in banners %}
+                        <div class="swiper-slide">
+                            <div class="relative h-64 lg:h-80 xl:h-96">
+                                {% if banner.image %}
+                                <img src="{{ banner.image.url }}"
+                                     alt="{{ banner.title }}"
+                                     class="w-full h-full object-cover">
+                                {% endif %}
+
+                                <!-- Banner content overlay -->
+                                <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center">
+                                    <div class="container mx-auto px-6">
+                                        <div class="max-w-lg">
+                                            <h1 class="text-3xl lg:text-5xl font-bold text-white mb-4">
+                                                {{ banner.title }}
+                                            </h1>
+                                            {% if banner.description %}
+                                            <p class="text-lg lg:text-xl text-gray-200 mb-6">
+                                                {{ banner.description }}
+                                            </p>
+                                            {% endif %}
+                                            {% if banner.link_url %}
+                                            <a href="{{ banner.link_url }}"
+                                               class="inline-flex items-center bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                                                Ko'rish
+                                                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                </svg>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="swiper-pagination !bottom-4"></div>
+                    <div class="swiper-button-next !text-white"></div>
+                    <div class="swiper-button-prev !text-white"></div>
+                </div>
+                {% else %}
+                <!-- Default banner if no banners -->
+                <div class="h-64 lg:h-80 xl:h-96 flex items-center justify-center">
+                    <div class="text-center text-white">
+                        <h1 class="text-4xl lg:text-6xl font-bold mb-4">Avtokontinent.uz</h1>
+                        <p class="text-xl lg:text-2xl mb-6">Eng sifatli avto ehtiyot qismlar</p>
+                        <a href="{% url 'products:product_list' %}"
+                           class="inline-flex items-center bg-white text-gray-900 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                            Mahsulotlarni ko'rish
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Search Section - OPTIMIZED -->
+    <section class="bg-primary-50 border-b">
+        <div class="container mx-auto px-4 py-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4 text-center">
+                    Qidirmoqchi bo'lgan ehtiyot qismingizni kiriting
+                </h2>
+
+                <!-- Search Form -->
+                <form method="GET" action="{% url 'core:search' %}" class="flex gap-2 mb-4">
+                    <div class="flex-1 relative">
+                        <input type="text"
+                               name="q"
+                               placeholder="Mahsulot, kategoriya yoki brend qidiring..."
+                               class="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <svg class="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <button type="submit" class="bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                        Qidirish
+                    </button>
+                </form>
+
+                <!-- Popular Search Tags -->
+                <div class="text-center">
+                    <span class="text-sm text-gray-500 mr-3">Mashhur qidiruvlar:</span>
+                    <div class="inline-flex flex-wrap gap-2 mt-2">
+                        <a href="{% url 'core:search' %}?q=motor" class="tag-btn">Motor qismlari</a>
+                        <a href="{% url 'core:search' %}?q=tormoz" class="tag-btn">Tormoz tizimi</a>
+                        <a href="{% url 'core:search' %}?q=filtr" class="tag-btn">Filtrlar</a>
+                        <a href="{% url 'core:search' %}?q=yog" class="tag-btn">Motor yog'i</a>
+                        <a href="{% url 'core:search' %}?q=akkumulyator" class="tag-btn">Akkumulyator</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Categories - OPTIMIZED -->
+    <section class="py-8 lg:py-12 bg-white fade-in">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">Asosiy kategoriyalar</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Avtomobilingiz uchun kerakli barcha ehtiyot qismlarni bizning keng kategoriyalarimizdan toping
+                </p>
+            </div>
+
+            {% if categories %}
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                {% for category in categories %}
+                <a href="{{ category.get_absolute_url }}" class="category-card group bg-white rounded-xl border border-gray-200 hover:border-primary-300 p-4 text-center">
+                    <!-- Category Icon -->
+                    <div class="w-12 h-12 lg:w-16 lg:h-16 mx-auto mb-3 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                        {% if category.image %}
+                            <img src="{{ category.image.url }}" alt="{{ category.name }}" class="w-8 h-8 lg:w-10 lg:h-10 object-contain">
+                        {% else %}
+                            <svg class="w-6 h-6 lg:w-8 lg:h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                        {% endif %}
+                    </div>
+
+                    <!-- Category Name -->
+                    <h3 class="font-medium text-gray-900 group-hover:text-primary-600 transition-colors text-sm lg:text-base line-clamp-2">
+                        {{ category.name }}
+                    </h3>
+
+                    <!-- Products Count - TUZATILDI -->
+                    <p class="text-xs text-gray-500 mt-1">
+                        {% if category.product_set.count > 0 %}
+                            {{ category.product_set.count }} mahsulot
+                        {% elif category.subcategories.exists %}
+                            {% with subcategory_products=category.subcategories.all|length %}
+                                {{ subcategory_products }}+ kategoriya
+                            {% endwith %}
+                        {% else %}
+                            Tez orada
+                        {% endif %}
+                    </p>
+                </a>
+                {% endfor %}
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="{% url 'categories:category_list' %}" class="inline-flex items-center bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                    <span>Barcha kategoriyalar</span>
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Featured Products - OPTIMIZED -->
+    {% if new_products %}
+    <section class="py-8 lg:py-12 bg-white fade-in">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-6 lg:mb-8">
+                <div>
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">🚀 Eng yangi maxsulotlar</h2>
+                    <p class="text-gray-600">Siz uchun qaynoq</p>
+                </div>
+                <a href="{% url 'products:product_list' %}" class="hidden md:flex items-center text-primary-600 hover:text-primary-800 font-medium">
+                    <span>Barchasini ko'rish</span>
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {% for product in new_products %}
+                    {% include 'includes/product_card.html' %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Featured Products - OPTIMIZED -->
+    {% if featured_products %}
+    <section class="py-8 lg:py-12 bg-white fade-in">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-6 lg:mb-8">
+                <div>
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">🔥 Tavsiya qilamiz</h2>
+                    <p class="text-gray-600">Siz uchun maxsus tavsiya etilganlar</p>
+                </div>
+                <a href="{% url 'products:featured_products' %}" class="hidden md:flex items-center text-primary-600 hover:text-primary-800 font-medium">
+                    <span>Barchasini ko'rish</span>
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {% for product in featured_products %}
+                    {% include 'includes/product_card.html' %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Popular Products - OPTIMIZED -->
+    {% if popular_products %}
+    <section class="py-8 lg:py-12 bg-white fade-in">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-6 lg:mb-8">
+                <div>
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">🎯 Eng ko'p sotilgan</h2>
+                    <p class="text-gray-600">Mijozlarimiz tomonidan eng ko'p xarid qilinadigan</p>
+                </div>
+                <a href="{% url 'products:popular_products' %}" class="hidden md:flex items-center text-primary-600 hover:text-primary-800 font-medium">
+                    <span>Barchasini ko'rish</span>
+                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {% for product in popular_products %}
+                    {% include 'includes/product_card.html' %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Popular Brands - OPTIMIZED -->
+    {% if popular_brands %}
+    <section class="py-8 lg:py-12 bg-gray-50 fade-in">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">Mashhur brendlar</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Dunyoning eng yaxshi avtomobil brendlari uchun sifatli ehtiyot qismlar
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+                {% for brand in popular_brands %}
+                <a href="{{ brand.get_absolute_url }}" class="brand-card group bg-white border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-md p-4 text-center">
+                    <div class="w-12 h-12 lg:w-16 lg:h-16 mx-auto mb-3 bg-gray-50 rounded-lg flex items-center justify-center group-hover:bg-primary-50">
+                        {% if brand.logo %}
+                            <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="w-10 h-10 lg:w-12 lg:h-12 object-contain">
+                        {% else %}
+                            <div class="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">{{ brand.name|first }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <h3 class="font-medium text-gray-900 group-hover:text-primary-600 text-sm">{{ brand.name }}</h3>
+                    <p class="text-xs text-gray-500 mt-1">{{ brand.products_count|default:0 }} mahsulot</p>
+                </a>
+                {% endfor %}
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="{% url 'brands:brand_list' %}" class="inline-flex items-center bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                    Barcha brendlar
+                </a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Features Section - OPTIMIZED -->
+    <section class="py-12 lg:py-16 bg-gray-900 text-white fade-in">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-2xl lg:text-3xl font-bold mb-4">Nega aynan bizni tanlashingiz kerak?</h2>
+                <p class="text-gray-300 max-w-2xl mx-auto">
+                    Yillar davomida o'zbekistonlik avtomobilchilarning ishonchini qozongan do'kon
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Sifat kafolati</h3>
+                    <p class="text-gray-300 text-sm">Barcha mahsulotlarimiz original yoki sertifikatlangan analoglar</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Tez yetkazish</h3>
+                    <p class="text-gray-300 text-sm">Toshkent bo'ylab 1-2 kun, viloyatlarga 3-5 kun ichida</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Eng yaxshi narx</h3>
+                    <p class="text-gray-300 text-sm">Raqobatbardosh narxlar va muntazam chegirmalar</p>
+                </div>
+
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 100 19.5 9.75 9.75 0 000-19.5z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">24/7 qo'llab-quvvatlash</h3>
+                    <p class="text-gray-300 text-sm">Har qanday savol bo'yicha mutaxassislarimizdan yordam</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section - COMPACT -->
+    <section class="py-8 lg:py-12 bg-primary-600 text-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div>
+                    <div class="text-2xl lg:text-3xl font-bold mb-1">15,000+</div>
+                    <div class="text-primary-100 text-sm">Mahsulot</div>
+                </div>
+                <div>
+                    <div class="text-2xl lg:text-3xl font-bold mb-1">50,000+</div>
+                    <div class="text-primary-100 text-sm">Mijoz</div>
+                </div>
+                <div>
+                    <div class="text-2xl lg:text-3xl font-bold mb-1">500+</div>
+                    <div class="text-primary-100 text-sm">Model</div>
+                </div>
+                <div>
+                    <div class="text-2xl lg:text-3xl font-bold mb-1">5+</div>
+                    <div class="text-primary-100 text-sm">Yil</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// OPTIMIZED JavaScript - minimal va tez
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Homepage loaded');
+
+    // Banner Swiper - TUZATILDI
+    if (document.querySelector('.banner-swiper')) {
+        new Swiper('.banner-swiper', {
+            loop: true,
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            effect: 'fade',
+            fadeEffect: {
+                crossFade: true
+            },
+            speed: 800,
+        });
+    }
+
+    // Fast fade-in animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -30px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target); // Performance boost
+            }
+        });
+    }, observerOptions);
+
+    // Observe sections
+    document.querySelectorAll('.fade-in').forEach(section => {
+        observer.observe(section);
+    });
+
+    // Product interactions - OPTIMIZED
+    initProductInteractions();
+});
+
+// Optimized product interactions
+function initProductInteractions() {
+    // Event delegation for better performance
+    document.addEventListener('click', function(e) {
+        const target = e.target.closest('.wishlist-btn');
+        if (target) {
+            e.preventDefault();
+            handleWishlist(target.dataset.productId);
+        }
+
+        const likeBtn = e.target.closest('.like-btn');
+        if (likeBtn) {
+            e.preventDefault();
+            handleLike(likeBtn.dataset.productId);
+        }
+    });
+}
+
+// Fast wishlist handler
+function handleWishlist(productId) {
+    console.log('Wishlist:', productId);
+    const isAdded = window.wishlistManager?.toggleWishlist(productId);
+
+    // Update UI
+    const btn = document.querySelector(`[data-product-id="${productId}"].wishlist-btn`);
+    if (btn) {
+        const icon = btn.querySelector('svg');
+        if (isAdded) {
+            icon.classList.add('text-red-500', 'fill-current');
+        } else {
+            icon.classList.remove('text-red-500', 'fill-current');
+        }
+    }
+}
+
+// Fast like handler
+function handleLike(productId) {
+    console.log('Like:', productId);
+    // Add your like logic here
+}
+
+// Fast add to cart
+function handleAddToCart(productId) {
+    console.log('Add to cart:', productId);
+    window.cartManager?.addToCart(productId);
+
+    // Visual feedback
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = '✓ Qo\'shildi!';
+    btn.disabled = true;
+
+    setTimeout(() => {
+        btn.textContent = originalText;
+        btn.disabled = false;
+    }, 1000);
+}
+
+// Tag button styling
+document.addEventListener('DOMContentLoaded', function() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .tag-btn {
+            display: inline-block;
+            background: white;
+            color: #374151;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.15s ease;
+        }
+        .tag-btn:hover {
+            background: #eff6ff;
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+    `;
+    document.head.appendChild(style);
+});
+</script>
+{% endblock %}

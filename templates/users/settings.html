@@ -1,0 +1,286 @@
+<!-- templates/users/settings.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sozlamalar - {{ user.first_name|default:"Foydalanuvchi" }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <div class="max-w-2xl mx-auto">
+
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="flex items-center space-x-4 mb-4">
+                    <a href="{% url 'users:profile' %}"
+                       class="p-2 text-gray-600 hover:text-gray-900 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </a>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Sozlamalar</h1>
+                        <p class="text-gray-600">Hisob sozlamalari va xavfsizlik</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Form -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+
+                    <!-- Notification Settings -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">📱 Bildirishnoma sozlamalari</h3>
+
+                        <div class="space-y-4">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox"
+                                       name="email_notifications"
+                                       class="text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                <div class="ml-3">
+                                    <div class="font-medium text-gray-900">Email bildirishnomalar</div>
+                                    <div class="text-sm text-gray-500">Buyurtma holati va yangiliklar haqida email xabar olish</div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox"
+                                       name="telegram_notifications"
+                                       {% if user.telegram_chat_id %}checked{% else %}disabled{% endif %}
+                                       class="text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                <div class="ml-3">
+                                    <div class="font-medium text-gray-900">Telegram bildirishnomalar</div>
+                                    <div class="text-sm text-gray-500">
+                                        {% if user.telegram_chat_id %}
+                                            Buyurtma holati haqida Telegram orqali xabar olish
+                                        {% else %}
+                                            Telegram botga ulanish kerak
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox"
+                                       name="promotional_notifications"
+                                       class="text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                <div class="ml-3">
+                                    <div class="font-medium text-gray-900">Reklama xabarlari</div>
+                                    <div class="text-sm text-gray-500">Maxsus takliflar va chegirmalar haqida xabar olish</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Settings -->
+                    <div class="pt-6 border-t">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">🔒 Maxfiylik sozlamalari</h3>
+
+                        <div class="space-y-4">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox"
+                                       name="profile_visibility"
+                                       checked
+                                       class="text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                <div class="ml-3">
+                                    <div class="font-medium text-gray-900">Profil ko'rinishi</div>
+                                    <div class="text-sm text-gray-500">Sharhlaringizda ismingiz ko'rinsin</div>
+                                </div>
+                            </label>
+
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox"
+                                       name="order_history_visibility"
+                                       checked
+                                       class="text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                <div class="ml-3">
+                                    <div class="font-medium text-gray-900">Buyurtmalar tarixi</div>
+                                    <div class="text-sm text-gray-500">Buyurtmalar tarixini saqlash</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Language & Display -->
+                    <div class="pt-6 border-t">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">🌐 Til va ko'rinish</h3>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Sayt tili</label>
+                                <select name="language"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    <option value="uz" selected>O'zbek tili</option>
+                                    <option value="ru">Русский язык</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Valyuta ko'rinishi</label>
+                                <select name="currency_display"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    <option value="both" selected>USD va UZS</option>
+                                    <option value="usd">Faqat USD</option>
+                                    <option value="uzs">Faqat UZS</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t">
+                        <button type="submit"
+                                class="flex-1 bg-primary-600 text-white py-3 px-6 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                            ✅ Sozlamalarni saqlash
+                        </button>
+
+                        <a href="{% url 'users:profile' %}"
+                           class="flex-1 border border-gray-300 text-gray-700 text-center py-3 px-6 rounded-lg hover:bg-gray-50 transition-colors font-medium">
+                            ❌ Bekor qilish
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Account Actions -->
+            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">⚙️ Hisob amalllari</h3>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div>
+                            <div class="font-medium text-gray-900">Parolni o'zgartirish</div>
+                            <div class="text-sm text-gray-500">Hisob xavfsizligi uchun parolni yangilang</div>
+                        </div>
+                        <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors">
+                            O'zgartirish
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div>
+                            <div class="font-medium text-gray-900">Ma'lumotlarni eksport qilish</div>
+                            <div class="text-sm text-gray-500">Barcha ma'lumotlaringizni yuklab olish</div>
+                        </div>
+                        <button class="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors">
+                            Yuklab olish
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border border-red-200 rounded-lg bg-red-50">
+                        <div>
+                            <div class="font-medium text-red-900">Hisobni o'chirish</div>
+                            <div class="text-sm text-red-600">Bu amalni bekor qilib bo'lmaydi</div>
+                        </div>
+                        <a href="{% url 'users:delete_account' %}"
+                           class="bg-red-100 text-red-700 px-4 py-2 rounded-lg hover:bg-red-200 transition-colors">
+                            O'chirish
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Telegram Integration -->
+            {% if not user.telegram_chat_id %}
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-blue-900">Telegram botga ulaning!</h3>
+                        <p class="text-blue-700 text-sm mt-1">
+                            Buyurtmalar holati haqida real vaqtda xabar olish uchun Telegram botimizga ulanib qo'ying.
+                        </p>
+                        <a href="https://t.me/asliddin767bot"
+                           target="_blank"
+                           class="inline-flex items-center mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                            </svg>
+                            Botga ulaning
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Help & Support -->
+            <div class="mt-6 bg-gray-100 rounded-lg p-4">
+                <h3 class="font-medium text-gray-900 mb-2">❓ Yordam kerakmi?</h3>
+                <p class="text-sm text-gray-600 mb-3">
+                    Sozlamalar bilan bog'liq savollaringiz bo'lsa, biz bilan bog'laning:
+                </p>
+                <div class="flex flex-wrap gap-4 text-sm">
+                    <a href="tel:+998901234567" class="text-green-600 hover:underline">
+                        📞 +998 90 123 45 67
+                    </a>
+                    <a href="https://t.me/avtokontinent_support" target="_blank" class="text-blue-600 hover:underline">
+                        💬 Telegram support
+                    </a>
+                    <a href="mailto:support@avtokontinent.uz" class="text-primary-600 hover:underline">
+                        ✉️ Email support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form submission
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+
+        submitBtn.innerHTML = '<div class="loading-spinner inline-block mr-2"></div> Saqlanmoqda...';
+        submitBtn.disabled = true;
+
+        // Restore button after 10 seconds if form doesn't submit
+        setTimeout(() => {
+            if (submitBtn.disabled) {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }, 10000);
+    });
+
+    // Show confirmation for dangerous actions
+    document.querySelector('a[href*="delete_account"]').addEventListener('click', function(e) {
+        if (!confirm('Hisobni o\'chirish haqiqatan ham xohlaysizmi? Bu amalni bekor qilib bo\'lmaydi!')) {
+            e.preventDefault();
+        }
+    });
+
+    // Disabled telegram notifications if not connected
+    const telegramCheckbox = document.querySelector('input[name="telegram_notifications"]');
+    if (telegramCheckbox && telegramCheckbox.disabled) {
+        telegramCheckbox.parentElement.classList.add('opacity-50');
+    }
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + S to save
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        document.querySelector('form').dispatchEvent(new Event('submit'));
+    }
+
+    // Escape to go back
+    if (e.key === 'Escape') {
+        window.location.href = '{% url "users:profile" %}';
+    }
+});
+</script>
+{% endblock %}

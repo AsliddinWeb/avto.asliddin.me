@@ -1,0 +1,556 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{{ category.name }} mahsulotlari - Avtokontinent.uz
+{% endblock %}
+
+{% block description %}
+{{ category.name }} kategoriyasidagi barcha avto ehtiyot qismlar.
+{{ total_products }} ta mahsulot. Tez yetkazib berish va kafolat.
+{% endblock %}
+
+{% block keywords %}
+{{ category.name }}, mahsulotlar, avto ehtiyot qismlar, zapchastlar, avtokontinent,
+{% for brand in available_brands %}{{ brand.name }}, {% endfor %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-sidebar {
+        transition: transform 0.3s ease;
+    }
+
+    .filter-sidebar.mobile-hidden {
+        transform: translateX(-100%);
+    }
+
+    .product-card {
+        transition: all 0.3s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .filter-badge {
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+
+    <!-- Page Header -->
+    <div class="bg-white border-b">
+        <div class="container mx-auto px-4 py-6">
+
+            <!-- Breadcrumb -->
+            <nav class="flex items-center space-x-2 text-sm text-gray-500 mb-4">
+                <a href="{% url 'core:homepage' %}" class="hover:text-primary-600">Bosh sahifa</a>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+                <a href="{% url 'categories:category_list' %}" class="hover:text-primary-600">Kategoriyalar</a>
+                {% if parent_category %}
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <a href="{{ parent_category.get_absolute_url }}" class="hover:text-primary-600">{{ parent_category.name }}</a>
+                {% endif %}
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+                <a href="{{ category.get_absolute_url }}" class="hover:text-primary-600">{{ category.name }}</a>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+                <span class="text-gray-900 font-medium">Mahsulotlar</span>
+            </nav>
+
+            <!-- Page Title -->
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+                        {{ category.name }} mahsulotlari
+                    </h1>
+                    <p class="text-gray-600">
+                        {{ total_products }} ta mahsulot topildi
+                    </p>
+                </div>
+
+                <!-- Category Link -->
+                <div class="mt-4 lg:mt-0">
+                    <a href="{{ category.get_absolute_url }}"
+                       class="inline-flex items-center text-primary-600 hover:text-primary-800 font-medium">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Kategoriyaga qaytish
+                    </a>
+                </div>
+            </div>
+
+            <!-- Active Filters -->
+            {% if current_brand or current_sort != '-created_at' %}
+            <div class="flex flex-wrap items-center gap-2 mt-4">
+                <span class="text-sm font-medium text-gray-700">Faol filtrlar:</span>
+
+                {% if current_brand %}
+                    <span class="filter-badge inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                        Brend: {{ current_brand }}
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'brand' and key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}"
+                           class="ml-2 hover:text-blue-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </a>
+                    </span>
+                {% endif %}
+
+                <!-- Clear All Filters -->
+                <a href="{% url 'categories:category_products' category.slug %}"
+                   class="text-sm text-red-600 hover:text-red-800 font-medium">
+                    Barcha filtrlarni tozalash
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-6">
+        <div class="lg:grid lg:grid-cols-4 lg:gap-8">
+
+            <!-- Sidebar Filters -->
+            <div class="lg:col-span-1 mb-6 lg:mb-0">
+                <div x-data="{ showFilters: false }" class="lg:sticky lg:top-8">
+
+                    <!-- Mobile Filter Toggle -->
+                    <button @click="showFilters = !showFilters"
+                            class="lg:hidden w-full bg-white border border-gray-300 rounded-lg px-4 py-3 flex items-center justify-between mb-4">
+                        <span class="font-medium text-gray-900">Filtrlar</span>
+                        <svg class="w-5 h-5 transition-transform"
+                             :class="showFilters ? 'rotate-180' : ''"
+                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Filters Panel -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+                         x-show="showFilters || window.innerWidth >= 1024"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100">
+
+                        <form method="GET" id="filter-form" class="divide-y divide-gray-200">
+
+                            <!-- Brand Filter -->
+                            {% if available_brands %}
+                            <div class="p-6">
+                                <h3 class="font-semibold text-gray-900 mb-4">Brendlar</h3>
+                                <div class="space-y-3 max-h-48 overflow-y-auto">
+                                    <label class="flex items-center cursor-pointer group">
+                                        <input type="radio"
+                                               name="brand"
+                                               value=""
+                                               {% if not current_brand %}checked{% endif %}
+                                               class="text-primary-600 focus:ring-primary-500 border-gray-300">
+                                        <span class="ml-3 text-sm text-gray-700 group-hover:text-primary-600 transition-colors font-medium">
+                                            Barcha brendlar
+                                        </span>
+                                    </label>
+
+                                    {% for brand in available_brands %}
+                                    <label class="flex items-center cursor-pointer group">
+                                        <input type="radio"
+                                               name="brand"
+                                               value="{{ brand.slug }}"
+                                               {% if current_brand == brand.name %}checked{% endif %}
+                                               class="text-primary-600 focus:ring-primary-500 border-gray-300">
+                                        <span class="ml-3 text-sm text-gray-700 group-hover:text-primary-600 transition-colors">
+                                            {{ brand.name }}
+                                        </span>
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Subcategories Filter -->
+                            {% if subcategories %}
+                            <div class="p-6">
+                                <h3 class="font-semibold text-gray-900 mb-4">Subkategoriyalar</h3>
+                                <div class="space-y-2">
+                                    {% for subcategory in subcategories %}
+                                    <a href="{{ subcategory.get_absolute_url }}"
+                                       class="block text-sm text-gray-700 hover:text-primary-600 hover:bg-gray-50 px-2 py-1 rounded transition-colors">
+                                        {{ subcategory.name }}
+                                        <span class="text-gray-500">({{ subcategory.products_count|default:0 }})</span>
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Filter Actions -->
+                            <div class="p-6 bg-gray-50">
+                                <button type="submit"
+                                        class="w-full bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                                    Filtrlarni qo'llash
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-3">
+
+                <!-- Sort & Results Info -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                    <div class="flex items-center space-x-4 mb-4 sm:mb-0">
+                        <span class="text-sm text-gray-600">
+                            {% if products %}
+                                {{ products.start_index }}-{{ products.end_index }} / {{ total_products }} ta mahsulot
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Sort Dropdown -->
+                    <div class="flex items-center space-x-3">
+                        <label class="text-sm font-medium text-gray-700">Tartiblash:</label>
+                        <select name="sort"
+                                onchange="updateSort(this.value)"
+                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Yangi mahsulotlar</option>
+                            <option value="created_at" {% if current_sort == 'created_at' %}selected{% endif %}>Eski mahsulotlar</option>
+                            <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Nom (A-Z)</option>
+                            <option value="-name" {% if current_sort == '-name' %}selected{% endif %}>Nom (Z-A)</option>
+                            <option value="price" {% if current_sort == 'price' %}selected{% endif %}>Arzon narx</option>
+                            <option value="-price" {% if current_sort == '-price' %}selected{% endif %}>Qimmat narx</option>
+                            <option value="-views_count" {% if current_sort == 'popular' %}selected{% endif %}>Mashhur</option>
+                            <option value="-likes_count" {% if current_sort == 'liked' %}selected{% endif %}>Ko'p yoqtirilgan</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                {% if products %}
+                    <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {% for product in products %}
+                            {% include 'includes/product_card.html' %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if products.paginator.num_pages > 1 %}
+                        <div class="mt-8">
+                            <nav class="flex justify-center" aria-label="Pagination">
+                                <div class="flex items-center space-x-2">
+
+                                    <!-- Previous Page -->
+                                    {% if products.has_previous %}
+                                        <a href="?page={{ products.previous_page_number }}{% if current_brand %}&brand={{ current_brand }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                                           class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                            Oldingi
+                                        </a>
+                                    {% endif %}
+
+                                    <!-- Page Numbers -->
+                                    {% for num in products.paginator.page_range %}
+                                        {% if products.number == num %}
+                                            <span class="px-3 py-2 text-sm font-medium text-white bg-primary-600 border border-primary-600 rounded-md">
+                                                {{ num }}
+                                            </span>
+                                        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                                            <a href="?page={{ num }}{% if current_brand %}&brand={{ current_brand }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                                               class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                                {{ num }}
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    <!-- Next Page -->
+                                    {% if products.has_next %}
+                                        <a href="?page={{ products.next_page_number }}{% if current_brand %}&brand={{ current_brand }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                                           class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                            Keyingi
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </nav>
+                        </div>
+                    {% endif %}
+
+                {% else %}
+                    <!-- No Products Found -->
+                    <div class="text-center py-16">
+                        <div class="max-w-md mx-auto">
+                            <svg class="w-20 h-20 text-gray-400 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4-8-4m16 0v10l-8 4-8-4V7"></path>
+                            </svg>
+                            <h3 class="text-2xl font-semibold text-gray-900 mb-4">Mahsulot topilmadi</h3>
+                            <p class="text-gray-600 mb-6">
+                                {{ category.name }} kategoriyasida sizning qidiruv so'rovingiz bo'yicha mahsulot topilmadi.
+                                Iltimos, boshqa filtrlar yoki brendlar bilan izlab ko'ring.
+                            </p>
+
+                            <div class="space-y-4">
+                                {% if available_brands %}
+                                <div class="flex flex-wrap justify-center gap-2">
+                                    <span class="text-sm text-gray-500">Mavjud brendlar:</span>
+                                    {% for brand in available_brands|slice:":5" %}
+                                    <a href="?brand={{ brand.slug }}"
+                                       class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors">
+                                        {{ brand.name }}
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
+                                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                                    <a href="{% url 'categories:category_products' category.slug %}"
+                                       class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                                        Barcha mahsulotlar
+                                    </a>
+                                    <a href="{{ category.get_absolute_url }}"
+                                       class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium">
+                                        Kategoriyaga qaytish
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Sort functionality
+    window.updateSort = function(sortValue) {
+        const url = new URL(window.location);
+        url.searchParams.set('sort', sortValue);
+        url.searchParams.delete('page'); // Reset to first page
+        window.location.href = url.toString();
+    };
+
+    // Auto-submit filter form on change
+    const filterForm = document.getElementById('filter-form');
+    if (filterForm) {
+        const inputs = filterForm.querySelectorAll('input[type="radio"]');
+        inputs.forEach(input => {
+            input.addEventListener('change', function() {
+                // Small delay for better UX
+                setTimeout(() => {
+                    filterForm.submit();
+                }, 100);
+            });
+        });
+    }
+
+    // Product hover animations
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-4px)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Loading animation for pagination links
+    const paginationLinks = document.querySelectorAll('nav a');
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            this.style.opacity = '0.7';
+            this.innerHTML = 'Yuklanmoqda...';
+        });
+    });
+
+    // Smooth scroll to top when page changes
+    if (window.location.search.includes('page=')) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Initialize product interactions
+    initProductInteractions();
+});
+
+// Product interactions
+function initProductInteractions() {
+    // Add to cart buttons
+    document.querySelectorAll('[onclick*="handleAddToCart"]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = this.getAttribute('onclick').match(/\d+/)[0];
+            handleAddToCart(productId);
+        });
+    });
+
+    // Wishlist buttons
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+                if (window.avtokontinent && window.avtokontinent.showToast) {
+                    window.avtokontinent.showToast('Sevimlilarga qo\'shish uchun tizimga kiring', 'info');
+                } else {
+                    alert('Sevimlilarga qo\'shish uchun tizimga kiring');
+                }
+                return;
+            }
+
+            const productId = this.dataset.productId;
+            handleWishlist(productId);
+        });
+    });
+
+    // Like buttons
+    document.querySelectorAll('.like-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!{{ user.is_authenticated|yesno:"true,false" }}) {
+                if (window.avtokontinent && window.avtokontinent.showToast) {
+                    window.avtokontinent.showToast('Like bosish uchun tizimga kiring', 'info');
+                } else {
+                    alert('Like bosish uchun tizimga kiring');
+                }
+                return;
+            }
+
+            const productId = this.dataset.productId;
+            handleLike(productId);
+        });
+    });
+}
+
+// Add to cart functionality
+window.handleAddToCart = function(productId) {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+
+    btn.innerHTML = '✓ Qo\'shildi!';
+    btn.disabled = true;
+    btn.classList.remove('bg-primary-600', 'hover:bg-primary-700');
+    btn.classList.add('bg-green-500');
+
+    // Use global cart manager if available
+    if (window.cartManager) {
+        window.cartManager.addToCart(productId);
+    }
+
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.classList.remove('bg-green-500');
+        btn.classList.add('bg-primary-600', 'hover:bg-primary-700');
+    }, 2000);
+};
+
+// Wishlist functionality
+window.handleWishlist = function(productId) {
+    if (window.wishlistManager) {
+        const isAdded = window.wishlistManager.toggleWishlist(productId);
+        const icon = document.querySelector(`.wishlist-icon-${productId}`);
+
+        if (icon) {
+            if (isAdded) {
+                icon.classList.add('text-red-500', 'fill-current');
+            } else {
+                icon.classList.remove('text-red-500', 'fill-current');
+            }
+        }
+    }
+};
+
+// Like functionality
+window.handleLike = function(productId) {
+    // Like logic here
+    console.log('Like clicked:', productId);
+
+    if (window.avtokontinent && window.avtokontinent.showToast) {
+        window.avtokontinent.showToast('Like qo\'shildi!', 'success');
+    }
+};
+
+// Analytics tracking
+if (typeof gtag !== 'undefined') {
+    gtag('event', 'page_view', {
+        page_title: 'Category Products - {{ category.name }}',
+        page_location: window.location.href,
+        category_name: '{{ category.name }}',
+        products_count: {{ total_products }}
+    });
+}
+</script>
+
+<!-- SEO Schema -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "{{ category.name }} mahsulotlari - Avtokontinent.uz",
+    "description": "{{ category.name }} kategoriyasidagi barcha mahsulotlar",
+    "url": "{{ request.build_absolute_uri }}",
+    "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Bosh sahifa",
+                "item": "{{ request.build_absolute_uri }}/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Kategoriyalar",
+                "item": "{{ request.build_absolute_uri }}/categories/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "{{ category.name }}",
+                "item": "{{ request.build_absolute_uri }}{{ category.get_absolute_url }}"
+            },
+            {
+                "@type": "ListItem",
+                "position": 4,
+                "name": "Mahsulotlar",
+                "item": "{{ request.build_absolute_uri }}"
+            }
+        ]
+    },
+    "mainEntity": {
+        "@type": "ItemList",
+        "numberOfItems": {{ total_products }}
+    }
+}
+</script>
+{% endblock %}

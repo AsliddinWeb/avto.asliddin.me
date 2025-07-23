@@ -1,0 +1,265 @@
+<!-- templates/brands/brand_category_products.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ brand.name }} - {{ category.name }} mahsulotlari{% endblock %}
+
+{% block description %}
+{{ brand.name }} brendining {{ category.name }} kategoriyasiga tegishli mahsulotlar. Sifatli ehtiyot qismlar va tez yetkazib berish.
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-6">
+    <div class="container mx-auto px-4">
+
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    {% if brand.logo %}
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
+                            <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="w-full h-full object-contain">
+                        </div>
+                    {% endif %}
+
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">
+                            {{ brand.name }} - {{ category.name }}
+                        </h1>
+                        <p class="text-gray-600">{{ total_products }} ta mahsulot</p>
+                    </div>
+                </div>
+
+                <!-- Breadcrumb Links -->
+                <div class="flex items-center space-x-2 text-sm">
+                    <a href="{{ brand.get_absolute_url }}"
+                       class="text-primary-600 hover:text-primary-800">{{ brand.name }}</a>
+                    <span class="text-gray-400">/</span>
+                    <a href="{{ category.get_absolute_url }}"
+                       class="text-primary-600 hover:text-primary-800">{{ category.name }}</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-4 gap-6">
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-sm p-6 sticky top-4 space-y-6">
+
+                    <!-- Car Models Filter -->
+                    {% if available_models %}
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-3">🚗 Avtomobil modeli</h3>
+                        <form method="get" id="model-filter">
+                            <div class="space-y-2 max-h-48 overflow-y-auto">
+                                <label class="flex items-center">
+                                    <input type="radio" name="model" value=""
+                                           {% if not current_model %}checked{% endif %}
+                                           class="text-primary-600 focus:ring-primary-500">
+                                    <span class="ml-2 text-sm">Barchasi</span>
+                                    <span class="ml-auto text-xs text-gray-500">{{ total_products }}</span>
+                                </label>
+                                {% for model in available_models %}
+                                <label class="flex items-center">
+                                    <input type="radio" name="model" value="{{ model.slug }}"
+                                           {% if current_model == model.slug %}checked{% endif %}
+                                           class="text-primary-600 focus:ring-primary-500">
+                                    <span class="ml-2 text-sm">{{ model.name }}</span>
+                                    <span class="ml-auto text-xs text-gray-500">
+                                        {{ model.products_count|default:0 }}
+                                    </span>
+                                </label>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Hidden fields -->
+                            {% if current_sort %}
+                                <input type="hidden" name="sort" value="{{ current_sort }}">
+                            {% endif %}
+                        </form>
+                    </div>
+                    {% endif %}
+
+                    <!-- Quick Actions -->
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-3">⚡ Tez havolalar</h3>
+                        <div class="space-y-2">
+                            <a href="{% url 'brands:brand_products' brand.slug %}"
+                               class="block p-3 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition-colors text-sm">
+                                <div class="font-medium">Brend mahsulotlari</div>
+                                <div class="text-gray-500">Barcha kategoriyalar</div>
+                            </a>
+
+                            <a href="{{ category.get_absolute_url }}"
+                               class="block p-3 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition-colors text-sm">
+                                <div class="font-medium">Kategoriya mahsulotlari</div>
+                                <div class="text-gray-500">Barcha brendlar</div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Clear Filters -->
+                    {% if current_model %}
+                    <div>
+                        <a href="{% url 'brands:brand_category_products' brand.slug category.slug %}"
+                           class="block w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors text-sm font-medium">
+                            Filtrlarni tozalash
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-3">
+
+                <!-- Sort Options -->
+                <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div class="text-sm text-gray-600">
+                            {% if current_model %}
+                                {{ available_models|length }} model uchun {{ products|length }} ta mahsulot
+                            {% else %}
+                                {{ products|length }} ta mahsulot ko'rsatilmoqda
+                            {% endif %}
+                        </div>
+
+                        <div class="flex items-center space-x-4">
+                            <label class="text-sm font-medium text-gray-700">Tartiblash:</label>
+                            <select name="sort" onchange="updateSort(this.value)"
+                                    class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500">
+                                <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>Yangi mahsulotlar</option>
+                                <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Nom (A-Z)</option>
+                                <option value="price" {% if current_sort == 'price' %}selected{% endif %}>Arzon narx</option>
+                                <option value="-price" {% if current_sort == '-price' %}selected{% endif %}>Qimmat narx</option>
+                                <option value="popular" {% if current_sort == 'popular' %}selected{% endif %}>Mashhur</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                {% if products %}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% for product in products %}
+                            {% include 'includes/product_card.html' %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Load More / Pagination -->
+                    {% if is_paginated %}
+                    <div class="mt-8 text-center">
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}{% if current_model %}&model={{ current_model }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                               class="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                                Ko'proq yuklash ({{ page_obj.next_page_number }}/{{ page_obj.paginator.num_pages }})
+                            </a>
+                        {% endif %}
+
+                        {% if page_obj.has_previous %}
+                            <div class="mt-4">
+                                <a href="?page={{ page_obj.previous_page_number }}{% if current_model %}&model={{ current_model }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                                   class="text-primary-600 hover:text-primary-800 font-medium">
+                                    ← Oldingi sahifa
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+                        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Mahsulot topilmadi</h3>
+                        <p class="text-gray-600 mb-6">
+                            {{ brand.name }} brendining {{ category.name }} kategoriyasida
+                            {% if current_model %}tanlangan model uchun{% endif %} mahsulot mavjud emas.
+                        </p>
+
+                        <div class="space-y-3">
+                            {% if current_model %}
+                                <a href="{% url 'brands:brand_category_products' brand.slug category.slug %}"
+                                   class="inline-block bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                                    Barcha modellarni ko'rish
+                                </a>
+                            {% endif %}
+
+                            <div class="space-x-4">
+                                <a href="{% url 'brands:brand_products' brand.slug %}"
+                                   class="text-primary-600 hover:text-primary-800 font-medium">
+                                    {{ brand.name }} mahsulotlari
+                                </a>
+                                <span class="text-gray-400">|</span>
+                                <a href="{{ category.get_absolute_url }}"
+                                   class="text-primary-600 hover:text-primary-800 font-medium">
+                                    {{ category.name }} mahsulotlari
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- SEO Content -->
+                <div class="mt-8 bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-3">
+                        {{ brand.name }} {{ category.name }} haqida
+                    </h2>
+                    <div class="prose text-gray-700 text-sm">
+                        <p>
+                            {{ brand.name }} brendining {{ category.name }} kategoriyasidagi mahsulotlar yuqori sifat va ishonchlilik bilan ajralib turadi.
+                            Barcha mahsulotlar asl zavod sifatida ishlab chiqarilgan va kafolat bilan ta'minlanadi.
+                        </p>
+                        {% if category.description %}
+                        <p class="mt-2">{{ category.description }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit model filter
+    const modelFilter = document.getElementById('model-filter');
+    if (modelFilter) {
+        const radioInputs = modelFilter.querySelectorAll('input[type="radio"]');
+
+        radioInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                setTimeout(() => {
+                    modelFilter.submit();
+                }, 100);
+            });
+        });
+    }
+});
+
+// Sort functionality
+function updateSort(sortValue) {
+    const url = new URL(window.location);
+    url.searchParams.set('sort', sortValue);
+    url.searchParams.delete('page');
+    window.location.href = url.toString();
+}
+
+// Analytics
+if (typeof gtag !== 'undefined') {
+    gtag('event', 'brand_category_view', {
+        'event_category': 'Products',
+        'event_label': '{{ brand.name }} - {{ category.name }}',
+        'products_count': {{ total_products|default:0 }}
+    });
+}
+</script>
+{% endblock %}

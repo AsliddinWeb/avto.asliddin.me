@@ -1,0 +1,408 @@
+<!-- templates/brands/brand_detail.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ brand.name }} - Avtomobil ehtiyot qismlari{% endblock %}
+
+{% block description %}
+{{ brand.name }} avtomobillari uchun sifatli ehtiyot qismlar. {{ brand.name }} zapchastlari, motor yog'lari va aksessuarlar. Tez yetkazib berish va kafolat.
+{% endblock %}
+
+{% block keywords %}
+{{ brand.name }}, {{ brand.name }} zapchastlar, {{ brand.name }} ehtiyot qismlar, {{ brand.name }} motor yogi
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+
+        <!-- Brand Header -->
+        <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+            <div class="flex flex-col lg:flex-row items-start lg:items-center gap-8">
+
+                <!-- Brand Logo -->
+                <div class="flex-shrink-0">
+                    {% if brand.logo %}
+                        <div class="w-32 h-32 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+                            <img src="{{ brand.logo.url }}"
+                                 alt="{{ brand.name }}"
+                                 class="w-full h-full object-contain p-4">
+                        </div>
+                    {% else %}
+                        <div class="w-32 h-32 bg-gradient-to-r from-primary-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                            <span class="text-white font-bold text-4xl">{{ brand.name|slice:":2"|upper }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Brand Info -->
+                <div class="flex-1">
+                    <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ brand.name }}</h1>
+
+                    {% if brand.description %}
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                        {{ brand.description }}
+                    </p>
+                    {% endif %}
+
+                    <!-- Brand Stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center p-4 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-primary-600">{{ total_products }}</div>
+                            <div class="text-sm text-gray-600">Mahsulotlar</div>
+                        </div>
+                        <div class="text-center p-4 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-green-600">{{ car_models.count }}</div>
+                            <div class="text-sm text-gray-600">Modeller</div>
+                        </div>
+                        <div class="text-center p-4 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-blue-600">{{ brand_categories.count }}</div>
+                            <div class="text-sm text-gray-600">Kategoriyalar</div>
+                        </div>
+                        <div class="text-center p-4 bg-gray-50 rounded-lg">
+                            <div class="text-2xl font-bold text-orange-600">{{ popular_products.count }}</div>
+                            <div class="text-sm text-gray-600">Mashhur</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="flex flex-col gap-3 min-w-0 lg:min-w-fit">
+                    <a href="{% url 'brands:brand_products' brand.slug %}"
+                       class="inline-flex items-center bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-semibold">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M8 11v6h8v-6M8 11H6a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2h-2"></path>
+                        </svg>
+                        Barcha mahsulotlar
+                    </a>
+
+                    <a href="{% url 'brands:car_model_list' brand.slug %}"
+                       class="inline-flex items-center border border-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors font-semibold">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h2M7 21V5a2 2 0 012-2h6a2 2 0 012 2v16"></path>
+                        </svg>
+                        Avtomobil modellari
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-8">
+
+                <!-- Car Models Section -->
+                {% if car_models %}
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-900">🚗 Avtomobil modellari</h2>
+                        <a href="{% url 'brands:car_model_list' brand.slug %}"
+                           class="text-primary-600 hover:text-primary-800 font-medium">
+                            Barchasini ko'rish →
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {% for model in car_models|slice:":6" %}
+                        <a href="{{ model.get_absolute_url }}"
+                           class="block p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">{{ model.name }}</h3>
+                                    <div class="text-sm text-gray-600">
+                                        {% if model.year_from or model.year_to %}
+                                            {{ model.year_from|default:"" }}-{{ model.year_to|default:"hozir" }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    {{ model.products_count|default:0 }} mahsulot
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Recent Products Section -->
+                {% if recent_products %}
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-900">🆕 Yangi mahsulotlar</h2>
+                        <a href="{% url 'brands:brand_products' brand.slug %}"
+                           class="text-primary-600 hover:text-primary-800 font-medium">
+                            Barchasini ko'rish →
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {% for product in recent_products|slice:":6" %}
+                        <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                            <a href="{{ product.get_absolute_url }}" class="block">
+                                <!-- Product Image -->
+                                <div class="aspect-square bg-gray-100">
+                                    {% if product.main_image %}
+                                        <img src="{{ product.main_image.url }}"
+                                             alt="{{ product.name }}"
+                                             class="w-full h-full object-cover">
+                                    {% else %}
+                                        <div class="w-full h-full flex items-center justify-center">
+                                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Product Info -->
+                                <div class="p-3">
+                                    <h3 class="font-medium text-gray-900 text-sm line-clamp-2 mb-2">
+                                        {{ product.name }}
+                                    </h3>
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-sm">
+                                            <div class="font-bold text-gray-900">${{ product.price_usd }}</div>
+                                            <div class="text-xs text-gray-600">{{ product.price_som|floatformat:0 }} so'm</div>
+                                        </div>
+                                        {% if product.in_stock %}
+                                            <span class="bg-green-100 text-green-800 px-2 py-1 text-xs rounded">Mavjud</span>
+                                        {% else %}
+                                            <span class="bg-red-100 text-red-800 px-2 py-1 text-xs rounded">Tugagan</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Popular Products Section -->
+                {% if popular_products %}
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-900">🔥 Mashhur mahsulotlar</h2>
+                        <a href="{% url 'brands:brand_products' brand.slug %}?sort=popular"
+                           class="text-primary-600 hover:text-primary-800 font-medium">
+                            Barchasini ko'rish →
+                        </a>
+                    </div>
+
+                    <div class="space-y-4">
+                        {% for product in popular_products|slice:":5" %}
+                        <div class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            <a href="{{ product.get_absolute_url }}" class="flex items-center space-x-4 flex-1">
+                                <!-- Product Image -->
+                                <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                    {% if product.main_image %}
+                                        <img src="{{ product.main_image.url }}"
+                                             alt="{{ product.name }}"
+                                             class="w-full h-full object-cover">
+                                    {% else %}
+                                        <div class="w-full h-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Product Info -->
+                                <div class="flex-1">
+                                    <h3 class="font-medium text-gray-900 line-clamp-1">{{ product.name }}</h3>
+                                    <div class="text-sm text-gray-600">{{ product.category.name }}</div>
+                                    <div class="flex items-center space-x-2 mt-1">
+                                        <span class="font-bold text-gray-900">${{ product.price_usd }}</span>
+                                        <span class="text-xs text-gray-500">{{ product.views_count }} ko'rilgan</span>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- Quick Add to Cart -->
+                            {% if product.in_stock %}
+                            <button onclick="handleAddToCart({{ product.id }})"
+                                    class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium">
+                                Savatga
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+
+                <!-- Brand Categories -->
+                {% if brand_categories %}
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📂 Kategoriyalar</h3>
+                    <div class="space-y-2">
+                        {% for category in brand_categories %}
+                        <a href="{% url 'brands:brand_category_products' brand.slug category.slug %}"
+                           class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                            <span class="text-gray-700">{{ category.name }}</span>
+                            <span class="text-sm text-gray-500">
+                                {{ category.product_set.count|default:0 }}
+                            </span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Quick Search -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🔍 {{ brand.name }} da qidirish</h3>
+                    <form method="get" action="{% url 'brands:brand_products' brand.slug %}">
+                        <div class="relative">
+                            <input type="text"
+                                   name="search"
+                                   placeholder="Mahsulot qidirish..."
+                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <button type="submit"
+                                class="w-full mt-3 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium">
+                            Qidirish
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Related Brands -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🏷️ O'xshash brendlar</h3>
+                    <div class="space-y-3">
+                        <!-- This would need to be populated by the view -->
+                        <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="w-8 h-8 bg-gray-200 rounded-full"></div>
+                            <span class="text-gray-700">BMW</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="w-8 h-8 bg-gray-200 rounded-full"></div>
+                            <span class="text-gray-700">Audi</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div class="w-8 h-8 bg-gray-200 rounded-full"></div>
+                            <span class="text-gray-700">Lexus</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Brand Contact Info -->
+                <div class="bg-gradient-to-r from-primary-50 to-blue-50 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📞 Yordam kerakmi?</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                            </svg>
+                            <a href="tel:+998901234567" class="text-green-600 hover:underline">
+                                +998 90 123 45 67
+                            </a>
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                            </svg>
+                            <a href="https://t.me/avtokontinent_support" target="_blank" class="text-blue-600 hover:underline">
+                                Telegram orqali
+                            </a>
+                        </div>
+
+                        <p class="text-gray-600 text-xs mt-3">
+                            {{ brand.name }} ehtiyot qismlari bo'yicha maslahat va yordam
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Brand detail page interactions
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate stats on load
+    const statElements = document.querySelectorAll('.text-2xl.font-bold');
+    statElements.forEach(element => {
+        const finalValue = parseInt(element.textContent) || 0;
+        if (finalValue > 0) {
+            let currentValue = 0;
+            const increment = Math.max(1, Math.ceil(finalValue / 30));
+
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= finalValue) {
+                    currentValue = finalValue;
+                    clearInterval(timer);
+                }
+                element.textContent = currentValue;
+            }, 50);
+        }
+    });
+
+    // Add hover effects to product cards
+    document.querySelectorAll('.hover\\:shadow-md').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Quick search form
+    const searchForm = document.querySelector('form[action*="brand_products"]');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            const input = this.querySelector('input[name="search"]');
+            if (!input.value.trim()) {
+                e.preventDefault();
+                input.focus();
+                window.avtokontinent.showToast('Qidiruv so\'zini kiriting', 'error');
+            }
+        });
+    }
+});
+
+// Analytics tracking
+if (typeof gtag !== 'undefined') {
+    gtag('event', 'brand_view', {
+        'event_category': 'Brands',
+        'event_label': '{{ brand.name }}',
+        'brand_id': {{ brand.id }},
+        'products_count': {{ total_products }}
+    });
+}
+
+// Handle add to cart for popular products
+function handleAddToCart(productId) {
+    if (typeof window.cartManager !== 'undefined') {
+        window.cartManager.addToCart(productId);
+
+        // Track add to cart event
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'add_to_cart', {
+                'event_category': 'E-commerce',
+                'event_label': '{{ brand.name }} Product',
+                'product_id': productId
+            });
+        }
+    }
+}
+</script>
+{% endblock %}
