@@ -11,6 +11,9 @@
     <meta name="description" content="{% block description %}Avtokontinent.uz - Barcha markalar uchun sifatli avto ehtiyot qismlar. Tez yetkazib berish va kafolat.{% endblock %}">
     <meta name="keywords" content="{% block keywords %}avto ehtiyot qismlar, avtokontinent, auto parts, uzbekistan{% endblock %}">
 
+    <!-- CSRF Token for AJAX -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'images/logo/favicon.ico' %}">
 
@@ -226,6 +229,52 @@
         0%, 100% { opacity: 1; }
         50% { opacity: .5; }
     }
+
+    /* Wishlist specific styles */
+    .wishlist-btn {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .wishlist-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .wishlist-btn.wishlist-active {
+        background-color: #fee2e2;
+        border-color: #fca5a5;
+    }
+
+    .wishlist-btn:active {
+        transform: scale(0.95);
+    }
+
+    .wishlist-icon-animation {
+        animation: heartBeat 0.6s ease-in-out;
+    }
+
+    @keyframes heartBeat {
+        0% { transform: scale(1); }
+        14% { transform: scale(1.3); }
+        28% { transform: scale(1); }
+        42% { transform: scale(1.3); }
+        70% { transform: scale(1); }
+    }
+
+    /* Wishlist count badge */
+    .wishlist-count {
+        min-width: 1.25rem;
+        height: 1.25rem;
+        font-size: 0.75rem;
+        line-height: 1.25rem;
+        transition: all 0.3s ease;
+    }
+
+    .wishlist-count:empty {
+        display: none !important;
+    }
 </style>
 
     {% block extra_css %}{% endblock %}
@@ -237,6 +286,14 @@
     showMobileSearch: false,
     isLoading: false
 }">
+
+<!-- Global JavaScript Variables -->
+<script>
+    // Global variables for JavaScript
+    window.userIsAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+    window.requireAuthForWishlist = false; // Set to true if you want to require auth for wishlist
+    window.loginUrl = "{% url 'telegram_auth:login_page' %}";
+</script>
 
 <!-- Loading Overlay -->
 <div x-show="isLoading" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
@@ -289,12 +346,22 @@
 <!-- Mobile Cart Button -->
 <div class="fixed bottom-6 right-6 z-30 md:hidden">
     <a href="/cart/" class="btn-primary text-white p-4 rounded-2xl shadow-glow transform hover:scale-110 transition-all duration-300">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l4.5-4.5m0 0L17 13M7 13l4.5-4.5m0 0L17 13"></path>
+        </svg>
+        <span class="cart-count absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1 hidden">0</span>
+    </a>
+</div>
 
 <!-- Scroll to Top Button -->
 <button @click="window.scrollTo({top: 0, behavior: 'smooth'})"
         x-show="window.pageYOffset > 300"
         x-cloak
         class="fixed bottom-6 left-6 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white p-4 rounded-2xl shadow-glow hover:from-secondary-600 hover:to-secondary-700 transform hover:scale-110 transition-all duration-300 z-30">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+    </svg>
+</button>
 
 <!-- JavaScript Libraries -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
@@ -302,7 +369,7 @@
 
 <!-- Global JavaScript -->
 <script>
-// Global avtokontinent object (TUZATILDI: oldin avtokontinet edi)
+// Global avtokontinent object
 window.avtokontinent = {
     // Show/Hide loading
     showLoading() {
@@ -323,7 +390,8 @@ window.avtokontinent = {
     showToast(message, type = 'success') {
         const toast = document.createElement('div');
         const bgColor = type === 'success' ? 'bg-green-500' :
-                       type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+                       type === 'error' ? 'bg-red-500' :
+                       type === 'info' ? 'bg-blue-500' : 'bg-gray-500';
 
         toast.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm ${bgColor} text-white transform translate-x-full transition-transform duration-300`;
         toast.innerHTML = `
@@ -425,8 +493,10 @@ window.cartManager = {
             el.textContent = totalItems;
             if (totalItems > 0) {
                 el.style.display = 'flex';
+                el.classList.remove('hidden');
             } else {
                 el.style.display = 'none';
+                el.classList.add('hidden');
             }
         });
     },
@@ -437,65 +507,248 @@ window.cartManager = {
     }
 };
 
-// Wishlist Management (LocalStorage)
+// Optimallashtirilgan Wishlist Management System
 window.wishlistManager = {
+    STORAGE_KEY: 'avtokontinent_wishlist',
+
     getWishlist() {
-        const wishlist = localStorage.getItem('wishlist');
-        return wishlist ? JSON.parse(wishlist) : [];
+        try {
+            const wishlist = localStorage.getItem(this.STORAGE_KEY);
+            return wishlist ? JSON.parse(wishlist) : [];
+        } catch (error) {
+            console.error('Wishlist get error:', error);
+            return [];
+        }
     },
 
-    toggleWishlist(productId) {
-        let wishlist = this.getWishlist();
-        const index = wishlist.indexOf(productId);
-
-        if (index > -1) {
-            wishlist.splice(index, 1);
-            window.avtokontinent.showToast('Sevimlilardan olib tashlandi', 'success');
-            localStorage.setItem('wishlist', JSON.stringify(wishlist));
-            return false;
-        } else {
-            wishlist.push(productId);
-            window.avtokontinent.showToast('Sevimlilarga qo\'shildi!', 'success');
-            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    saveWishlist(wishlist) {
+        try {
+            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(wishlist));
             return true;
+        } catch (error) {
+            console.error('Wishlist save error:', error);
+            return false;
         }
     },
 
     isInWishlist(productId) {
-        return this.getWishlist().includes(productId);
+        const wishlist = this.getWishlist();
+        return wishlist.includes(parseInt(productId));
+    },
+
+    addToWishlist(productId) {
+        const id = parseInt(productId);
+        let wishlist = this.getWishlist();
+
+        if (!wishlist.includes(id)) {
+            wishlist.push(id);
+            this.saveWishlist(wishlist);
+            this.updateWishlistCount();
+            this.updateWishlistIcons(id, true);
+
+            window.avtokontinent?.showToast('Mahsulot sevimlilarga qo\'shildi!', 'success');
+            this.triggerWishlistEvent('added', id);
+            return true;
+        }
+        return false;
+    },
+
+    removeFromWishlist(productId) {
+        const id = parseInt(productId);
+        let wishlist = this.getWishlist();
+        const index = wishlist.indexOf(id);
+
+        if (index > -1) {
+            wishlist.splice(index, 1);
+            this.saveWishlist(wishlist);
+            this.updateWishlistCount();
+            this.updateWishlistIcons(id, false);
+
+            window.avtokontinent?.showToast('Mahsulot sevimlilardan olib tashlandi', 'info');
+            this.triggerWishlistEvent('removed', id);
+            return true;
+        }
+        return false;
+    },
+
+    toggleWishlist(productId) {
+        const id = parseInt(productId);
+
+        if (this.isInWishlist(id)) {
+            return !this.removeFromWishlist(id);
+        } else {
+            return this.addToWishlist(id);
+        }
     },
 
     updateWishlistCount() {
         const wishlist = this.getWishlist();
+        const count = wishlist.length;
+
         document.querySelectorAll('.wishlist-count').forEach(el => {
-            el.textContent = wishlist.length;
-            if (wishlist.length > 0) {
+            el.textContent = count;
+
+            if (count > 0) {
                 el.style.display = 'flex';
+                el.classList.remove('hidden');
             } else {
                 el.style.display = 'none';
+                el.classList.add('hidden');
             }
         });
+
+        document.querySelectorAll('[data-wishlist-count]').forEach(el => {
+            el.setAttribute('data-wishlist-count', count);
+            el.textContent = count;
+        });
+    },
+
+    updateWishlistIcons(productId, isInWishlist) {
+        const icons = document.querySelectorAll(`.wishlist-icon-${productId}`);
+        const buttons = document.querySelectorAll(`.wishlist-btn[data-product-id="${productId}"]`);
+
+        icons.forEach(icon => {
+            if (isInWishlist) {
+                icon.classList.add('text-red-500', 'fill-current');
+                icon.classList.remove('text-gray-500');
+
+                // Add animation
+                icon.classList.add('wishlist-icon-animation');
+                setTimeout(() => {
+                    icon.classList.remove('wishlist-icon-animation');
+                }, 600);
+            } else {
+                icon.classList.remove('text-red-500', 'fill-current');
+                icon.classList.add('text-gray-500');
+            }
+        });
+
+        buttons.forEach(btn => {
+            const title = isInWishlist ? 'Sevimlilardan olib tashlash' : 'Sevimlilarga qo\'shish';
+            btn.setAttribute('title', title);
+            btn.setAttribute('aria-label', title);
+
+            if (isInWishlist) {
+                btn.classList.add('wishlist-active');
+                btn.setAttribute('data-in-wishlist', 'true');
+            } else {
+                btn.classList.remove('wishlist-active');
+                btn.setAttribute('data-in-wishlist', 'false');
+            }
+        });
+    },
+
+    initializeWishlistIcons() {
+        const wishlist = this.getWishlist();
+
+        wishlist.forEach(productId => {
+            this.updateWishlistIcons(productId, true);
+        });
+
+        this.updateWishlistCount();
+    },
+
+    clearWishlist() {
+        if (confirm('Barcha sevimli mahsulotlarni o\'chirmoqchimisiz?')) {
+            localStorage.removeItem(this.STORAGE_KEY);
+            this.updateWishlistCount();
+
+            document.querySelectorAll('[class*="wishlist-icon-"]').forEach(icon => {
+                icon.classList.remove('text-red-500', 'fill-current');
+                icon.classList.add('text-gray-500');
+            });
+
+            window.avtokontinent?.showToast('Barcha sevimlilar tozalandi', 'info');
+            this.triggerWishlistEvent('cleared', null);
+        }
+    },
+
+    triggerWishlistEvent(action, productId) {
+        const event = new CustomEvent('wishlistChange', {
+            detail: {
+                action: action,
+                productId: productId,
+                wishlist: this.getWishlist(),
+                count: this.getWishlist().length
+            }
+        });
+
+        document.dispatchEvent(event);
+    },
+
+    getCSRFToken() {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'csrftoken') {
+                return value;
+            }
+        }
+
+        const metaToken = document.querySelector('meta[name="csrf-token"]');
+        if (metaToken) {
+            return metaToken.getAttribute('content');
+        }
+
+        const formToken = document.querySelector('[name="csrfmiddlewaretoken"]');
+        if (formToken) {
+            return formToken.value;
+        }
+
+        return '';
     }
 };
 
-// Product card functions
-function handleWishlist(productId) {
-    const isAdded = window.wishlistManager.toggleWishlist(productId);
-    const icon = document.querySelector(`.wishlist-icon-${productId}`);
+// Global wishlist handler function
+function handleWishlist(productId, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
 
-    if (icon) {
-        if (isAdded) {
-            icon.classList.add('text-red-500', 'fill-current');
-        } else {
-            icon.classList.remove('text-red-500', 'fill-current');
+    const id = parseInt(productId);
+    if (isNaN(id)) {
+        console.error('Invalid product ID:', productId);
+        return;
+    }
+
+    if (window.requireAuthForWishlist && !window.userIsAuthenticated) {
+        window.avtokontinent?.showToast('Sevimlilarga qo\'shish uchun tizimga kiring', 'info');
+
+        if (window.loginUrl) {
+            setTimeout(() => {
+                window.location.href = window.loginUrl;
+            }, 2000);
+        }
+        return;
+    }
+
+    const isAdded = window.wishlistManager.toggleWishlist(id);
+
+    // Visual feedback
+    const button = event ? event.currentTarget : document.querySelector(`.wishlist-btn[data-product-id="${id}"]`);
+    if (button) {
+        button.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            button.style.transform = 'scale(1)';
+        }, 150);
+
+        const icon = button.querySelector('svg');
+        if (icon) {
+            icon.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                icon.style.transform = 'scale(1)';
+            }, 200);
         }
     }
+
+    return isAdded;
 }
 
+// Product card functions
 function handleAddToCart(productId) {
     window.cartManager.addToCart(productId);
 
-    // Optional: animate button
     const btn = event.target;
     const originalText = btn.innerHTML;
     btn.innerHTML = '✓ Qo\'shildi!';
@@ -511,15 +764,56 @@ function handleAddToCart(productId) {
 document.addEventListener('DOMContentLoaded', function() {
     // Update counts
     window.cartManager.updateCartCount();
-    window.wishlistManager.updateWishlistCount();
+    window.wishlistManager.initializeWishlistIcons();
 
-    // Check wishlist status on page load
-    const wishlist = window.wishlistManager.getWishlist();
-    wishlist.forEach(productId => {
-        const icon = document.querySelector(`.wishlist-icon-${productId}`);
-        if (icon) {
-            icon.classList.add('text-red-500', 'fill-current');
-        }
+    // Bind wishlist button events
+    function bindWishlistEvents() {
+        document.querySelectorAll('.wishlist-btn').forEach(btn => {
+            btn.replaceWith(btn.cloneNode(true));
+        });
+
+        document.querySelectorAll('.wishlist-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const productId = this.getAttribute('data-product-id') || this.dataset.productId;
+                handleWishlist(productId, e);
+            });
+        });
+    }
+
+    bindWishlistEvents();
+
+    // Observer for dynamic content
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                const hasWishlistBtns = Array.from(mutation.addedNodes).some(node => {
+                    return node.nodeType === 1 && (
+                        node.classList?.contains('wishlist-btn') ||
+                        node.querySelector?.('.wishlist-btn')
+                    );
+                });
+
+                if (hasWishlistBtns) {
+                    setTimeout(bindWishlistEvents, 100);
+                }
+            }
+        });
+    });
+
+    const productsContainer = document.getElementById('products-container');
+    if (productsContainer) {
+        observer.observe(productsContainer, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    // Listen for wishlist change events
+    document.addEventListener('wishlistChange', function(e) {
+        console.log('Wishlist changed:', e.detail);
     });
 
     // Auto-dismiss messages after 5 seconds
@@ -533,6 +827,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }, 5000);
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'w' && !e.ctrlKey && !e.metaKey) {
+        const target = e.target;
+        if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
+            const focusedProduct = document.querySelector('.product-card:focus-within .wishlist-btn');
+            if (focusedProduct) {
+                e.preventDefault();
+                focusedProduct.click();
+            }
+        }
+    }
 });
 </script>
 

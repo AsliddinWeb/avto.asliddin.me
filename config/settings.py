@@ -204,5 +204,10 @@ CSRF_TRUSTED_ORIGINS = [
     "https://www.avto.asliddin.me",
 ]
 
-# ALLOWED_HOSTS ni qayta aniqlash (.env dan)
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# Login/Logout URLs
+LOGIN_URL = '/auth/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_URL = '/users/logout/'
+LOGOUT_REDIRECT_URL = '/'
+
+LOGIN_REQUIRED_REDIRECT_URL = '/auth/login/'

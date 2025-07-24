@@ -1,5 +1,6 @@
-<!-- Product Card Component - FAQAT UZS -->
-<div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-200 group overflow-hidden">
+
+<!-- Optimallashtirilgan Product Card Component -->
+<div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-200 group overflow-hidden product-card">
 
     <!-- Product Image -->
     <div class="relative aspect-square overflow-hidden bg-gray-100">
@@ -44,12 +45,12 @@
         <!-- Action Buttons -->
         <div class="absolute top-2 right-2 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
 
-            <!-- Wishlist Button -->
-            <button class="wishlist-btn w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
-                    onclick="handleWishlist({{ product.id }})"
+            <!-- Wishlist Button - OPTIMALLASHTIRILGAN -->
+            <button class="wishlist-btn w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-all duration-300"
                     data-product-id="{{ product.id }}"
-                    title="Sevimlilarga qo'shish">
-                <svg class="w-4 h-4 transition-colors wishlist-icon-{{ product.id }}"
+                    title="Sevimlilarga qo'shish"
+                    aria-label="Sevimlilarga qo'shish">
+                <svg class="w-4 h-4 transition-all duration-300 wishlist-icon-{{ product.id }} text-gray-500"
                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
@@ -60,7 +61,8 @@
             <!-- Quick View Button -->
             <button class="quick-view-btn w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
                     data-product-id="{{ product.id }}"
-                    title="Tez ko'rish">
+                    title="Tez ko'rish"
+                    aria-label="Tez ko'rish">
                 <svg class="w-4 h-4 text-gray-600 hover:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -125,11 +127,9 @@
         <!-- Price - FAQAT UZS -->
         <div class="flex items-center justify-between mb-3">
             <div class="flex flex-col">
-                <!-- Faqat SOM narxi ko'rsatiladi -->
                 <div class="text-xl font-bold text-gray-900">
                     {{ product.formatted_price_som }}
                 </div>
-                <!-- USD narx olib tashlandi -->
             </div>
 
             <!-- Featured Badge -->
@@ -155,8 +155,9 @@
                 <!-- Likes -->
                 <div class="flex items-center space-x-1">
                     <button class="like-btn flex items-center space-x-1 hover:text-red-500 transition-colors"
-                            data-product-id="{{ product.id }}">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            data-product-id="{{ product.id }}"
+                            onclick="handleLike({{ product.id }}, event)">
+                        <svg class="w-4 h-4 like-icon-{{ product.id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                         </svg>
                         <span class="like-count">{{ product.likes_count|default:0 }}</span>
@@ -168,7 +169,6 @@
             {% if product.reviews.exists %}
                 <div class="flex items-center space-x-1">
                     <div class="flex">
-                        <!-- Simple 5-star display -->
                         {% for i in "12345" %}
                             <svg class="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
@@ -185,7 +185,7 @@
             <!-- Add to Cart Button -->
             {% if product.in_stock %}
                 <button class="cart-btn flex-1 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
-                        onclick="handleAddToCart({{ product.id }})"
+                        onclick="handleAddToCart({{ product.id }}, event)"
                         data-product-id="{{ product.id }}">
                     Savatga qo'shish
                 </button>
