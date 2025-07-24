@@ -345,11 +345,19 @@
 
 <!-- Mobile Cart Button -->
 <div class="fixed bottom-6 right-6 z-30 md:hidden">
-    <a href="/cart/" class="btn-primary text-white p-4 rounded-2xl shadow-glow transform hover:scale-110 transition-all duration-300">
+    <a href="/cart/" class="
+        bg-gradient-to-r from-blue-500 to-blue-600
+        text-white p-4 rounded-2xl
+        shadow-lg hover:shadow-xl
+        transform hover:-translate-y-1 hover:scale-105
+        active:translate-y-0 active:scale-95
+        transition-all duration-300
+        relative block
+    ">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l4.5-4.5m0 0L17 13M7 13l4.5-4.5m0 0L17 13"></path>
         </svg>
-        <span class="cart-count absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1 hidden">0</span>
+        <span class="cart-count absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-5 h-5 flex items-center justify-center font-semibold border-2 border-white hidden">0</span>
     </a>
 </div>
 
