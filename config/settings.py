@@ -1,3 +1,5 @@
+# config/settings.py - CLEAN MULTILANG VERSION
+
 """
 Django settings for config project.
 """
@@ -5,6 +7,7 @@ Django settings for config project.
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from django.utils.translation import gettext_lazy as _
 
 load_dotenv()
 
@@ -21,6 +24,8 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Application definition
 INSTALLED_APPS = [
+    'modeltranslation',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,6 +53,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # ← i18n uchun
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -66,6 +72,7 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.template.context_processors.i18n',  # ← i18n uchun
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'apps.core.context_processors.site_settings',
@@ -105,13 +112,35 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-LANGUAGE_CODE = 'uz-uz'
+# ========================================
+# INTERNATIONALIZATION SETTINGS
+# ========================================
+LANGUAGE_CODE = 'uz'  # Default
 TIME_ZONE = 'Asia/Tashkent'
 USE_I18N = True
+USE_L10N = True
 USE_TZ = True
 
-# Static files
+# Languages
+LANGUAGES = [
+    ('uz', _('O\'zbekcha')),
+    ('ru', _('Русский')),
+    ('en', _('English')),
+]
+
+# Locale files
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',
+]
+
+# ========================================
+# MODELTRANSLATION SETTINGS (DB content uchun)
+# ========================================
+MODELTRANSLATION_LANGUAGES = ('uz', 'ru', 'en')
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'uz'
+MODELTRANSLATION_FALLBACK_LANGUAGES = ('uz', 'ru', 'en')
+
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
@@ -130,8 +159,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
+    "https://avto.asliddin.me",
+    "https://www.avto.asliddin.me",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+]
+
+# CSRF trusted origins
+CSRF_TRUSTED_ORIGINS = [
+    "https://avto.asliddin.me",
+    "https://www.avto.asliddin.me",
 ]
 
 # Session settings
@@ -167,42 +204,6 @@ LOGGING = {
 # Telegram auth settings
 TEMP_CODE_EXPIRY_MINUTES = 1  # 5 xonali kod 1 daqiqa
 USER_CODE_EXPIRY_MINUTES = 5  # 4 xonali kod 5 daqiqa
-
-# ASGI settings
-ASGI_APPLICATION = 'config.asgi.application'
-TELEGRAM_BOT_ASYNC = True
-
-# Production Security Settings
-# if not DEBUG:
-    # HTTPS sozlamalari
-    # SECURE_SSL_REDIRECT = True
-    # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    # SECURE_BROWSER_XSS_FILTER = True
-    # SECURE_CONTENT_TYPE_NOSNIFF = True
-    # X_FRAME_OPTIONS = 'DENY'
-    # SECURE_HSTS_SECONDS = 31536000  # 1 yil
-    # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    # SECURE_HSTS_PRELOAD = True
-
-    # Session va Cookie xavfsizligi
-    # SESSION_COOKIE_SECURE = True
-    # CSRF_COOKIE_SECURE = True
-    # SESSION_COOKIE_HTTPONLY = True
-    # CSRF_COOKIE_HTTPONLY = True
-
-# CORS sozlamalarini yangilash
-CORS_ALLOWED_ORIGINS = [
-    "https://avto.asliddin.me",
-    "https://www.avto.asliddin.me",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-]
-
-# CSRF trusted origins
-CSRF_TRUSTED_ORIGINS = [
-    "https://avto.asliddin.me",
-    "https://www.avto.asliddin.me",
-]
 
 # Login/Logout URLs
 LOGIN_URL = '/auth/login/'

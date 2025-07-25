@@ -1,3 +1,5 @@
+# docker-compose.yml - MULTILANG READY
+
 services:
   db:
     image: postgres:15
@@ -6,35 +8,62 @@ services:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
+             python manage.py compilemessages &&
+             python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
     ports:
       - "8005:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - .env
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/admin/login/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # Telegram Bot service
   bot:
     build: .
-    command: python manage.py start_bot
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py start_bot"
     volumes:
       - .:/app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - .env
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "manage.py", "start_bot", "--test-only"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
 
 volumes:
-  postgres_data_dev:
+  postgres_data:
+  static_volume:
+  media_volume:
