@@ -1,0 +1,48 @@
+<!-- Test Translation Debug Template -->
+{% load i18n %}
+
+<div style="position: fixed; top: 100px; right: 20px; background: #fff; padding: 15px; border: 2px solid #ccc; border-radius: 8px; z-index: 1000; font-family: monospace; font-size: 12px;">
+    <h4 style="margin: 0 0 10px 0; color: #333;">🌐 Translation Debug</h4>
+
+    <!-- Current Language -->
+    <p><strong>Current Language:</strong> {{ LANGUAGE_CODE }}</p>
+
+    <!-- Static Translation Test -->
+    <div style="margin: 10px 0;">
+        <strong>Static Text:</strong><br>
+        {% trans "Ehtiyot qismlar" %}<br>
+        {% trans "Kategoriyalar" %}<br>
+        {% trans "Brendlar" %}<br>
+        {% trans "Barcha mahsulotlar" %}
+    </div>
+
+    <!-- DB Content Test -->
+    {% if categories.first %}
+    <div style="margin: 10px 0;">
+        <strong>DB Content:</strong><br>
+        Category: {{ categories.first.name }}<br>
+        {% if categories.first.description %}
+        Desc: {{ categories.first.description|truncatewords:5 }}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Available Languages -->
+    <div style="margin: 10px 0;">
+        <strong>Available:</strong><br>
+        {% get_available_languages as languages %}
+        {% for lang_code, lang_name in languages %}
+            <span style="{% if lang_code == LANGUAGE_CODE %}font-weight: bold; color: blue;{% endif %}">
+                {{ lang_name }} ({{ lang_code }})
+            </span>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Language Switch Links -->
+    <div style="margin: 10px 0 0 0;">
+        <strong>Quick Switch:</strong><br>
+        <a href="{% url 'set_language' %}" onclick="return false;" style="color: #666; margin-right: 5px;">UZ</a>
+        <a href="/ru{{ request.get_full_path }}" style="color: #666; margin-right: 5px;">RU</a>
+        <a href="/en{{ request.get_full_path }}" style="color: #666;">EN</a>
+    </div>
+</div>

@@ -867,8 +867,123 @@ document.addEventListener('keydown', function(e) {
 });
 </script>
 
+<script>
+// Language Switcher JavaScript Function
+function languageSwitcher() {
+    return {
+        isOpen: false,
+        currentLang: '{{ LANGUAGE_CODE|default:"uz" }}',
+
+        toggleDropdown() {
+            this.isOpen = !this.isOpen;
+        },
+
+        getCurrentFlag() {
+            const flags = {
+                'uz': '🇺🇿',
+                'ru': '🇷🇺',
+                'en': '🇺🇸'
+            };
+            return flags[this.currentLang] || '🇺🇿';
+        },
+
+        getCurrentName() {
+            const names = {
+                'uz': "O'zbekcha",
+                'ru': 'Русский',
+                'en': 'English'
+            };
+            return names[this.currentLang] || "O'zbekcha";
+        },
+
+        async switchLanguage(langCode) {
+            console.log('Switching to language:', langCode);
+
+            try {
+                let csrfToken = this.getCSRFToken();
+
+                if (!csrfToken) {
+                    console.error('CSRF token not found');
+                    this.submitLanguageForm(langCode);
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('language', langCode);
+                formData.append('next', window.location.pathname + window.location.search);
+                formData.append('csrfmiddlewaretoken', csrfToken);
+
+                const response = await fetch('/i18n/setlang/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    this.submitLanguageForm(langCode);
+                }
+            } catch (error) {
+                console.error('Language switch error:', error);
+                this.submitLanguageForm(langCode);
+            }
+        },
+
+        getCSRFToken() {
+            let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            if (!csrfToken) {
+                csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+            }
+
+            if (!csrfToken) {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'csrftoken') {
+                        csrfToken = value;
+                        break;
+                    }
+                }
+            }
+
+            return csrfToken;
+        },
+
+        submitLanguageForm(langCode) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/i18n/setlang/';
+            form.style.display = 'none';
+
+            const fields = {
+                'csrfmiddlewaretoken': this.getCSRFToken() || '',
+                'language': langCode,
+                'next': window.location.pathname + window.location.search
+            };
+
+            Object.entries(fields).forEach(([name, value]) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+}
+</script>
+
 {% block extra_js %}{% endblock %}
 
 {% csrf_token %}
+
+{% include 'includes/translation_debug.html' %}
 </body>
 </html>
