@@ -868,7 +868,7 @@ document.addEventListener('keydown', function(e) {
 </script>
 
 <script>
-// Language Switcher JavaScript Function
+// FIXED Language Switcher JavaScript Function
 function languageSwitcher() {
     return {
         isOpen: false,
@@ -898,41 +898,95 @@ function languageSwitcher() {
 
         async switchLanguage(langCode) {
             console.log('Switching to language:', langCode);
+            this.isOpen = false;
 
             try {
-                let csrfToken = this.getCSRFToken();
+                // YANGI URL BUILDING LOGIC
+                const currentPath = window.location.pathname;
+                const currentSearch = window.location.search;
 
-                if (!csrfToken) {
-                    console.error('CSRF token not found');
-                    this.submitLanguageForm(langCode);
-                    return;
+                let newUrl;
+
+                // Remove current language prefix if exists
+                let cleanPath = currentPath;
+                if (currentPath.startsWith('/uz/')) {
+                    cleanPath = currentPath.substring(3);
+                } else if (currentPath.startsWith('/ru/')) {
+                    cleanPath = currentPath.substring(3);
+                } else if (currentPath.startsWith('/en/')) {
+                    cleanPath = currentPath.substring(3);
                 }
 
-                const formData = new FormData();
-                formData.append('language', langCode);
-                formData.append('next', window.location.pathname + window.location.search);
-                formData.append('csrfmiddlewaretoken', csrfToken);
+                // Ensure clean path starts with /
+                if (!cleanPath.startsWith('/')) {
+                    cleanPath = '/' + cleanPath;
+                }
 
-                const response = await fetch('/i18n/setlang/', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok) {
-                    window.location.reload();
+                // Build new URL with correct language prefix
+                if (langCode === 'uz') {
+                    // Uzbek is default, no prefix needed
+                    newUrl = cleanPath + currentSearch;
                 } else {
-                    this.submitLanguageForm(langCode);
+                    // Add language prefix for ru/en
+                    newUrl = `/${langCode}${cleanPath}${currentSearch}`;
                 }
+
+                console.log('Current path:', currentPath);
+                console.log('Clean path:', cleanPath);
+                console.log('New URL:', newUrl);
+
+                // Set language in session first
+                const csrfToken = this.getCSRFToken();
+
+                if (csrfToken) {
+                    const formData = new FormData();
+                    formData.append('language', langCode);
+                    formData.append('next', newUrl);
+                    formData.append('csrfmiddlewaretoken', csrfToken);
+
+                    const response = await fetch('/i18n/setlang/', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (response.ok) {
+                        // Redirect to new URL
+                        window.location.href = newUrl;
+                        return;
+                    }
+                }
+
+                // Fallback: direct redirect
+                window.location.href = newUrl;
+
             } catch (error) {
                 console.error('Language switch error:', error);
-                this.submitLanguageForm(langCode);
+                // Fallback redirect
+                this.fallbackRedirect(langCode);
             }
         },
 
+        fallbackRedirect(langCode) {
+            const currentPath = window.location.pathname;
+            const currentSearch = window.location.search;
+
+            let cleanPath = currentPath.replace(/^\/(uz|ru|en)/, '');
+            if (!cleanPath.startsWith('/')) {
+                cleanPath = '/' + cleanPath;
+            }
+
+            const newUrl = langCode === 'uz' ?
+                cleanPath + currentSearch :
+                `/${langCode}${cleanPath}${currentSearch}`;
+
+            window.location.href = newUrl;
+        },
+
         getCSRFToken() {
+            // Try multiple methods to get CSRF token
             let csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
             if (!csrfToken) {
@@ -951,30 +1005,6 @@ function languageSwitcher() {
             }
 
             return csrfToken;
-        },
-
-        submitLanguageForm(langCode) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/i18n/setlang/';
-            form.style.display = 'none';
-
-            const fields = {
-                'csrfmiddlewaretoken': this.getCSRFToken() || '',
-                'language': langCode,
-                'next': window.location.pathname + window.location.search
-            };
-
-            Object.entries(fields).forEach(([name, value]) => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = name;
-                input.value = value;
-                form.appendChild(input);
-            });
-
-            document.body.appendChild(form);
-            form.submit();
         }
     }
 }
