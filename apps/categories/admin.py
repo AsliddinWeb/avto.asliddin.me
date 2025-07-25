@@ -1,8 +1,10 @@
 from django.contrib import admin
+from modeltranslation.admin import TranslationAdmin
 from .models import Category
 
+
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(TranslationAdmin):
     list_display = ['name', 'parent', 'is_active', 'order']
     list_filter = ['is_active', 'parent', 'created_at']
     search_fields = ['name', 'description']

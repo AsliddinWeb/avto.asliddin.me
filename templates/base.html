@@ -1,15 +1,16 @@
-<!DOCTYPE html>
+{% load i18n %}
 {% load static %}
-<html lang="uz" class="scroll-smooth">
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'uz' }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <!-- SEO Meta Tags -->
-    <title>{% block title %}Avtokontinent.uz - Avto Ehtiyot Qismlar{% endblock %}</title>
-    <meta name="description" content="{% block description %}Avtokontinent.uz - Barcha markalar uchun sifatli avto ehtiyot qismlar. Tez yetkazib berish va kafolat.{% endblock %}">
-    <meta name="keywords" content="{% block keywords %}avto ehtiyot qismlar, avtokontinent, auto parts, uzbekistan{% endblock %}">
+    <title>{% block title %}{% trans "Avtokontinent.uz - Avto Ehtiyot Qismlar" %}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{% trans "Avtokontinent.uz - Barcha markalar uchun sifatli avto ehtiyot qismlar. Tez yetkazib berish va kafolat." %}{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}{% trans "avto ehtiyot qismlar, avtokontinent, auto parts, uzbekistan" %}{% endblock %}">
 
     <!-- CSRF Token for AJAX -->
     <meta name="csrf-token" content="{{ csrf_token }}">
@@ -293,13 +294,26 @@
     window.userIsAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
     window.requireAuthForWishlist = false; // Set to true if you want to require auth for wishlist
     window.loginUrl = "{% url 'telegram_auth:login_page' %}";
+
+    // Translation strings for JavaScript
+    window.translations = {
+        loading: "{% trans 'Yuklanmoqda...' %}",
+        error: "{% trans 'Xatolik yuz berdi' %}",
+        addedToCart: "{% trans 'Mahsulot savatga qo\'shildi!' %}",
+        addedToWishlist: "{% trans 'Mahsulot sevimlilarga qo\'shildi!' %}",
+        removedFromWishlist: "{% trans 'Mahsulot sevimlilardan olib tashlandi' %}",
+        loginRequired: "{% trans 'Sevimlilarga qo\'shish uchun tizimga kiring' %}",
+        clearWishlistConfirm: "{% trans 'Barcha sevimli mahsulotlarni o\'chirmoqchimisiz?' %}",
+        wishlistCleared: "{% trans 'Barcha sevimlilar tozalandi' %}",
+        addedText: "{% trans 'Qo\'shildi!' %}"
+    };
 </script>
 
 <!-- Loading Overlay -->
 <div x-show="isLoading" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
     <div class="glass rounded-2xl p-8 flex items-center space-x-4 shadow-elegant">
         <div class="loading-spinner"></div>
-        <span class="text-gray-700 font-medium">Yuklanmoqda...</span>
+        <span class="text-gray-700 font-medium">{% trans "Yuklanmoqda..." %}</span>
     </div>
 </div>
 
@@ -311,7 +325,7 @@
 <!-- Breadcrumb -->
 {% block breadcrumb %}
 {% if request.resolver_match.url_name != 'core:homepage' %}
-<nav class="bg-gray-100 border-b" aria-label="Breadcrumb">
+<nav class="bg-gray-100 border-b" aria-label="{% trans 'Breadcrumb' %}">
     <div class="container mx-auto px-4 py-3">
         {% include 'includes/breadcrumb.html' %}
     </div>
@@ -331,8 +345,8 @@
     {% block content %}
     <div class="container mx-auto px-4 py-8">
         <div class="text-center">
-            <h1 class="text-4xl font-bold text-gray-900 mb-4">Xush kelibsiz!</h1>
-            <p class="text-xl text-gray-600">Bu sahifa content template'da to'ldiriladi</p>
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">{% trans "Xush kelibsiz!" %}</h1>
+            <p class="text-xl text-gray-600">{% trans "Bu sahifa content template'da to'ldiriladi" %}</p>
         </div>
     </div>
     {% endblock %}
@@ -353,7 +367,7 @@
         active:translate-y-0 active:scale-95
         transition-all duration-300
         relative block
-    ">
+    " title="{% trans 'Savat' %}">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l4.5-4.5m0 0L17 13M7 13l4.5-4.5m0 0L17 13"></path>
         </svg>
@@ -365,6 +379,7 @@
 <button @click="window.scrollTo({top: 0, behavior: 'smooth'})"
         x-show="window.pageYOffset > 300"
         x-cloak
+        title="{% trans 'Yuqoriga ko\'tarish' %}"
         class="fixed bottom-6 left-6 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white p-4 rounded-2xl shadow-glow hover:from-secondary-600 hover:to-secondary-700 transform hover:scale-110 transition-all duration-300 z-30">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
@@ -455,7 +470,7 @@ window.avtokontinent = {
             return result;
         } catch (error) {
             console.error('Fetch error:', error);
-            this.showToast('Xatolik yuz berdi: ' + error.message, 'error');
+            this.showToast(window.translations.error + ': ' + error.message, 'error');
             throw error;
         } finally {
             this.hideLoading();
@@ -482,7 +497,7 @@ window.cartManager = {
 
         localStorage.setItem('cart', JSON.stringify(cart));
         this.updateCartCount();
-        window.avtokontinent.showToast('Mahsulot savatga qo\'shildi!', 'success');
+        window.avtokontinent.showToast(window.translations.addedToCart, 'success');
     },
 
     removeFromCart(productId) {
@@ -554,7 +569,7 @@ window.wishlistManager = {
             this.updateWishlistCount();
             this.updateWishlistIcons(id, true);
 
-            window.avtokontinent?.showToast('Mahsulot sevimlilarga qo\'shildi!', 'success');
+            window.avtokontinent?.showToast(window.translations.addedToWishlist, 'success');
             this.triggerWishlistEvent('added', id);
             return true;
         }
@@ -572,7 +587,7 @@ window.wishlistManager = {
             this.updateWishlistCount();
             this.updateWishlistIcons(id, false);
 
-            window.avtokontinent?.showToast('Mahsulot sevimlilardan olib tashlandi', 'info');
+            window.avtokontinent?.showToast(window.translations.removedFromWishlist, 'info');
             this.triggerWishlistEvent('removed', id);
             return true;
         }
@@ -632,7 +647,7 @@ window.wishlistManager = {
         });
 
         buttons.forEach(btn => {
-            const title = isInWishlist ? 'Sevimlilardan olib tashlash' : 'Sevimlilarga qo\'shish';
+            const title = isInWishlist ? window.translations.removedFromWishlist : window.translations.addedToWishlist;
             btn.setAttribute('title', title);
             btn.setAttribute('aria-label', title);
 
@@ -657,7 +672,7 @@ window.wishlistManager = {
     },
 
     clearWishlist() {
-        if (confirm('Barcha sevimli mahsulotlarni o\'chirmoqchimisiz?')) {
+        if (confirm(window.translations.clearWishlistConfirm)) {
             localStorage.removeItem(this.STORAGE_KEY);
             this.updateWishlistCount();
 
@@ -666,7 +681,7 @@ window.wishlistManager = {
                 icon.classList.add('text-gray-500');
             });
 
-            window.avtokontinent?.showToast('Barcha sevimlilar tozalandi', 'info');
+            window.avtokontinent?.showToast(window.translations.wishlistCleared, 'info');
             this.triggerWishlistEvent('cleared', null);
         }
     },
@@ -721,7 +736,7 @@ function handleWishlist(productId, event) {
     }
 
     if (window.requireAuthForWishlist && !window.userIsAuthenticated) {
-        window.avtokontinent?.showToast('Sevimlilarga qo\'shish uchun tizimga kiring', 'info');
+        window.avtokontinent?.showToast(window.translations.loginRequired, 'info');
 
         if (window.loginUrl) {
             setTimeout(() => {
@@ -759,7 +774,7 @@ function handleAddToCart(productId) {
 
     const btn = event.target;
     const originalText = btn.innerHTML;
-    btn.innerHTML = '✓ Qo\'shildi!';
+    btn.innerHTML = '✓ ' + window.translations.addedText;
     btn.disabled = true;
 
     setTimeout(() => {

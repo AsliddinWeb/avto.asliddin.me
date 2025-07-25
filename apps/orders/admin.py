@@ -5,6 +5,8 @@ from django.contrib import messages
 from .models import Order, OrderItem, OrderStatusHistory
 import logging
 
+from modeltranslation.admin import TranslationAdmin
+
 logger = logging.getLogger(__name__)
 
 
@@ -22,7 +24,7 @@ class OrderStatusHistoryInline(admin.TabularInline):
 
 
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
+class OrderAdmin(TranslationAdmin):
     list_display = [
         'order_number', 'user', 'status', 'total_amount_som',
         'is_paid', 'telegram_status', 'created_at'

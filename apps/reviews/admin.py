@@ -1,12 +1,13 @@
 from django.contrib import admin
+from modeltranslation.admin import TranslationAdmin
 from .models import Review, ReviewLike, ProductWishlist
 
 
 @admin.register(Review)
-class ReviewAdmin(admin.ModelAdmin):
+class ReviewAdmin(TranslationAdmin):
     list_display = [
         'user', 'product', 'rating', 'star_display',
-        'is_approved', 'is_featured', 'created_at'  # is_featured QO'SHILDI
+        'is_approved', 'is_featured', 'created_at'
     ]
     list_filter = [
         'rating', 'is_approved', 'is_featured', 'created_at'

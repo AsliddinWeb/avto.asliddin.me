@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from modeltranslation.admin import TranslationAdmin
 from .models import Product, ProductImage, UserLike
 
 
@@ -10,7 +11,7 @@ class ProductImageInline(admin.TabularInline):
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(TranslationAdmin):
     list_display = [
         'name', 'category', 'brand', 'price_usd', 'price_som_display',
         'is_active', 'is_featured', 'in_stock', 'views_count', 'likes_count'
