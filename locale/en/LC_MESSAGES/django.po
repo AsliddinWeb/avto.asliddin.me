@@ -1,0 +1,957 @@
+# LANGUAGE translation file for Avtokontinent.uz
+# Copyright (C) 2025
+# This file is distributed under the same license as the Avtokontinent package.
+# FIRST AUTHOR <email@example.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Avtokontinent 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-01 12:00+0500\n"
+"PO-Revision-Date: 2025-01-01 12:00+0500\n"
+"Last-Translator: \n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Meta Information
+msgid "Avtokontinent.uz - Avto Ehtiyot Qismlar"
+msgstr "Avtokontinent.uz - Auto Parts"
+
+msgid "Avtokontinent.uz - Barcha markalar uchun sifatli avto ehtiyot qismlar. Tez yetkazib berish va kafolat."
+msgstr "Avtokontinent.uz - Quality auto parts for all car brands. Fast delivery and warranty."
+
+msgid "avto ehtiyot qismlar, avtokontinent, auto parts, uzbekistan"
+msgstr "auto parts, avtokontinent, car parts, uzbekistan"
+
+# Navigation and UI Elements
+msgid "Breadcrumb"
+msgstr "Breadcrumb"
+
+msgid "Xush kelibsiz!"
+msgstr "Welcome!"
+
+msgid "Bu sahifa content template'da to'ldiriladi"
+msgstr "This page will be filled in the content template"
+
+msgid "Savat"
+msgstr "Cart"
+
+msgid "Yuqoriga ko'tarish"
+msgstr "Back to top"
+
+# Loading and Status Messages
+msgid "Yuklanmoqda..."
+msgstr "Loading..."
+
+msgid "Xatolik yuz berdi"
+msgstr "An error occurred"
+
+# Cart and Wishlist Messages
+msgid "Mahsulot savatga qo'shildi!"
+msgstr "Product added to cart!"
+
+msgid "Mahsulot sevimlilarga qo'shildi!"
+msgstr "Product added to wishlist!"
+
+msgid "Mahsulot sevimlilardan olib tashlandi"
+msgstr "Product removed from wishlist"
+
+msgid "Sevimlilarga qo'shish uchun tizimga kiring"
+msgstr "Please login to add to wishlist"
+
+msgid "Barcha sevimli mahsulotlarni o'chirmoqchimisiz?"
+msgstr "Do you want to remove all favorite products?"
+
+msgid "Barcha sevimlilar tozalandi"
+msgstr "All favorites cleared"
+
+msgid "Qo'shildi!"
+msgstr "Added!"
+
+# Common Actions
+msgid "Qidirish"
+msgstr "Search"
+
+msgid "Kirish"
+msgstr "Login"
+
+msgid "Ro'yxatdan o'tish"
+msgstr "Register"
+
+msgid "Chiqish"
+msgstr "Logout"
+
+msgid "Bosh sahifa"
+msgstr "Home"
+
+msgid "Mahsulotlar"
+msgstr "Products"
+
+msgid "Kategoriyalar"
+msgstr "Categories"
+
+msgid "Biz haqimizda"
+msgstr "About Us"
+
+msgid "Aloqa"
+msgstr "Contact"
+
+# Product Related
+msgid "Yangi mahsulotlar"
+msgstr "New Products"
+
+msgid "Mashhur mahsulotlar"
+msgstr "Popular Products"
+
+msgid "Chegirmali mahsulotlar"
+msgstr "Discounted Products"
+
+msgid "Batafsil"
+msgstr "Details"
+
+msgid "Savatga qo'shish"
+msgstr "Add to Cart"
+
+msgid "so'm"
+msgstr "sum"
+
+msgid "Mavjud"
+msgstr "In Stock"
+
+msgid "Mavjud emas"
+msgstr "Out of Stock"
+
+# Form Elements
+msgid "Yuborish"
+msgstr "Submit"
+
+msgid "Bekor qilish"
+msgstr "Cancel"
+
+msgid "Saqlash"
+msgstr "Save"
+
+msgid "O'chirish"
+msgstr "Delete"
+
+msgid "Taxrirlash"
+msgstr "Edit"
+
+# User Account
+msgid "Profilim"
+msgstr "My Profile"
+
+msgid "Buyurtmalarim"
+msgstr "My Orders"
+
+msgid "Sevimli mahsulotlar"
+msgstr "Favorite Products"
+
+msgid "Sozlamalar"
+msgstr "Settings"
+
+# Footer Elements
+msgid "Manzil"
+msgstr "Address"
+
+msgid "Telefon"
+msgstr "Phone"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Ish vaqti"
+msgstr "Working Hours"
+
+msgid "Ijtimoiy tarmoqlar"
+msgstr "Social Networks"
+
+# Error Messages
+msgid "Sahifa topilmadi"
+msgstr "Page not found"
+
+msgid "Serverda xatolik"
+msgstr "Server error"
+
+msgid "Ruxsat berilmagan"
+msgstr "Access denied"
+
+# Success Messages
+msgid "Muvaffaqiyatli bajarildi"
+msgstr "Successfully completed"
+
+msgid "Ma'lumotlar saqlandi"
+msgstr "Data saved"
+
+msgid "Xabar yuborildi"
+msgstr "Message sent"
+
+# Header Navigation - New translations (EN)
+msgid "Ehtiyot qismlar"
+msgstr "Auto Parts"
+
+msgid "Barcha mahsulotlar"
+msgstr "All Products"
+
+msgid "Barchasini ko'rish"
+msgstr "View All"
+
+msgid "Motor qismlari"
+msgstr "Engine Parts"
+
+msgid "Tormoz tizimi"
+msgstr "Brake System"
+
+msgid "Filtrlar"
+msgstr "Filters"
+
+msgid "Brendlar"
+msgstr "Brands"
+
+msgid "Mashhur brendlar"
+msgstr "Popular Brands"
+
+msgid "Barcha brendlar"
+msgstr "All Brands"
+
+msgid "Ehtiyot qism qidirish..."
+msgstr "Search auto parts..."
+
+msgid "bo'yicha barcha natijalarni ko'rish"
+msgstr "view all results for"
+
+msgid "Sevimli mahsulotlar"
+msgstr "Favorite Products"
+
+msgid "Profil"
+msgstr "Profile"
+
+msgid "Buyurtmalar"
+msgstr "Orders"
+
+msgid "Sevimlilar"
+msgstr "Favorites"
+
+msgid "Telegram orqali kirish"
+msgstr "Login via Telegram"
+
+msgid "Barcha natijalarni ko'rish"
+msgstr "View All Results"
+
+msgid "Barcha kategoriyalar"
+msgstr "All Categories"
+
+msgid "Tezkor havolalar"
+msgstr "Quick Links"
+
+# Footer Navigation - New translations (EN)
+msgid "O'zbekistondagi eng ishonchli avto ehtiyot qismlar onlayn do'koni. Sifat va tez yetkazish kafolati."
+msgstr "The most reliable online auto parts store in Uzbekistan. Quality and fast delivery guarantee."
+
+msgid "Havolalar"
+msgstr "Links"
+
+msgid "Tavsiya qilingan"
+msgstr "Featured"
+
+msgid "Mijozlar"
+msgstr "Customers"
+
+msgid "Kirish / Ro'yxat"
+msgstr "Login / Register"
+
+msgid "Buyurtma kuzatuvi"
+msgstr "Order Tracking"
+
+msgid "Oferta"
+msgstr "Terms"
+
+msgid "Bog'lanish"
+msgstr "Contact"
+
+msgid "Du-Ju"
+msgstr "Mon-Fri"
+
+msgid "Sh"
+msgstr "Sat"
+
+msgid "Ya"
+msgstr "Sun"
+
+msgid "Dam olish"
+msgstr "Closed"
+
+msgid "Barcha huquqlar himoyalangan."
+msgstr "All rights reserved."
+
+msgid "To'lov"
+msgstr "Payment"
+
+msgid "Yuqoriga"
+msgstr "Back to top"
+
+# Banner Carousel - New translations (EN)
+msgid "Batafsil ko'rish"
+msgstr "View Details"
+
+msgid "Oldingi slayd"
+msgstr "Previous slide"
+
+msgid "Keyingi slayd"
+msgstr "Next slide"
+
+msgid "Slaydga o'tish"
+msgstr "Go to slide"
+
+msgid "Avtomatik o'tishni to'xtatish"
+msgstr "Stop autoplay"
+
+msgid "Avtomatik o'tishni boshlash"
+msgstr "Start autoplay"
+
+msgid "Banner mavjud emas"
+msgstr "No banner available"
+
+msgid "Admin paneldan banner qo'shing"
+msgstr "Add banner from admin panel"
+
+# Breadcrumb Navigation - New translations (EN)
+msgid "Rasmiylashtirish"
+msgstr "Checkout"
+
+msgid "Mening buyurtmalarim"
+msgstr "My Orders"
+
+msgid "Buyurtmalar tarixi"
+msgstr "Order History"
+
+msgid "Sharhlar"
+msgstr "Reviews"
+
+# Category Menu - New translations (EN)
+msgid "Kategoriyalar yuklanmoqda..."
+msgstr "Loading categories..."
+
+msgid "ta bo'lim"
+msgstr "sections"
+
+msgid "ta subkategoriya"
+msgstr "subcategories"
+
+msgid "Ko'rish"
+msgstr "View"
+
+msgid "Bu kategoriyada subkategoriya yo'q"
+msgstr "No subcategories in this category"
+
+msgid "Barcha mahsulotlarni ko'rish"
+msgstr "View all products"
+
+msgid "Kategoriya tanlang"
+msgstr "Select a category"
+
+msgid "Subkategoriyalarni ko'rish uchun chap tomondan kategoriya ustiga sichqonchani olib boring"
+msgstr "Hover over a category on the left to view subcategories"
+
+msgid "Tavsiya qilingan mahsulotlar"
+msgstr "Featured products"
+
+# Language Switcher - New translations (EN)
+msgid "Til tanlovi avtomatik saqlanadi"
+msgstr "Language preference is saved automatically"
+
+# Messages - New translations (EN)
+msgid "Muvaffaqiyat"
+msgstr "Success"
+
+msgid "Xatolik"
+msgstr "Error"
+
+msgid "Ogohlantirish"
+msgstr "Warning"
+
+msgid "Ma'lumot"
+msgstr "Info"
+
+msgid "Xabar"
+msgstr "Message"
+
+msgid "Yopish"
+msgstr "Close"
+
+# Pagination - New translations (EN)
+msgid "Sahifalash"
+msgstr "Pagination"
+
+msgid "Oldingi"
+msgstr "Previous"
+
+msgid "Keyingi"
+msgstr "Next"
+
+msgid "dan"
+msgstr "to"
+
+msgid "gacha, jami"
+msgstr "of"
+
+msgid "ta natija"
+msgstr "results"
+
+msgid "Oldingi sahifa"
+msgstr "Previous page"
+
+msgid "Keyingi sahifa"
+msgstr "Next page"
+
+msgid "Sahifada ko'rsatish:"
+msgstr "Show per page:"
+
+msgid "Sahifaga o'tish:"
+msgstr "Go to page:"
+
+msgid "O'tish"
+msgstr "Go"
+
+# Product Card - New translations (EN)
+msgid "Tavsiya"
+msgstr "Featured"
+
+msgid "Tugagan"
+msgstr "Out of Stock"
+
+msgid "Yangi"
+msgstr "New"
+
+msgid "Sevimlilarga qo'shish"
+msgstr "Add to Wishlist"
+
+msgid "Tez ko'rish"
+msgstr "Quick View"
+
+msgid "Mos keladi:"
+msgstr "Compatible with:"
+
+msgid "ko'proq"
+msgstr "more"
+
+msgid "TOP"
+msgstr "TOP"
+
+msgid "Yoqtirish"
+msgstr "Like"
+
+msgid "Savatga qo'shish"
+msgstr "Add to Cart"
+
+# Search - New translations (EN)
+msgid "Mahsulot, kategoriya yoki brend izlang..."
+msgstr "Search products, categories or brands..."
+
+msgid "Tozalash"
+msgstr "Clear"
+
+msgid "Qidirilmoqda..."
+msgstr "Searching..."
+
+msgid "Hech narsa topilmadi"
+msgstr "Nothing found"
+
+msgid "Boshqa kalit so'zlar bilan izlab ko'ring"
+msgstr "Try different keywords"
+
+msgid "Mashhur qidiruvlar"
+msgstr "Popular searches"
+
+msgid "Motor"
+msgstr "Engine"
+
+msgid "Tormoz"
+msgstr "Brake"
+
+msgid "Filtr"
+msgstr "Filter"
+
+msgid "Yog'"
+msgstr "Oil"
+
+msgid "Elektr qismlari"
+msgstr "Electrical parts"
+
+msgid "↑↓ harakat, Enter tanlash, Esc yopish"
+msgstr "↑↓ navigate, Enter select, Esc close"
+
+# About Page - New translations (EN)
+msgid "Avtokontinent.uz - O'zbekistondagi eng yirik avto ehtiyot qismlar do'koni. 2020 yildan beri sifatli mahsulotlar va professional xizmat."
+msgstr "Avtokontinent.uz - the largest auto parts store in Uzbekistan. Quality products and professional service since 2020."
+
+msgid "O'zbekiston avto ehtiyot qismlar bozorida ishonchli hamkor"
+msgstr "Reliable partner in Uzbekistan's auto parts market"
+
+msgid "2020 yildan beri"
+msgstr "Since 2020"
+
+msgid "biz O'zbekiston avto ehtiyot qismlar bozorida faoliyat olib boramiz. Bizning maqsadimiz - har bir avtomobil egasiga sifatli va arzon mahsulotlar taqdim etish."
+msgstr "we have been operating in Uzbekistan's auto parts market. Our goal is to provide every car owner with quality and affordable products."
+
+msgid "Bizda"
+msgstr "We have"
+
+msgid "xil mahsulot,"
+msgstr "different products,"
+
+msgid "mashhur brend va"
+msgstr "popular brands and"
+
+msgid "avtomobil modeli uchun ehtiyot qismlar mavjud."
+msgstr "spare parts for car models available."
+
+msgid "Barcha mahsulotlarimiz original yoki yuqori sifatli alternativ mahsulotlar bo'lib,"
+msgstr "All our products are original or high-quality alternative products,"
+
+msgid "kafolat bilan"
+msgstr "with warranty"
+
+msgid "ta'minlanadi."
+msgstr "provided."
+
+msgid "Avto ehtiyot qismlar"
+msgstr "Auto Parts"
+
+msgid "Bizning xizmatlar"
+msgstr "Our Services"
+
+msgid "Sifatli mahsulotlar"
+msgstr "Quality Products"
+
+msgid "Barcha mahsulotlar original yoki yuqori sifatli alternativ"
+msgstr "All products are original or high-quality alternatives"
+
+msgid "Tez yetkazib berish"
+msgstr "Fast Delivery"
+
+msgid "1-3 kun ichida O'zbekiston bo'ylab yetkazib berish"
+msgstr "Delivery throughout Uzbekistan within 1-3 days"
+
+msgid "24/7 Qo'llab-quvvatlash"
+msgstr "24/7 Support"
+
+msgid "Kun-tun sizga yordam berishga tayyormiz"
+msgstr "Ready to help you around the clock"
+
+msgid "Biz bilan bog'laning"
+msgstr "Contact Us"
+
+msgid "Savollaringiz bo'lsa, bizga murojaat qiling"
+msgstr "If you have questions, contact us"
+
+msgid "Toshkent shahri"
+msgstr "Tashkent city"
+
+msgid "Chilonzor tumani"
+msgstr "Chilanzar district"
+
+# Contact Page - New translations (EN)
+msgid "Kontakt"
+msgstr "Contact"
+
+msgid "Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-quvvatlash xizmati."
+msgstr "Contact Avtokontinent.uz. 24/7 support service via phone, Telegram, email."
+
+msgid "Savollaringiz yoki takliflaringiz bo'lsa, biz bilan bog'laning. 24/7 xizmat ko'rsatamiz."
+msgstr "If you have questions or suggestions, contact us. We provide 24/7 service."
+
+msgid "Aloqa ma'lumotlari"
+msgstr "Contact Information"
+
+msgid "24/7 qo'ng'iroq qiling"
+msgstr "Call 24/7"
+
+msgid "Tez javob olish uchun"
+msgstr "For quick response"
+
+msgid "Rasmiy murojaat uchun"
+msgstr "For official inquiries"
+
+msgid "Bunyodkor ko'chasi, 15-uy"
+msgstr "Bunyodkor Street, 15"
+
+msgid "Ish vaqti: 9:00 - 18:00"
+msgstr "Working hours: 9:00 - 18:00"
+
+msgid "Dushanba - Juma:"
+msgstr "Monday - Friday:"
+
+msgid "Shanba:"
+msgstr "Saturday:"
+
+msgid "Yakshanba:"
+msgstr "Sunday:"
+
+msgid "Online qo'llab-quvvatlash:"
+msgstr "Online support:"
+
+msgid "Xabar yuborish"
+msgstr "Send Message"
+
+msgid "Ismingiz"
+msgstr "Your Name"
+
+msgid "To'liq ismingizni kiriting"
+msgstr "Enter your full name"
+
+msgid "Telefon raqam"
+msgstr "Phone Number"
+
+msgid "ixtiyoriy"
+msgstr "optional"
+
+msgid "Mavzu"
+msgstr "Subject"
+
+msgid "Mavzuni tanlang"
+msgstr "Select subject"
+
+msgid "Mahsulot haqida savol"
+msgstr "Product question"
+
+msgid "Buyurtma bo'yicha"
+msgstr "About order"
+
+msgid "Yetkazib berish"
+msgstr "Delivery"
+
+msgid "Kafolat va qaytarish"
+msgstr "Warranty and returns"
+
+msgid "Taklif va shikoyat"
+msgstr "Suggestions and complaints"
+
+msgid "Boshqa"
+msgstr "Other"
+
+msgid "Xabaringizni batafsil yozing..."
+msgstr "Write your message in detail..."
+
+msgid "Telegram orqali murojaat qiling. Odatda 15 daqiqa ichida javob beramiz."
+msgstr "Contact via Telegram. We usually respond within 15 minutes."
+
+msgid "Tez-tez so'raladigan savollar"
+msgstr "Frequently Asked Questions"
+
+msgid "Yetkazib berish qancha vaqt oladi?"
+msgstr "How long does delivery take?"
+
+msgid "Toshkent shahrida 1-2 kun, viloyatlarda 2-3 kun."
+msgstr "1-2 days in Tashkent city, 2-3 days in regions."
+
+msgid "Kafolat qanday ishlaydi?"
+msgstr "How does warranty work?"
+
+msgid "Barcha mahsulotlarga 6 oy kafolat beramiz."
+msgstr "We provide 6 months warranty on all products."
+
+msgid "To'lov usullari qanday?"
+msgstr "What are the payment methods?"
+
+msgid "Naqd, plastik karta va bank o'tkazmasi orqali."
+msgstr "Cash, bank card and bank transfer."
+
+msgid "Mahsulotni qaytarish mumkinmi?"
+msgstr "Can I return the product?"
+
+msgid "Ha, 7 kun ichida qaytarish mumkin."
+msgstr "Yes, you can return within 7 days."
+
+msgid "Barcha majburiy maydonlarni to'ldiring"
+msgstr "Fill in all required fields"
+
+msgid "Xabaringiz yuborildi! Tez orada bog'lanamiz."
+msgstr "Your message has been sent! We will contact you soon."
+
+# Index Page - New translations (EN)
+msgid "O'zbekistondagi eng katta avto ehtiyot qismlar do'koni"
+msgstr "The largest auto parts store in Uzbekistan"
+
+msgid "Barcha markalar uchun sifatli avto ehtiyot qismlar. Tez yetkazib berish, kafolat va eng yaxshi narxlar. Chevrolet, Mercedes, Toyota, Hyundai va boshqa brendlar uchun original zapchastlar."
+msgstr "Quality auto parts for all brands. Fast delivery, warranty and best prices. Original spare parts for Chevrolet, Mercedes, Toyota, Hyundai and other brands."
+
+msgid "avto ehtiyot qismlar, zapchastlar, avtokontinent, auto parts, chevrolet, mercedes, toyota, motor, tormoz, filtr, yog, uzbekistan, toshkent"
+msgstr "auto parts, spare parts, avtokontinent, chevrolet, mercedes, toyota, engine, brake, filter, oil, uzbekistan, tashkent"
+
+msgid "Ko'rish"
+msgstr "View"
+
+msgid "Eng sifatli avto ehtiyot qismlar"
+msgstr "Highest quality auto parts"
+
+msgid "Mahsulotlarni ko'rish"
+msgstr "View Products"
+
+msgid "Qidirmoqchi bo'lgan ehtiyot qismingizni kiriting"
+msgstr "Enter the spare part you are looking for"
+
+msgid "Mahsulot, kategoriya yoki brend qidiring..."
+msgstr "Search products, categories or brands..."
+
+msgid "Mashhur qidiruvlar:"
+msgstr "Popular searches:"
+
+msgid "Motor yog'i"
+msgstr "Engine Oil"
+
+msgid "Akkumulyator"
+msgstr "Battery"
+
+msgid "Asosiy kategoriyalar"
+msgstr "Main Categories"
+
+msgid "Avtomobilingiz uchun kerakli barcha ehtiyot qismlarni bizning keng kategoriyalarimizdan toping"
+msgstr "Find all the spare parts you need for your car from our wide categories"
+
+msgid "kategoriya"
+msgstr "category"
+
+msgid "Tez orada"
+msgstr "Coming soon"
+
+msgid "Eng yangi mahsulotlar"
+msgstr "Latest Products"
+
+msgid "Siz uchun qaynoq"
+msgstr "Hot for you"
+
+msgid "Tavsiya qilamiz"
+msgstr "We Recommend"
+
+msgid "Siz uchun maxsus tavsiya etilganlar"
+msgstr "Specially recommended for you"
+
+msgid "Eng ko'p sotilgan"
+msgstr "Best Sellers"
+
+msgid "Mijozlarimiz tomonidan eng ko'p xarid qilinadigan"
+msgstr "Most purchased by our customers"
+
+msgid "Dunyoning eng yaxshi avtomobil brendlari uchun sifatli ehtiyot qismlar"
+msgstr "Quality spare parts for the world's best automotive brands"
+
+msgid "Nega aynan bizni tanlashingiz kerak?"
+msgstr "Why choose us?"
+
+msgid "Yillar davomida o'zbekistonlik avtomobilchilarning ishonchini qozongan do'kon"
+msgstr "A store that has earned the trust of Uzbek motorists over the years"
+
+msgid "Sifat kafolati"
+msgstr "Quality Guarantee"
+
+msgid "Barcha mahsulotlarimiz original yoki sertifikatlangan analoglar"
+msgstr "All our products are original or certified analogs"
+
+msgid "Toshkent bo'ylab 1-2 kun, viloyatlarga 3-5 kun ichida"
+msgstr "1-2 days in Tashkent, 3-5 days to regions"
+
+msgid "Eng yaxshi narx"
+msgstr "Best Price"
+
+msgid "Raqobatbardosh narxlar va muntazam chegirmalar"
+msgstr "Competitive prices and regular discounts"
+
+msgid "Har qanday savol bo'yicha mutaxassislarimizdan yordam"
+msgstr "Help from our specialists on any questions"
+
+msgid "Mijoz"
+msgstr "Customer"
+
+msgid "Model"
+msgstr "Model"
+
+msgid "Yil"
+msgstr "Year"
+
+msgid "Qo'shildi!"
+msgstr "Added!"
+
+msgid "bo'yicha qidiruv natijalari"
+msgstr "search results for"
+
+msgid "Avtokontinent.uz"
+msgstr "Avtokontinent.uz"
+
+msgid "Mahsulotlarni qidirish"
+msgstr "Search Products"
+
+msgid "so'rovi bo'yicha"
+msgstr "for query"
+
+msgid "ta mahsulot topildi"
+msgstr "products found"
+
+msgid "Avto ehtiyot qismlar onlayn qidirish va xarid qilish"
+msgstr "Online search and purchase of auto parts"
+
+msgid "Avto ehtiyot qismlarni qidirish. Kuchli qidiruv tizimi bilan kerakli mahsulotingizni oson toping"
+msgstr "Search auto parts. Easily find the product you need with a powerful search system"
+
+msgid "qidiruv"
+msgstr "search"
+
+msgid "mahsulot qidirish"
+msgstr "product search"
+
+msgid "avto ehtiyot qismlar"
+msgstr "auto parts"
+
+msgid "Mahsulot nomi, kategoriya yoki brend nomini kiriting..."
+msgstr "Enter product name, category or brand name..."
+
+msgid "Qidirish"
+msgstr "Search"
+
+msgid "Kengaytirilgan qidiruv"
+msgstr "Advanced Search"
+
+msgid "Kategoriya"
+msgstr "Category"
+
+msgid "Barcha kategoriyalar"
+msgstr "All Categories"
+
+msgid "Motor qismlari"
+msgstr "Engine Parts"
+
+msgid "Tormoz tizimi"
+msgstr "Brake System"
+
+msgid "Filtrlar"
+msgstr "Filters"
+
+msgid "Yog'lar"
+msgstr "Oils"
+
+msgid "Brend"
+msgstr "Brand"
+
+msgid "Barcha brendlar"
+msgstr "All Brands"
+
+msgid "Narx oralig'i"
+msgstr "Price Range"
+
+msgid "Dan"
+msgstr "From"
+
+msgid "Gacha"
+msgstr "To"
+
+msgid "Faqat mavjud mahsulotlar"
+msgstr "Only available products"
+
+msgid "Hech qanday mahsulot topilmadi"
+msgstr "No products found"
+
+msgid "Kerakli mahsulotingizni toping"
+msgstr "Find the product you need"
+
+msgid "Ehtimol siz quyidagini nazarda tutgan bo'larsiz:"
+msgstr "Perhaps you meant:"
+
+msgid "o'rniga"
+msgstr "instead of"
+
+msgid "Mashhur qidiruvlar"
+msgstr "Popular Searches"
+
+msgid "Akkumulyator"
+msgstr "Battery"
+
+msgid "ta natija ko'rsatilmoqda"
+msgstr "results showing"
+
+msgid "Tartiblash:"
+msgstr "Sort by:"
+
+msgid "Mos kelish bo'yicha"
+msgstr "By Relevance"
+
+msgid "Yangi mahsulotlar"
+msgstr "New Products"
+
+msgid "Nom (A-Z)"
+msgstr "Name (A-Z)"
+
+msgid "Arzon narx"
+msgstr "Low Price"
+
+msgid "Qimmat narx"
+msgstr "High Price"
+
+msgid "Mashhur"
+msgstr "Popular"
+
+msgid "Mavjud"
+msgstr "Available"
+
+msgid "Tugagan"
+msgstr "Out of Stock"
+
+msgid "Savatga qo'shish"
+msgstr "Add to Cart"
+
+msgid "Mavjud emas"
+msgstr "Not Available"
+
+msgid "bo'yicha natija topilmadi"
+msgstr "no results found for"
+
+msgid "Qidiruv so'rovingizni o'zgartiring yoki quyidagi tavsiyalardan foydalaning:"
+msgstr "Change your search query or use the following suggestions:"
+
+msgid "Qidiruv tavsiyalari:"
+msgstr "Search suggestions:"
+
+msgid "Imlo xatolarini tekshiring"
+msgstr "Check spelling errors"
+
+msgid "Qisqaroq yoki umumiyroq so'zlar ishlatib ko'ring"
+msgstr "Try using shorter or more general words"
+
+msgid "Sinonimlar yoki boshqa atamalardan foydalaning"
+msgstr "Use synonyms or other terms"
+
+msgid "Kengaytirilgan qidiruvdan foydalaning"
+msgstr "Use advanced search"
+
+msgid "Mashhur qidiruvlar:"
+msgstr "Popular searches:"
+
+msgid "Motor"
+msgstr "Engine"
+
+msgid "Tormoz"
+msgstr "Brake"
+
+msgid "Filtr"
+msgstr "Filter"
+
+msgid "Yog'"
+msgstr "Oil"
+
+msgid "Barcha mahsulotlar"
+msgstr "All Products"
+
+msgid "Kategoriyalar"
+msgstr "Categories"
+
+msgid "Sevimlilarga qo'shish uchun tizimga kiring"
+msgstr "Log in to add to favorites"
+
+msgid "Like bosish uchun tizimga kiring"
+msgstr "Log in to like"
+
+msgid "Qo'shildi!"
+msgstr "Added!"

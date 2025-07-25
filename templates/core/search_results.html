@@ -1,26 +1,27 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}
 {% if query %}
-"{{ query }}" bo'yicha qidiruv natijalari - Avtokontinent.uz
+"{{ query }}" {% trans "bo'yicha qidiruv natijalari" %} - {% trans "Avtokontinent.uz" %}
 {% else %}
-Mahsulotlarni qidirish - Avtokontinent.uz
+{% trans "Mahsulotlarni qidirish" %} - {% trans "Avtokontinent.uz" %}
 {% endif %}
 {% endblock %}
 
 {% block description %}
 {% if query %}
-"{{ query }}" so'rovi bo'yicha {{ total_found|default:0 }} ta mahsulot topildi.
-Avto ehtiyot qismlar onlayn qidirish va xarid qilish.
+"{{ query }}" {% trans "so'rovi bo'yicha" %} {{ total_found|default:0 }} {% trans "ta mahsulot topildi" %}.
+{% trans "Avto ehtiyot qismlar onlayn qidirish va xarid qilish" %}.
 {% else %}
-Avto ehtiyot qismlarni qidirish. Kuchli qidiruv tizimi bilan kerakli mahsulotingizni oson toping.
+{% trans "Avto ehtiyot qismlarni qidirish. Kuchli qidiruv tizimi bilan kerakli mahsulotingizni oson toping" %}.
 {% endif %}
 {% endblock %}
 
 {% block keywords %}
 {% if query %}{{ query }}, {% endif %}
-qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokontinent
+{% trans "qidiruv" %}, search, {% trans "mahsulot qidirish" %}, {% trans "avto ehtiyot qismlar" %}, zapchastlar, avtokontinent
 {% endblock %}
 
 {% block extra_css %}
@@ -76,7 +77,7 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                         <input type="text"
                                name="q"
                                value="{{ query }}"
-                               placeholder="Mahsulot nomi, kategoriya yoki brend nomini kiriting..."
+                               placeholder="{% trans 'Mahsulot nomi, kategoriya yoki brend nomini kiriting...' %}"
                                class="w-full pl-12 pr-20 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-gray-50 focus:bg-white transition-all"
                                autocomplete="off"
                                autofocus>
@@ -92,7 +93,7 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                         <div class="absolute inset-y-0 right-0 flex items-center pr-2">
                             <button type="submit"
                                     class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
-                                Qidirish
+                                {% trans "Qidirish" %}
                             </button>
                         </div>
                     </div>
@@ -102,7 +103,7 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                         <button type="button"
                                 onclick="toggleAdvancedSearch()"
                                 class="text-sm text-primary-600 hover:text-primary-800 font-medium">
-                            Kengaytirilgan qidiruv
+                            {% trans "Kengaytirilgan qidiruv" %}
                         </button>
                     </div>
 
@@ -110,20 +111,20 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                     <div id="advanced-search" class="hidden mt-4 bg-gray-50 rounded-lg p-4 border">
                         <div class="grid md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Kategoriya</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{% trans "Kategoriya" %}</label>
                                 <select name="category" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500">
-                                    <option value="">Barcha kategoriyalar</option>
-                                    <option value="motor">Motor qismlari</option>
-                                    <option value="tormoz">Tormoz tizimi</option>
-                                    <option value="filtr">Filtrlar</option>
-                                    <option value="yog">Yog'lar</option>
+                                    <option value="">{% trans "Barcha kategoriyalar" %}</option>
+                                    <option value="motor">{% trans "Motor qismlari" %}</option>
+                                    <option value="tormoz">{% trans "Tormoz tizimi" %}</option>
+                                    <option value="filtr">{% trans "Filtrlar" %}</option>
+                                    <option value="yog">{% trans "Yog'lar" %}</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Brend</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{% trans "Brend" %}</label>
                                 <select name="brand" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500">
-                                    <option value="">Barcha brendlar</option>
+                                    <option value="">{% trans "Barcha brendlar" %}</option>
                                     <option value="mercedes">Mercedes</option>
                                     <option value="bmw">BMW</option>
                                     <option value="audi">Audi</option>
@@ -132,17 +133,17 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Narx oralig'i (USD)</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">{% trans "Narx oralig'i" %} (USD)</label>
                                 <div class="flex space-x-2">
-                                    <input type="number" name="price_min" placeholder="Dan" class="flex-1 border border-gray-300 rounded-lg px-3 py-2">
-                                    <input type="number" name="price_max" placeholder="Gacha" class="flex-1 border border-gray-300 rounded-lg px-3 py-2">
+                                    <input type="number" name="price_min" placeholder="{% trans 'Dan' %}" class="flex-1 border border-gray-300 rounded-lg px-3 py-2">
+                                    <input type="number" name="price_max" placeholder="{% trans 'Gacha' %}" class="flex-1 border border-gray-300 rounded-lg px-3 py-2">
                                 </div>
                             </div>
 
                             <div class="flex items-end">
                                 <label class="flex items-center">
                                     <input type="checkbox" name="in_stock" value="1" class="text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-                                    <span class="ml-2 text-sm text-gray-700">Faqat mavjud mahsulotlar</span>
+                                    <span class="ml-2 text-sm text-gray-700">{% trans "Faqat mavjud mahsulotlar" %}</span>
                                 </label>
                             </div>
                         </div>
@@ -154,23 +155,23 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
             {% if query %}
                 <div class="text-center">
                     <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-                        "{{ query }}" bo'yicha qidiruv natijalari
+                        "{{ query }}" {% trans "bo'yicha qidiruv natijalari" %}
                     </h1>
                     <p class="text-gray-600">
                         {% if total_found %}
-                            {{ total_found }} ta mahsulot topildi
+                            {{ total_found }} {% trans "ta mahsulot topildi" %}
                         {% else %}
-                            Hech qanday mahsulot topilmadi
+                            {% trans "Hech qanday mahsulot topilmadi" %}
                         {% endif %}
                     </p>
                 </div>
             {% else %}
                 <div class="text-center">
                     <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-                        Mahsulotlarni qidirish
+                        {% trans "Mahsulotlarni qidirish" %}
                     </h1>
                     <p class="text-gray-600">
-                        Kerakli mahsulotingizni toping
+                        {% trans "Kerakli mahsulotingizni toping" %}
                     </p>
                 </div>
             {% endif %}
@@ -182,14 +183,14 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
         <div class="container mx-auto px-4 py-6">
             <!-- Typo Suggestion -->
             <div class="typo-suggestion rounded-lg p-4 mb-6">
-                <h3 class="font-semibold text-gray-900 mb-2">Ehtimol siz quyidagini nazarda tutgan bo'larsiz:</h3>
+                <h3 class="font-semibold text-gray-900 mb-2">{% trans "Ehtimol siz quyidagini nazarda tutgan bo'larsiz:" %}</h3>
                 <div class="flex flex-wrap gap-2">
                     {% comment %} Backend'dan typo suggestions keladi {% endcomment %}
                     <a href="?q=motor" class="bg-white hover:bg-purple-50 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium border border-purple-200 transition-colors">
-                        "motor" ({{ query }} o'rniga)
+                        "motor" ({{ query }} {% trans "o'rniga" %})
                     </a>
                     <a href="?q=tormoz" class="bg-white hover:bg-purple-50 text-purple-700 px-4 py-2 rounded-lg text-sm font-medium border border-purple-200 transition-colors">
-                        "tormoz" ({{ query }} o'rniga)
+                        "tormoz" ({{ query }} {% trans "o'rniga" %})
                     </a>
                 </div>
             </div>
@@ -200,7 +201,7 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
     {% if not query %}
         <div class="container mx-auto px-4 py-6">
             <div class="bg-white rounded-lg shadow-sm border p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">Mashhur qidiruvlar</h2>
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">{% trans "Mashhur qidiruvlar" %}</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <a href="?q=motor" class="search-suggestion group p-3 rounded-lg border border-gray-200 hover:border-primary-300">
                         <div class="flex items-center space-x-2">
@@ -209,7 +210,7 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                                 </svg>
                             </div>
-                            <span class="font-medium text-gray-900 group-hover:text-primary-600">Motor qismlari</span>
+                            <span class="font-medium text-gray-900 group-hover:text-primary-600">{% trans "Motor qismlari" %}</span>
                         </div>
                     </a>
 
@@ -220,7 +221,7 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                                     <circle cx="12" cy="12" r="10"/>
                                 </svg>
                             </div>
-                            <span class="font-medium text-gray-900 group-hover:text-primary-600">Tormoz tizimi</span>
+                            <span class="font-medium text-gray-900 group-hover:text-primary-600">{% trans "Tormoz tizimi" %}</span>
                         </div>
                     </a>
 
@@ -231,7 +232,7 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                                     <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/>
                                 </svg>
                             </div>
-                            <span class="font-medium text-gray-900 group-hover:text-primary-600">Filtrlar</span>
+                            <span class="font-medium text-gray-900 group-hover:text-primary-600">{% trans "Filtrlar" %}</span>
                         </div>
                     </a>
 
@@ -242,7 +243,7 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                                     <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/>
                                 </svg>
                             </div>
-                            <span class="font-medium text-gray-900 group-hover:text-primary-600">Akkumulyator</span>
+                            <span class="font-medium text-gray-900 group-hover:text-primary-600">{% trans "Akkumulyator" %}</span>
                         </div>
                     </a>
                 </div>
@@ -259,19 +260,19 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                 <div class="bg-white rounded-lg shadow-sm border p-4 mb-6">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div class="text-sm text-gray-600">
-                            {{ products|length }} ta natija ko'rsatilmoqda
+                            {{ products|length }} {% trans "ta natija ko'rsatilmoqda" %}
                         </div>
 
                         <div class="flex items-center space-x-4">
-                            <label class="text-sm font-medium text-gray-700">Tartiblash:</label>
+                            <label class="text-sm font-medium text-gray-700">{% trans "Tartiblash:" %}</label>
                             <select onchange="updateSort(this.value)"
                                     class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500">
-                                <option value="relevance">Mos kelish bo'yicha</option>
-                                <option value="-created_at">Yangi mahsulotlar</option>
-                                <option value="name">Nom (A-Z)</option>
-                                <option value="price">Arzon narx</option>
-                                <option value="-price">Qimmat narx</option>
-                                <option value="-views_count">Mashhur</option>
+                                <option value="relevance">{% trans "Mos kelish bo'yicha" %}</option>
+                                <option value="-created_at">{% trans "Yangi mahsulotlar" %}</option>
+                                <option value="name">{% trans "Nom (A-Z)" %}</option>
+                                <option value="price">{% trans "Arzon narx" %}</option>
+                                <option value="-price">{% trans "Qimmat narx" %}</option>
+                                <option value="-views_count">{% trans "Mashhur" %}</option>
                             </select>
                         </div>
                     </div>
@@ -315,11 +316,11 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                                 <div class="absolute bottom-3 left-3">
                                     {% if product.in_stock %}
                                         <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-                                            ✅ Mavjud
+                                            ✅ {% trans "Mavjud" %}
                                         </span>
                                     {% else %}
                                         <span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
-                                            ❌ Tugagan
+                                            ❌ {% trans "Tugagan" %}
                                         </span>
                                     {% endif %}
                                 </div>
@@ -383,12 +384,12 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                                 {% if product.in_stock %}
                                     <button onclick="handleAddToCart({{ product.id }})"
                                             class="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-lg font-medium text-sm transition-colors">
-                                        Savatga qo'shish
+                                        {% trans "Savatga qo'shish" %}
                                     </button>
                                 {% else %}
                                     <button disabled
                                             class="w-full bg-gray-300 text-gray-500 py-2 px-4 rounded-lg font-medium text-sm cursor-not-allowed">
-                                        Mavjud emas
+                                        {% trans "Mavjud emas" %}
                                     </button>
                                 {% endif %}
                             </div>
@@ -412,52 +413,52 @@ qidiruv, search, mahsulot qidirish, avto ehtiyot qismlar, zapchastlar, avtokonti
                         </svg>
 
                         <h3 class="text-2xl font-semibold text-gray-900 mb-4">
-                            "{{ query }}" bo'yicha natija topilmadi
+                            "{{ query }}" {% trans "bo'yicha natija topilmadi" %}
                         </h3>
 
                         <p class="text-gray-600 mb-8">
-                            Qidiruv so'rovingizni o'zgartiring yoki quyidagi tavsiyalardan foydalaning:
+                            {% trans "Qidiruv so'rovingizni o'zgartiring yoki quyidagi tavsiyalardan foydalaning:" %}
                         </p>
 
                         <div class="space-y-4 text-left bg-gray-50 rounded-lg p-6">
-                            <h4 class="font-semibold text-gray-900">Qidiruv tavsiyalari:</h4>
+                            <h4 class="font-semibold text-gray-900">{% trans "Qidiruv tavsiyalari:" %}</h4>
                             <ul class="space-y-2 text-sm text-gray-600">
                                 <li class="flex items-start space-x-2">
                                     <span class="text-primary-600 mt-1">•</span>
-                                    <span>Imlo xatolarini tekshiring</span>
+                                    <span>{% trans "Imlo xatolarini tekshiring" %}</span>
                                 </li>
                                 <li class="flex items-start space-x-2">
                                     <span class="text-primary-600 mt-1">•</span>
-                                    <span>Qisqaroq yoki umumiyroq so'zlar ishlatib ko'ring</span>
+                                    <span>{% trans "Qisqaroq yoki umumiyroq so'zlar ishlatib ko'ring" %}</span>
                                 </li>
                                 <li class="flex items-start space-x-2">
                                     <span class="text-primary-600 mt-1">•</span>
-                                    <span>Sinonimlar yoki boshqa atamalardan foydalaning</span>
+                                    <span>{% trans "Sinonimlar yoki boshqa atamalardan foydalaning" %}</span>
                                 </li>
                                 <li class="flex items-start space-x-2">
                                     <span class="text-primary-600 mt-1">•</span>
-                                    <span>Kengaytirilgan qidiruvdan foydalaning</span>
+                                    <span>{% trans "Kengaytirilgan qidiruvdan foydalaning" %}</span>
                                 </li>
                             </ul>
                         </div>
 
                         <div class="mt-8 space-y-4">
-                            <div class="text-sm text-gray-500 mb-4">Mashhur qidiruvlar:</div>
+                            <div class="text-sm text-gray-500 mb-4">{% trans "Mashhur qidiruvlar:" %}</div>
                             <div class="flex flex-wrap justify-center gap-2">
-                                <a href="?q=motor" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">Motor</a>
-                                <a href="?q=tormoz" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">Tormoz</a>
-                                <a href="?q=filtr" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">Filtr</a>
-                                <a href="?q=yog" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">Yog'</a>
+                                <a href="?q=motor" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">{% trans "Motor" %}</a>
+                                <a href="?q=tormoz" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">{% trans "Tormoz" %}</a>
+                                <a href="?q=filtr" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">{% trans "Filtr" %}</a>
+                                <a href="?q=yog" class="bg-primary-100 hover:bg-primary-200 text-primary-700 px-4 py-2 rounded-full text-sm font-medium transition-colors">{% trans "Yog'" %}</a>
                             </div>
 
                             <div class="flex flex-col sm:flex-row gap-3 justify-center mt-6">
                                 <a href="{% url 'products:product_list' %}"
                                    class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
-                                    Barcha mahsulotlar
+                                    {% trans "Barcha mahsulotlar" %}
                                 </a>
                                 <a href="{% url 'categories:category_list' %}"
                                    class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium">
-                                    Kategoriyalar
+                                    {% trans "Kategoriyalar" %}
                                 </a>
                             </div>
                         </div>
@@ -578,7 +579,7 @@ function initProductInteractions() {
             e.stopPropagation();
 
             if (!{{ user.is_authenticated|yesno:"true,false" }}) {
-                window.avtokontinent?.showToast('Sevimlilarga qo\'shish uchun tizimga kiring', 'info');
+                window.avtokontinent?.showToast('{% trans "Sevimlilarga qo'shish uchun tizimga kiring" %}', 'info');
                 return;
             }
 
@@ -595,7 +596,7 @@ function initProductInteractions() {
             e.stopPropagation();
 
             if (!{{ user.is_authenticated|yesno:"true,false" }}) {
-                window.avtokontinent?.showToast('Like bosish uchun tizimga kiring', 'info');
+                window.avtokontinent?.showToast('{% trans "Like bosish uchun tizimga kiring" %}', 'info');
                 return;
             }
 
@@ -611,7 +612,7 @@ window.handleAddToCart = function(productId) {
     const btn = event.target;
     const originalText = btn.innerHTML;
 
-    btn.innerHTML = '✓ Qo\'shildi!';
+    btn.innerHTML = '✓ {% trans "Qo\'shildi!" %}';
     btn.disabled = true;
     btn.classList.remove('bg-primary-600', 'hover:bg-primary-700');
     btn.classList.add('bg-green-500');

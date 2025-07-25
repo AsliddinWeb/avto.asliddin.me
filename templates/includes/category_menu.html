@@ -1,4 +1,5 @@
 <!-- Category Menu Dropdown Component -->
+{% load i18n %}
 <div class="relative"
      x-data="{
         isOpen: false,
@@ -40,7 +41,7 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
-        <span>Kategoriyalar</span>
+        <span>{% trans "Kategoriyalar" %}</span>
         <svg class="w-4 h-4 transition-transform duration-200"
              :class="isOpen ? 'rotate-180' : ''"
              fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,7 +67,7 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span class="text-sm">Kategoriyalar yuklanmoqda...</span>
+                <span class="text-sm">{% trans "Kategoriyalar yuklanmoqda..." %}</span>
             </div>
         </div>
 
@@ -93,7 +94,7 @@
                                     <div>
                                         <div class="font-medium" x-text="category.name"></div>
                                         <div class="text-xs text-gray-500" x-show="category.subcategories.length > 0">
-                                            <span x-text="category.subcategories.length"></span> ta bo'lim
+                                            <span x-text="category.subcategories.length"></span> {% trans "ta bo'lim" %}
                                         </div>
                                     </div>
                                 </div>
@@ -117,7 +118,7 @@
                     <h3 class="font-semibold text-gray-900" x-text="activeCategory ? activeCategory.name : ''"></h3>
                     <p class="text-sm text-gray-500">
                         <span x-text="activeCategory ? activeCategory.subcategories.length : 0"></span>
-                        ta subkategoriya
+                        {% trans "ta subkategoriya" %}
                     </p>
                 </div>
 
@@ -134,7 +135,7 @@
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="font-medium text-gray-900 truncate" x-text="subcategory.name"></div>
-                                    <div class="text-xs text-gray-500">Ko'rish</div>
+                                    <div class="text-xs text-gray-500">{% trans "Ko'rish" %}</div>
                                 </div>
                             </a>
                         </template>
@@ -148,10 +149,10 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                         </svg>
                     </div>
-                    <p class="text-sm text-gray-500">Bu kategoriyada subkategoriya yo'q</p>
+                    <p class="text-sm text-gray-500">{% trans "Bu kategoriyada subkategoriya yo'q" %}</p>
                     <a :href="activeCategory ? activeCategory.url : '#'"
                        class="inline-flex items-center mt-3 text-sm text-primary-600 hover:text-primary-800">
-                        <span>Barcha mahsulotlarni ko'rish</span>
+                        <span>{% trans "Barcha mahsulotlarni ko'rish" %}</span>
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
@@ -165,8 +166,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
                         </svg>
                     </div>
-                    <p class="text-sm text-gray-500 mb-3">Kategoriya tanlang</p>
-                    <p class="text-xs text-gray-400">Subkategoriyalarni ko'rish uchun chap tomondan kategoriya ustiga sichqonchani olib boring</p>
+                    <p class="text-sm text-gray-500 mb-3">{% trans "Kategoriya tanlang" %}</p>
+                    <p class="text-xs text-gray-400">{% trans "Subkategoriyalarni ko'rish uchun chap tomondan kategoriya ustiga sichqonchani olib boring" %}</p>
                 </div>
             </div>
         </div>
@@ -176,18 +177,18 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4 text-sm">
                     <a href="{% url 'categories:category_list' %}" class="text-primary-600 hover:text-primary-800 font-medium">
-                        Barcha kategoriyalar
+                        {% trans "Barcha kategoriyalar" %}
                     </a>
                     <a href="{% url 'products:featured_products' %}" class="text-gray-600 hover:text-gray-800">
-                        Tavsiya qilingan
+                        {% trans "Tavsiya qilingan" %}
                     </a>
                     <a href="{% url 'products:popular_products' %}" class="text-gray-600 hover:text-gray-800">
-                        Mashhur mahsulotlar
+                        {% trans "Mashhur mahsulotlar" %}
                     </a>
                 </div>
 
                 <div class="text-xs text-gray-500">
-                    Barcha kategoriyalar
+                    {% trans "Barcha kategoriyalar" %}
                 </div>
             </div>
         </div>
@@ -201,7 +202,7 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
-            <span>Kategoriyalar</span>
+            <span>{% trans "Kategoriyalar" %}</span>
         </button>
 
         <!-- Simple Dropdown for No-JS -->
@@ -209,13 +210,13 @@
             <div class="p-4">
                 <div class="space-y-2">
                     <a href="{% url 'categories:category_list' %}" class="block p-2 text-gray-700 hover:bg-gray-50 rounded transition-colors">
-                        Barcha kategoriyalar
+                        {% trans "Barcha kategoriyalar" %}
                     </a>
                     <a href="{% url 'products:featured_products' %}" class="block p-2 text-gray-700 hover:bg-gray-50 rounded transition-colors">
-                        Tavsiya qilingan mahsulotlar
+                        {% trans "Tavsiya qilingan mahsulotlar" %}
                     </a>
                     <a href="{% url 'products:popular_products' %}" class="block p-2 text-gray-700 hover:bg-gray-50 rounded transition-colors">
-                        Mashhur mahsulotlar
+                        {% trans "Mashhur mahsulotlar" %}
                     </a>
                 </div>
             </div>

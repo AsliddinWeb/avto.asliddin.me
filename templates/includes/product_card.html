@@ -1,5 +1,5 @@
-
 <!-- Optimallashtirilgan Product Card Component -->
+{% load i18n %}
 <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-200 group overflow-hidden product-card">
 
     <!-- Product Image -->
@@ -23,13 +23,13 @@
         <div class="absolute top-2 left-2 flex flex-col space-y-1">
             {% if product.is_featured %}
                 <span class="bg-yellow-500 text-white px-2 py-1 text-xs font-semibold rounded">
-                    Tavsiya
+                    {% trans "Tavsiya" %}
                 </span>
             {% endif %}
 
             {% if not product.in_stock %}
                 <span class="bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
-                    Tugagan
+                    {% trans "Tugagan" %}
                 </span>
             {% endif %}
 
@@ -37,7 +37,7 @@
             {% now "Y-m-d" as today %}
             {% if product.created_at|timesince|slice:":1" == "0" %}
                 <span class="bg-green-500 text-white px-2 py-1 text-xs font-semibold rounded">
-                    Yangi
+                    {% trans "Yangi" %}
                 </span>
             {% endif %}
         </div>
@@ -48,8 +48,8 @@
             <!-- Wishlist Button - OPTIMALLASHTIRILGAN -->
             <button class="wishlist-btn w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-all duration-300"
                     data-product-id="{{ product.id }}"
-                    title="Sevimlilarga qo'shish"
-                    aria-label="Sevimlilarga qo'shish">
+                    title="{% trans 'Sevimlilarga qo\'shish' %}"
+                    aria-label="{% trans 'Sevimlilarga qo\'shish' %}">
                 <svg class="w-4 h-4 transition-all duration-300 wishlist-icon-{{ product.id }} text-gray-500"
                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -61,8 +61,8 @@
             <!-- Quick View Button -->
             <button class="quick-view-btn w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
                     data-product-id="{{ product.id }}"
-                    title="Tez ko'rish"
-                    aria-label="Tez ko'rish">
+                    title="{% trans 'Tez ko\'rish' %}"
+                    aria-label="{% trans 'Tez ko\'rish' %}">
                 <svg class="w-4 h-4 text-gray-600 hover:text-primary-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -74,7 +74,7 @@
         {% if product.in_stock %}
             <div class="absolute bottom-2 left-2">
                 <span class="bg-green-100 text-green-800 px-2 py-1 text-xs font-medium rounded-full">
-                    ✓ Mavjud
+                    ✓ {% trans "Mavjud" %}
                 </span>
             </div>
         {% endif %}
@@ -112,14 +112,14 @@
         <!-- Compatible Car Models -->
         {% if product.car_models.exists %}
             <div class="text-xs text-gray-500 mb-2">
-                <span class="font-medium">Mos keladi:</span>
+                <span class="font-medium">{% trans "Mos keladi:" %}</span>
                 {% for model in product.car_models.all|slice:":2" %}
                     <span class="inline-block bg-gray-100 rounded px-2 py-1 mr-1 mb-1">
                         {{ model.brand.name }} {{ model.name }}
                     </span>
                 {% endfor %}
                 {% if product.car_models.count > 2 %}
-                    <span class="text-gray-400">+{{ product.car_models.count|add:"-2" }} ko'proq</span>
+                    <span class="text-gray-400">+{{ product.car_models.count|add:"-2" }} {% trans "ko'proq" %}</span>
                 {% endif %}
             </div>
         {% endif %}
@@ -135,7 +135,7 @@
             <!-- Featured Badge -->
             {% if product.is_featured %}
                 <div class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-semibold">
-                    ⭐ TOP
+                    ⭐ {% trans "TOP" %}
                 </div>
             {% endif %}
         </div>
@@ -156,7 +156,8 @@
                 <div class="flex items-center space-x-1">
                     <button class="like-btn flex items-center space-x-1 hover:text-red-500 transition-colors"
                             data-product-id="{{ product.id }}"
-                            onclick="handleLike({{ product.id }}, event)">
+                            onclick="handleLike({{ product.id }}, event)"
+                            title="{% trans 'Yoqtirish' %}">
                         <svg class="w-4 h-4 like-icon-{{ product.id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                         </svg>
@@ -187,19 +188,19 @@
                 <button class="cart-btn flex-1 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
                         onclick="handleAddToCart({{ product.id }}, event)"
                         data-product-id="{{ product.id }}">
-                    Savatga qo'shish
+                    {% trans "Savatga qo'shish" %}
                 </button>
             {% else %}
                 <!-- Out of Stock -->
                 <button disabled class="flex-1 bg-gray-300 text-gray-500 px-4 py-2 rounded-lg cursor-not-allowed text-sm font-medium">
-                    Tugagan
+                    {% trans "Tugagan" %}
                 </button>
             {% endif %}
 
             <!-- More Info Button -->
             <a href="{{ product.get_absolute_url }}"
                class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
-                Batafsil
+                {% trans "Batafsil" %}
             </a>
         </div>
     </div>

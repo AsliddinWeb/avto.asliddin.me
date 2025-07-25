@@ -1,16 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Avtokontinent.uz - O'zbekistondagi eng katta avto ehtiyot qismlar do'koni{% endblock %}
+{% block title %}Avtokontinent.uz - {% trans "O'zbekistondagi eng katta avto ehtiyot qismlar do'koni" %}{% endblock %}
 
 {% block description %}
-Barcha markalar uchun sifatli avto ehtiyot qismlar. Tez yetkazib berish, kafolat va eng yaxshi narxlar.
-Chevrolet, Mercedes, Toyota, Hyundai va boshqa brendlar uchun original zapchastlar.
+{% trans "Barcha markalar uchun sifatli avto ehtiyot qismlar. Tez yetkazib berish, kafolat va eng yaxshi narxlar. Chevrolet, Mercedes, Toyota, Hyundai va boshqa brendlar uchun original zapchastlar." %}
 {% endblock %}
 
 {% block keywords %}
-avto ehtiyot qismlar, zapchastlar, avtokontinent, auto parts, chevrolet, mercedes, toyota,
-motor, tormoz, filtr, yog, uzbekistan, toshkent
+{% trans "avto ehtiyot qismlar, zapchastlar, avtokontinent, auto parts, chevrolet, mercedes, toyota, motor, tormoz, filtr, yog, uzbekistan, toshkent" %}
 {% endblock %}
 
 {% block extra_css %}
@@ -119,7 +118,7 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
                                             {% if banner.link_url %}
                                             <a href="{{ banner.link_url }}"
                                                class="inline-flex items-center bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                                                Ko'rish
+                                                {% trans "Ko'rish" %}
                                                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                                 </svg>
@@ -143,10 +142,10 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
                 <div class="h-64 lg:h-80 xl:h-96 flex items-center justify-center">
                     <div class="text-center text-white">
                         <h1 class="text-4xl lg:text-6xl font-bold mb-4">Avtokontinent.uz</h1>
-                        <p class="text-xl lg:text-2xl mb-6">Eng sifatli avto ehtiyot qismlar</p>
+                        <p class="text-xl lg:text-2xl mb-6">{% trans "Eng sifatli avto ehtiyot qismlar" %}</p>
                         <a href="{% url 'products:product_list' %}"
                            class="inline-flex items-center bg-white text-gray-900 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                            Mahsulotlarni ko'rish
+                            {% trans "Mahsulotlarni ko'rish" %}
                         </a>
                     </div>
                 </div>
@@ -160,7 +159,7 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
         <div class="container mx-auto px-4 py-6">
             <div class="max-w-4xl mx-auto">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4 text-center">
-                    Qidirmoqchi bo'lgan ehtiyot qismingizni kiriting
+                    {% trans "Qidirmoqchi bo'lgan ehtiyot qismingizni kiriting" %}
                 </h2>
 
                 <!-- Search Form -->
@@ -168,26 +167,26 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
                     <div class="flex-1 relative">
                         <input type="text"
                                name="q"
-                               placeholder="Mahsulot, kategoriya yoki brend qidiring..."
+                               placeholder="{% trans 'Mahsulot, kategoriya yoki brend qidiring...' %}"
                                class="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <svg class="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
                     <button type="submit" class="bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
-                        Qidirish
+                        {% trans "Qidirish" %}
                     </button>
                 </form>
 
                 <!-- Popular Search Tags -->
                 <div class="text-center">
-                    <span class="text-sm text-gray-500 mr-3">Mashhur qidiruvlar:</span>
+                    <span class="text-sm text-gray-500 mr-3">{% trans "Mashhur qidiruvlar:" %}</span>
                     <div class="inline-flex flex-wrap gap-2 mt-2">
-                        <a href="{% url 'core:search' %}?q=motor" class="tag-btn">Motor qismlari</a>
-                        <a href="{% url 'core:search' %}?q=tormoz" class="tag-btn">Tormoz tizimi</a>
-                        <a href="{% url 'core:search' %}?q=filtr" class="tag-btn">Filtrlar</a>
-                        <a href="{% url 'core:search' %}?q=yog" class="tag-btn">Motor yog'i</a>
-                        <a href="{% url 'core:search' %}?q=akkumulyator" class="tag-btn">Akkumulyator</a>
+                        <a href="{% url 'core:search' %}?q=motor" class="tag-btn">{% trans "Motor qismlari" %}</a>
+                        <a href="{% url 'core:search' %}?q=tormoz" class="tag-btn">{% trans "Tormoz tizimi" %}</a>
+                        <a href="{% url 'core:search' %}?q=filtr" class="tag-btn">{% trans "Filtrlar" %}</a>
+                        <a href="{% url 'core:search' %}?q=yog" class="tag-btn">{% trans "Motor yog'i" %}</a>
+                        <a href="{% url 'core:search' %}?q=akkumulyator" class="tag-btn">{% trans "Akkumulyator" %}</a>
                     </div>
                 </div>
             </div>
@@ -198,9 +197,9 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
     <section class="py-8 lg:py-12 bg-white fade-in">
         <div class="container mx-auto px-4">
             <div class="text-center mb-8">
-                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">Asosiy kategoriyalar</h2>
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">{% trans "Asosiy kategoriyalar" %}</h2>
                 <p class="text-gray-600 max-w-2xl mx-auto">
-                    Avtomobilingiz uchun kerakli barcha ehtiyot qismlarni bizning keng kategoriyalarimizdan toping
+                    {% trans "Avtomobilingiz uchun kerakli barcha ehtiyot qismlarni bizning keng kategoriyalarimizdan toping" %}
                 </p>
             </div>
 
@@ -227,13 +226,13 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
                     <!-- Products Count - TUZATILDI -->
                     <p class="text-xs text-gray-500 mt-1">
                         {% if category.product_set.count > 0 %}
-                            {{ category.product_set.count }} mahsulot
+                            {{ category.product_set.count }} {% trans "mahsulot" %}
                         {% elif category.subcategories.exists %}
                             {% with subcategory_products=category.subcategories.all|length %}
-                                {{ subcategory_products }}+ kategoriya
+                                {{ subcategory_products }}+ {% trans "kategoriya" %}
                             {% endwith %}
                         {% else %}
-                            Tez orada
+                            {% trans "Tez orada" %}
                         {% endif %}
                     </p>
                 </a>
@@ -242,7 +241,7 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
 
             <div class="text-center mt-8">
                 <a href="{% url 'categories:category_list' %}" class="inline-flex items-center bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
-                    <span>Barcha kategoriyalar</span>
+                    <span>{% trans "Barcha kategoriyalar" %}</span>
                     <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
@@ -258,11 +257,11 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between mb-6 lg:mb-8">
                 <div>
-                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">🚀 Eng yangi maxsulotlar</h2>
-                    <p class="text-gray-600">Siz uchun qaynoq</p>
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">🚀 {% trans "Eng yangi mahsulotlar" %}</h2>
+                    <p class="text-gray-600">{% trans "Siz uchun qaynoq" %}</p>
                 </div>
                 <a href="{% url 'products:product_list' %}" class="hidden md:flex items-center text-primary-600 hover:text-primary-800 font-medium">
-                    <span>Barchasini ko'rish</span>
+                    <span>{% trans "Barchasini ko'rish" %}</span>
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
@@ -285,11 +284,11 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between mb-6 lg:mb-8">
                 <div>
-                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">🔥 Tavsiya qilamiz</h2>
-                    <p class="text-gray-600">Siz uchun maxsus tavsiya etilganlar</p>
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">🔥 {% trans "Tavsiya qilamiz" %}</h2>
+                    <p class="text-gray-600">{% trans "Siz uchun maxsus tavsiya etilganlar" %}</p>
                 </div>
                 <a href="{% url 'products:featured_products' %}" class="hidden md:flex items-center text-primary-600 hover:text-primary-800 font-medium">
-                    <span>Barchasini ko'rish</span>
+                    <span>{% trans "Barchasini ko'rish" %}</span>
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
@@ -312,11 +311,11 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between mb-6 lg:mb-8">
                 <div>
-                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">🎯 Eng ko'p sotilgan</h2>
-                    <p class="text-gray-600">Mijozlarimiz tomonidan eng ko'p xarid qilinadigan</p>
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">🎯 {% trans "Eng ko'p sotilgan" %}</h2>
+                    <p class="text-gray-600">{% trans "Mijozlarimiz tomonidan eng ko'p xarid qilinadigan" %}</p>
                 </div>
                 <a href="{% url 'products:popular_products' %}" class="hidden md:flex items-center text-primary-600 hover:text-primary-800 font-medium">
-                    <span>Barchasini ko'rish</span>
+                    <span>{% trans "Barchasini ko'rish" %}</span>
                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
@@ -338,9 +337,9 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
     <section class="py-8 lg:py-12 bg-gray-50 fade-in">
         <div class="container mx-auto px-4">
             <div class="text-center mb-8">
-                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">Mashhur brendlar</h2>
+                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">{% trans "Mashhur brendlar" %}</h2>
                 <p class="text-gray-600 max-w-2xl mx-auto">
-                    Dunyoning eng yaxshi avtomobil brendlari uchun sifatli ehtiyot qismlar
+                    {% trans "Dunyoning eng yaxshi avtomobil brendlari uchun sifatli ehtiyot qismlar" %}
                 </p>
             </div>
 
@@ -357,14 +356,14 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
                         {% endif %}
                     </div>
                     <h3 class="font-medium text-gray-900 group-hover:text-primary-600 text-sm">{{ brand.name }}</h3>
-                    <p class="text-xs text-gray-500 mt-1">{{ brand.products_count|default:0 }} mahsulot</p>
+                    <p class="text-xs text-gray-500 mt-1">{{ brand.products_count|default:0 }} {% trans "mahsulot" %}</p>
                 </a>
                 {% endfor %}
             </div>
 
             <div class="text-center mt-8">
                 <a href="{% url 'brands:brand_list' %}" class="inline-flex items-center bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium">
-                    Barcha brendlar
+                    {% trans "Barcha brendlar" %}
                 </a>
             </div>
         </div>
@@ -375,9 +374,9 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
     <section class="py-12 lg:py-16 bg-gray-900 text-white fade-in">
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
-                <h2 class="text-2xl lg:text-3xl font-bold mb-4">Nega aynan bizni tanlashingiz kerak?</h2>
+                <h2 class="text-2xl lg:text-3xl font-bold mb-4">{% trans "Nega aynan bizni tanlashingiz kerak?" %}</h2>
                 <p class="text-gray-300 max-w-2xl mx-auto">
-                    Yillar davomida o'zbekistonlik avtomobilchilarning ishonchini qozongan do'kon
+                    {% trans "Yillar davomida o'zbekistonlik avtomobilchilarning ishonchini qozongan do'kon" %}
                 </p>
             </div>
 
@@ -388,8 +387,8 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2">Sifat kafolati</h3>
-                    <p class="text-gray-300 text-sm">Barcha mahsulotlarimiz original yoki sertifikatlangan analoglar</p>
+                    <h3 class="text-xl font-semibold mb-2">{% trans "Sifat kafolati" %}</h3>
+                    <p class="text-gray-300 text-sm">{% trans "Barcha mahsulotlarimiz original yoki sertifikatlangan analoglar" %}</p>
                 </div>
 
                 <div class="text-center">
@@ -398,8 +397,8 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2">Tez yetkazish</h3>
-                    <p class="text-gray-300 text-sm">Toshkent bo'ylab 1-2 kun, viloyatlarga 3-5 kun ichida</p>
+                    <h3 class="text-xl font-semibold mb-2">{% trans "Tez yetkazish" %}</h3>
+                    <p class="text-gray-300 text-sm">{% trans "Toshkent bo'ylab 1-2 kun, viloyatlarga 3-5 kun ichida" %}</p>
                 </div>
 
                 <div class="text-center">
@@ -408,8 +407,8 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2">Eng yaxshi narx</h3>
-                    <p class="text-gray-300 text-sm">Raqobatbardosh narxlar va muntazam chegirmalar</p>
+                    <h3 class="text-xl font-semibold mb-2">{% trans "Eng yaxshi narx" %}</h3>
+                    <p class="text-gray-300 text-sm">{% trans "Raqobatbardosh narxlar va muntazam chegirmalar" %}</p>
                 </div>
 
                 <div class="text-center">
@@ -418,8 +417,8 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 100 19.5 9.75 9.75 0 000-19.5z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2">24/7 qo'llab-quvvatlash</h3>
-                    <p class="text-gray-300 text-sm">Har qanday savol bo'yicha mutaxassislarimizdan yordam</p>
+                    <h3 class="text-xl font-semibold mb-2">{% trans "24/7 qo'llab-quvvatlash" %}</h3>
+                    <p class="text-gray-300 text-sm">{% trans "Har qanday savol bo'yicha mutaxassislarimizdan yordam" %}</p>
                 </div>
             </div>
         </div>
@@ -431,19 +430,19 @@ motor, tormoz, filtr, yog, uzbekistan, toshkent
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                 <div>
                     <div class="text-2xl lg:text-3xl font-bold mb-1">15,000+</div>
-                    <div class="text-primary-100 text-sm">Mahsulot</div>
+                    <div class="text-primary-100 text-sm">{% trans "Mahsulot" %}</div>
                 </div>
                 <div>
                     <div class="text-2xl lg:text-3xl font-bold mb-1">50,000+</div>
-                    <div class="text-primary-100 text-sm">Mijoz</div>
+                    <div class="text-primary-100 text-sm">{% trans "Mijoz" %}</div>
                 </div>
                 <div>
                     <div class="text-2xl lg:text-3xl font-bold mb-1">500+</div>
-                    <div class="text-primary-100 text-sm">Model</div>
+                    <div class="text-primary-100 text-sm">{% trans "Model" %}</div>
                 </div>
                 <div>
                     <div class="text-2xl lg:text-3xl font-bold mb-1">5+</div>
-                    <div class="text-primary-100 text-sm">Yil</div>
+                    <div class="text-primary-100 text-sm">{% trans "Yil" %}</div>
                 </div>
             </div>
         </div>
@@ -555,7 +554,7 @@ function handleAddToCart(productId) {
     // Visual feedback
     const btn = event.target;
     const originalText = btn.textContent;
-    btn.textContent = '✓ Qo\'shildi!';
+    btn.textContent = '✓ {% trans "Qo'shildi!" %}';
     btn.disabled = true;
 
     setTimeout(() => {

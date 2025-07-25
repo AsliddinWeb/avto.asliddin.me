@@ -1,11 +1,12 @@
 <!-- templates/core/contact.html -->
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Kontakt - Avtokontinent.uz{% endblock %}
+{% block title %}{% trans "Kontakt" %} - Avtokontinent.uz{% endblock %}
 
 {% block description %}
-Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-quvvatlash xizmati.
+{% trans "Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-quvvatlash xizmati." %}
 {% endblock %}
 
 {% block content %}
@@ -14,9 +15,9 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
 
         <!-- Header -->
         <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-gray-900 mb-4">Biz bilan bog'laning</h1>
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">{% trans "Biz bilan bog'laning" %}</h1>
             <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                Savollaringiz yoki takliflaringiz bo'lsa, biz bilan bog'laning. 24/7 xizmat ko'rsatamiz.
+                {% trans "Savollaringiz yoki takliflaringiz bo'lsa, biz bilan bog'laning. 24/7 xizmat ko'rsatamiz." %}
             </p>
         </div>
 
@@ -27,7 +28,7 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
 
                 <!-- Contact Methods -->
                 <div class="bg-white rounded-lg shadow-sm p-8">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-6">Aloqa ma'lumotlari</h2>
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-6">{% trans "Aloqa ma'lumotlari" %}</h2>
 
                     <div class="space-y-6">
                         <!-- Phone -->
@@ -38,11 +39,11 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900">Telefon</h3>
+                                <h3 class="text-lg font-semibold text-gray-900">{% trans "Telefon" %}</h3>
                                 <a href="tel:+998901234567" class="text-green-600 hover:text-green-800 font-medium">
                                     +998 90 123 45 67
                                 </a>
-                                <p class="text-sm text-gray-600">24/7 qo'ng'iroq qiling</p>
+                                <p class="text-sm text-gray-600">{% trans "24/7 qo'ng'iroq qiling" %}</p>
                             </div>
                         </div>
 
@@ -58,7 +59,7 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
                                 <a href="https://t.me/avtokontinent_support" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium">
                                     @avtokontinent_support
                                 </a>
-                                <p class="text-sm text-gray-600">Tez javob olish uchun</p>
+                                <p class="text-sm text-gray-600">{% trans "Tez javob olish uchun" %}</p>
                             </div>
                         </div>
 
@@ -74,7 +75,7 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
                                 <a href="mailto:info@avtokontinent.uz" class="text-purple-600 hover:text-purple-800 font-medium">
                                     info@avtokontinent.uz
                                 </a>
-                                <p class="text-sm text-gray-600">Rasmiy murojaat uchun</p>
+                                <p class="text-sm text-gray-600">{% trans "Rasmiy murojaat uchun" %}</p>
                             </div>
                         </div>
 
@@ -87,12 +88,12 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900">Manzil</h3>
+                                <h3 class="text-lg font-semibold text-gray-900">{% trans "Manzil" %}</h3>
                                 <p class="text-gray-700 font-medium">
-                                    Toshkent shahri, Chilonzor tumani<br>
-                                    Bunyodkor ko'chasi, 15-uy
+                                    {% trans "Toshkent shahri, Chilonzor tumani" %}<br>
+                                    {% trans "Bunyodkor ko'chasi, 15-uy" %}
                                 </p>
-                                <p class="text-sm text-gray-600">Ish vaqti: 9:00 - 18:00</p>
+                                <p class="text-sm text-gray-600">{% trans "Ish vaqti: 9:00 - 18:00" %}</p>
                             </div>
                         </div>
                     </div>
@@ -100,23 +101,23 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
 
                 <!-- Working Hours -->
                 <div class="bg-white rounded-lg shadow-sm p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Ish vaqti</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">{% trans "Ish vaqti" %}</h3>
                     <div class="space-y-2 text-sm">
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Dushanba - Juma:</span>
+                            <span class="text-gray-600">{% trans "Dushanba - Juma:" %}</span>
                             <span class="font-medium">9:00 - 18:00</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Shanba:</span>
+                            <span class="text-gray-600">{% trans "Shanba:" %}</span>
                             <span class="font-medium">9:00 - 16:00</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-600">Yakshanba:</span>
-                            <span class="font-medium text-red-600">Dam olish</span>
+                            <span class="text-gray-600">{% trans "Yakshanba:" %}</span>
+                            <span class="font-medium text-red-600">{% trans "Dam olish" %}</span>
                         </div>
                         <div class="pt-2 border-t">
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Online qo'llab-quvvatlash:</span>
+                                <span class="text-gray-600">{% trans "Online qo'llab-quvvatlash:" %}</span>
                                 <span class="font-medium text-green-600">24/7</span>
                             </div>
                         </div>
@@ -126,7 +127,7 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
 
             <!-- Contact Form -->
             <div class="bg-white rounded-lg shadow-sm p-8">
-                <h2 class="text-2xl font-semibold text-gray-900 mb-6">Xabar yuborish</h2>
+                <h2 class="text-2xl font-semibold text-gray-900 mb-6">{% trans "Xabar yuborish" %}</h2>
 
                 <form method="post" class="space-y-6" id="contact-form">
                     {% csrf_token %}
@@ -134,20 +135,20 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
                     <!-- Name -->
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                            Ismingiz *
+                            {% trans "Ismingiz" %} *
                         </label>
                         <input type="text"
                                id="name"
                                name="name"
                                required
                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="To'liq ismingizni kiriting">
+                               placeholder="{% trans 'To\'liq ismingizni kiriting' %}">
                     </div>
 
                     <!-- Phone -->
                     <div>
                         <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
-                            Telefon raqam *
+                            {% trans "Telefon raqam" %} *
                         </label>
                         <input type="tel"
                                id="phone"
@@ -160,7 +161,7 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
                     <!-- Email -->
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                            Email (ixtiyoriy)
+                            Email ({% trans "ixtiyoriy" %})
                         </label>
                         <input type="email"
                                id="email"
@@ -172,33 +173,33 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
                     <!-- Subject -->
                     <div>
                         <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
-                            Mavzu *
+                            {% trans "Mavzu" %} *
                         </label>
                         <select id="subject"
                                 name="subject"
                                 required
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Mavzuni tanlang</option>
-                            <option value="mahsulot">Mahsulot haqida savol</option>
-                            <option value="buyurtma">Buyurtma bo'yicha</option>
-                            <option value="yetkazish">Yetkazib berish</option>
-                            <option value="kafolat">Kafolat va qaytarish</option>
-                            <option value="taklif">Taklif va shikoyat</option>
-                            <option value="boshqa">Boshqa</option>
+                            <option value="">{% trans "Mavzuni tanlang" %}</option>
+                            <option value="mahsulot">{% trans "Mahsulot haqida savol" %}</option>
+                            <option value="buyurtma">{% trans "Buyurtma bo'yicha" %}</option>
+                            <option value="yetkazish">{% trans "Yetkazib berish" %}</option>
+                            <option value="kafolat">{% trans "Kafolat va qaytarish" %}</option>
+                            <option value="taklif">{% trans "Taklif va shikoyat" %}</option>
+                            <option value="boshqa">{% trans "Boshqa" %}</option>
                         </select>
                     </div>
 
                     <!-- Message -->
                     <div>
                         <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
-                            Xabar *
+                            {% trans "Xabar" %} *
                         </label>
                         <textarea id="message"
                                   name="message"
                                   rows="5"
                                   required
                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                  placeholder="Xabaringizni batafsil yozing..."></textarea>
+                                  placeholder="{% trans 'Xabaringizni batafsil yozing...' %}"></textarea>
                     </div>
 
                     <!-- Submit Button -->
@@ -207,7 +208,7 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                         </svg>
-                        Xabar yuborish
+                        {% trans "Xabar yuborish" %}
                     </button>
                 </form>
 
@@ -219,8 +220,7 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
                         </svg>
                         <div>
                             <p class="text-sm text-blue-800">
-                                <strong>Tez javob olish uchun</strong> Telegram orqali murojaat qiling.
-                                Odatda 15 daqiqa ichida javob beramiz.
+                                <strong>{% trans "Tez javob olish uchun" %}</strong> {% trans "Telegram orqali murojaat qiling. Odatda 15 daqiqa ichida javob beramiz." %}
                             </p>
                         </div>
                     </div>
@@ -230,30 +230,30 @@ Avtokontinent.uz bilan bog'laning. Telefon, Telegram, email orqali 24/7 qo'llab-
 
         <!-- FAQ Section -->
         <div class="mt-12 bg-white rounded-lg shadow-sm p-8">
-            <h2 class="text-2xl font-semibold text-gray-900 mb-6 text-center">Tez-tez so'raladigan savollar</h2>
+            <h2 class="text-2xl font-semibold text-gray-900 mb-6 text-center">{% trans "Tez-tez so'raladigan savollar" %}</h2>
 
             <div class="grid md:grid-cols-2 gap-8">
                 <div class="space-y-4">
                     <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">Yetkazib berish qancha vaqt oladi?</h3>
-                        <p class="text-gray-600 text-sm">Toshkent shahrida 1-2 kun, viloyatlarda 2-3 kun.</p>
+                        <h3 class="font-semibold text-gray-900 mb-2">{% trans "Yetkazib berish qancha vaqt oladi?" %}</h3>
+                        <p class="text-gray-600 text-sm">{% trans "Toshkent shahrida 1-2 kun, viloyatlarda 2-3 kun." %}</p>
                     </div>
 
                     <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">Kafolat qanday ishlaydi?</h3>
-                        <p class="text-gray-600 text-sm">Barcha mahsulotlarga 6 oy kafolat beramiz.</p>
+                        <h3 class="font-semibold text-gray-900 mb-2">{% trans "Kafolat qanday ishlaydi?" %}</h3>
+                        <p class="text-gray-600 text-sm">{% trans "Barcha mahsulotlarga 6 oy kafolat beramiz." %}</p>
                     </div>
                 </div>
 
                 <div class="space-y-4">
                     <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">To'lov usullari qanday?</h3>
-                        <p class="text-gray-600 text-sm">Naqd, plastik karta va bank o'tkazmasi orqali.</p>
+                        <h3 class="font-semibold text-gray-900 mb-2">{% trans "To'lov usullari qanday?" %}</h3>
+                        <p class="text-gray-600 text-sm">{% trans "Naqd, plastik karta va bank o'tkazmasi orqali." %}</p>
                     </div>
 
                     <div>
-                        <h3 class="font-semibold text-gray-900 mb-2">Mahsulotni qaytarish mumkinmi?</h3>
-                        <p class="text-gray-600 text-sm">Ha, 7 kun ichida qaytarish mumkin.</p>
+                        <h3 class="font-semibold text-gray-900 mb-2">{% trans "Mahsulotni qaytarish mumkinmi?" %}</h3>
+                        <p class="text-gray-600 text-sm">{% trans "Ha, 7 kun ichida qaytarish mumkin." %}</p>
                     </div>
                 </div>
             </div>
@@ -277,12 +277,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const message = document.getElementById('message').value.trim();
 
         if (!name || !phone || !subject || !message) {
-            window.avtokontinent?.showToast('Barcha majburiy maydonlarni to\'ldiring', 'error');
+            window.avtokontinent?.showToast('{% trans "Barcha majburiy maydonlarni to'ldiring" %}', 'error');
             return;
         }
 
         // Submit form (you can implement actual form submission here)
-        window.avtokontinent?.showToast('Xabaringiz yuborildi! Tez orada bog\'lanamiz.', 'success');
+        window.avtokontinent?.showToast('{% trans "Xabaringiz yuborildi! Tez orada bog'lanamiz." %}', 'success');
         form.reset();
     });
 

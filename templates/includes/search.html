@@ -1,4 +1,5 @@
 <!-- Search Component -->
+{% load i18n %}
 <div class="relative" x-data="{
     query: '{{ request.GET.q|default:'' }}',
     showResults: false,
@@ -87,7 +88,7 @@
                    @focus="focusSearch()"
                    @blur="hideResults()"
                    @keydown="handleKeydown($event)"
-                   placeholder="Mahsulot, kategoriya yoki brend izlang..."
+                   placeholder="{% trans 'Mahsulot, kategoriya yoki brend izlang...' %}"
                    class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white hover:bg-gray-50 transition-colors text-sm md:text-base"
                    autocomplete="off"
                    spellcheck="false">
@@ -103,7 +104,7 @@
             <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
                 <button type="submit"
                         class="text-gray-400 hover:text-primary-600 transition-colors"
-                        title="Qidiruv">
+                        title="{% trans 'Qidiruv' %}">
                     <span x-show="!isSearching">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
@@ -123,7 +124,7 @@
                     @click="query = ''; results = []; showResults = false; $refs.searchInput.focus();"
                     type="button"
                     class="absolute inset-y-0 right-12 pr-2 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                    title="Tozalash">
+                    title="{% trans 'Tozalash' %}">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
@@ -149,7 +150,7 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span class="text-sm">Qidirilmoqda...</span>
+                <span class="text-sm">{% trans "Qidirilmoqda..." %}</span>
             </div>
         </div>
 
@@ -177,7 +178,7 @@
                         </div>
                         <div class="flex items-center space-x-2 mt-1">
                             <span class="text-sm font-semibold text-primary-600" x-text="'$' + result.price_usd"></span>
-                            <span class="text-sm text-gray-500" x-text="result.price_som + ' so\'m'"></span>
+                            <span class="text-sm text-gray-500" x-text="result.price_som + ' {% trans "so'm" %}'"></span>
                         </div>
                     </div>
 
@@ -199,41 +200,41 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
             </div>
-            <p class="text-sm text-gray-500 mb-1">Hech narsa topilmadi</p>
-            <p class="text-xs text-gray-400">Boshqa kalit so'zlar bilan izlab ko'ring</p>
+            <p class="text-sm text-gray-500 mb-1">{% trans "Hech narsa topilmadi" %}</p>
+            <p class="text-xs text-gray-400">{% trans "Boshqa kalit so'zlar bilan izlab ko'ring" %}</p>
         </div>
 
         <!-- Popular Searches (when no query) -->
         <div x-show="!isSearching && query.length < 2" class="p-4">
             <div class="mb-3">
-                <h5 class="text-sm font-medium text-gray-900 mb-2">Mashhur qidiruvlar</h5>
+                <h5 class="text-sm font-medium text-gray-900 mb-2">{% trans "Mashhur qidiruvlar" %}</h5>
                 <div class="flex flex-wrap gap-2">
                     <a href="/search/?q=motor" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm transition-colors">
-                        Motor
+                        {% trans "Motor" %}
                     </a>
                     <a href="/search/?q=tormoz" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm transition-colors">
-                        Tormoz
+                        {% trans "Tormoz" %}
                     </a>
                     <a href="/search/?q=filtr" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm transition-colors">
-                        Filtr
+                        {% trans "Filtr" %}
                     </a>
                     <a href="/search/?q=yog" class="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm transition-colors">
-                        Yog'
+                        {% trans "Yog'" %}
                     </a>
                 </div>
             </div>
 
             <div class="border-t border-gray-100 pt-3">
-                <h5 class="text-sm font-medium text-gray-900 mb-2">Kategoriyalar</h5>
+                <h5 class="text-sm font-medium text-gray-900 mb-2">{% trans "Kategoriyalar" %}</h5>
                 <div class="space-y-1">
                     <a href="/categories/motor/" class="block text-sm text-gray-600 hover:text-primary-600 transition-colors">
-                        🔧 Motor qismlari
+                        🔧 {% trans "Motor qismlari" %}
                     </a>
                     <a href="/categories/tormoz/" class="block text-sm text-gray-600 hover:text-primary-600 transition-colors">
-                        🛑 Tormoz tizimi
+                        🛑 {% trans "Tormoz tizimi" %}
                     </a>
                     <a href="/categories/elektr/" class="block text-sm text-gray-600 hover:text-primary-600 transition-colors">
-                        ⚡ Elektr qismlari
+                        ⚡ {% trans "Elektr qismlari" %}
                     </a>
                 </div>
             </div>
@@ -243,7 +244,7 @@
         <div x-show="results.length > 0" class="p-3 bg-gray-50 border-t border-gray-100">
             <a :href="'/search/?q=' + encodeURIComponent(query)"
                class="block text-center text-sm font-medium text-primary-600 hover:text-primary-800 py-2">
-                Barcha natijalarni ko'rish
+                {% trans "Barcha natijalarni ko'rish" %}
                 <span x-show="results.length >= 10" class="text-gray-500">
                     ({{ results.length }}+)
                 </span>
@@ -252,7 +253,7 @@
 
         <!-- Keyboard Shortcuts Hint -->
         <div class="p-2 bg-gray-50 border-t border-gray-100 text-xs text-gray-500 text-center">
-            <span>↑↓ harakat, Enter tanlash, Esc yopish</span>
+            <span>{% trans "↑↓ harakat, Enter tanlash, Esc yopish" %}</span>
         </div>
     </div>
 </div>
